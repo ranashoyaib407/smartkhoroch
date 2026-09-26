@@ -1536,7 +1536,7 @@
       }
     });
 
-    document.getElementById('memoExpenseForm').addEventListener('submit', (e) => {
+    document.getElementById('memoExpenseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const totalAmount = parseFloat(document.getElementById('memoTotalAmount').value) || 0;
       if(totalAmount <= 0) return alert('দয়া করে মেমোতে সঠিক পণ্যের দাম লিখুন!');
@@ -1592,7 +1592,7 @@
       document.getElementById('vDate').textContent = t.date;
       document.getElementById('vNote').textContent = t.note;
       
-      document.getElementById('deleteTxBtn').onclick = function() {
+      document.getElementById('deleteTxBtn').onclick = async function() {
         if(confirm('এই লেনদেনটি মুছে ফেলতে চান?')) {
           if (!currentUserGlobal) return alert('প্রথমে লগইন করুন।');
           try {
