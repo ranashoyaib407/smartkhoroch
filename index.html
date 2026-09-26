@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>টাকা হিসেব</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Hind Siliguri', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #eef2f6;
+      color: #1e293b;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      background: #f8fafc;
+      padding: 16px 16px 85px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      position: relative;
+    }
+
+    /* টপ বার */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trial-pill {
+      font-size: 11px;
+      background: #eff6ff;
+      color: #2563eb;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      border: 1px solid #dbeafe;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 7px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #475569;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    /* মেইন ব্যালেন্স কার্ড */
+    .hero-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 22px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(149, 157, 165, 0.08);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .balance-subtitle {
+      font-size: 14px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .balance-hero {
+      font-size: 38px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      margin: 4px 0;
+    }
+
+    .monthly-net {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f0fdf4;
+      color: #16a34a;
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    .in-out-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      border-top: 1px dashed #e2e8f0;
+      padding-top: 16px;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 14px;
+    }
+
+    .stat-pill.in { background: #f0fdf4; }
+    .stat-pill.out { background: #fef2f2; }
+
+    .stat-info { text-align: left; }
+    .stat-title { font-size: 12px; font-weight: 500; }
+    .stat-pill.in .stat-title { color: #16a34a; }
+    .stat-pill.out .stat-title { color: #dc2626; }
+
+    .stat-val { font-size: 16px; font-weight: 700; }
+    .stat-pill.in .stat-val { color: #15803d; }
+    .stat-pill.out .stat-val { color: #b91c1c; }
+
+    .stat-arrow {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stat-pill.in .stat-arrow { background: #dcfce7; color: #16a34a; }
+    .stat-pill.out .stat-arrow { background: #fee2e2; color: #dc2626; }
+
+    /* অ্যাকশন বাটন */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .big-btn {
+      border: none;
+      border-radius: 18px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform 0.15s ease;
+    }
+    .big-btn:active { transform: scale(0.97); }
+
+    .big-btn-in {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .big-btn-out {
+      background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
+      box-shadow: 0 6px 16px rgba(244, 63, 94, 0.3);
+    }
+
+    .plus-circle {
+      width: 32px;
+      height: 32px;
+      background: rgba(255,255,255,0.22);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* লেনদেন সেকশন */
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 4px;
+    }
+
+    .section-head h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .section-head span {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .tx-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-item {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      border: 1px solid #f1f5f9;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .card-item:hover { background: #fcfdfe; }
+
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .item-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .item-meta h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .item-subtext {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+      max-width: 170px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .amount-display {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .amount-display.income { color: #16a34a; }
+    .amount-display.expense { color: #dc2626; }
+
+    /* পেমেন্ট মেথড ব্যাজ */
+    .mfs-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 8px;
+      text-transform: capitalize;
+    }
+    .tag-bkash { background: #fdf2f8; color: #db2777; border: 1px solid #fbcfe8; }
+    .tag-nagad { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
+    .tag-cash { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+    .tag-rocket { background: #faf5ff; color: #9333ea; border: 1px solid #f3e8ff; }
+    .tag-bank { background: #f0fdfa; color: #0d9488; border: 1px solid #ccfbf1; }
+
+    /* ফিক্সড বটম নেভিগেশন বার */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 440px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 50;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.03);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .nav-item.active { color: #2563eb; font-weight: 600; }
+
+    /* পপআপ মডাল ও রসিদ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 100;
+    }
+    .modal.active { display: flex; }
+
+    .modal-content {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+      border-radius: 28px 28px 0 0;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .modal-header h3 { font-size: 18px; font-weight: 700; color: #0f172a; }
+    .close-btn { background: none; border: none; cursor: pointer; color: #64748b; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #475569;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: #2563eb;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: #2563eb;
+      color: #fff;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .receipt-box {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      padding: 16px;
+      border-radius: 16px;
+      margin: 14px 0;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+    }
+    .receipt-row:last-child { border-bottom: none; }
+    .receipt-label { color: #64748b; }
+    .receipt-val { font-weight: 600; color: #1e293b; }
+    .receipt-note {
+      margin-top: 10px;
+      background: #ffffff;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+      color: #334155;
+    }
+
+    .btn-delete {
+      background: #fef2f2;
+      color: #dc2626;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* ফুলস্ক্রিন পিন ও পেওয়াল */
+    .fullscreen-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #ffffff;
+      z-index: 999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .fullscreen-overlay.active { display: flex; }
+    .pin-input {
+      font-size: 28px;
+      letter-spacing: 12px;
+      text-align: center;
+      width: 180px;
+      padding: 10px;
+      margin: 16px 0;
+      border: 2px solid #2563eb;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- পিন লক স্ক্রিন -->
+  <div class="fullscreen-overlay" id="pinLockScreen">
+    <div style="background: #eff6ff; padding: 18px; border-radius: 50%; color: #2563eb; margin-bottom: 16px;">
+      <i data-lucide="lock" style="width: 36px; height: 36px;"></i>
+    </div>
+    <h2>পিন কোড দিন</h2>
+    <p style="font-size: 13px; color: #64748b; margin-top: 4px;">হিসাব সুরক্ষিত রাখতে ৪ সংখ্যার পিন দিন</p>
+    <input type="password" maxlength="4" class="pin-input" id="pinInput" placeholder="••••">
+    <button class="btn-submit" style="max-width: 180px;" id="pinSubmitBtn">আনলক করুন</button>
+  </div>
+
+  <!-- পেওয়াল স্ক্রিন -->
+  <div class="fullscreen-overlay" id="paywallScreen">
+    <div style="background: #fff7ed; padding: 18px; border-radius: 50%; color: #ea580c; margin-bottom: 16px;">
+      <i data-lucide="clock" style="width: 36px; height: 36px;"></i>
+    </div>
+    <h2>ফ্রি ট্রায়ালের মেয়াদ শেষ!</h2>
+    <p style="font-size: 13px; color: #64748b; margin-top: 4px;">হিসাব লেখা চালু রাখতে সাবস্ক্রিপশন কি সক্রিয় করুন।</p>
+    <div style="border: 2px solid #2563eb; background: #eff6ff; border-radius: 16px; padding: 16px; margin: 16px 0; width: 100%; max-width: 300px;">
+      <span class="trial-pill" style="background:#2563eb; color:#fff;">জনপ্রিয় অফার</span>
+      <div style="font-size: 26px; font-weight: 800; color: #1e40af; margin: 6px 0;">৳৪৯ / মাস</div>
+      <p style="font-size: 12px; color: #475569;">বিকাশ বা নগদ দিয়ে সহজ পেমেন্ট</p>
+    </div>
+    <input type="text" id="licenseKeyInput" placeholder="যেমন: 2026FREE" style="width: 100%; max-width: 300px; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 12px; margin-bottom: 10px;">
+    <button class="btn-submit" style="max-width: 300px;" id="activateLicenseBtn">অ্যাক্টিভ করুন</button>
+  </div>
+
+  <!-- মূল অ্যাপ কন্টেইনার -->
+  <div class="app-container">
+    
+    <!-- টপ বার -->
+    <header class="top-bar">
+      <div class="app-title">
+        <span>টাকা হিসেব</span>
+        <span class="trial-pill" id="trialBadge">ফ্রি ট্রায়াল</span>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="setPinBtn" title="পিন পরিবর্তন">
+          <i data-lucide="key-round" style="width: 16px; height: 16px;"></i>
+        </button>
+        <button class="icon-btn" id="lockAppBtn" title="লক করুন">
+          <i data-lucide="lock" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ব্যালেন্স কার্ড -->
+    <section class="hero-card">
+      <p class="balance-subtitle">বর্তমানে হাতে আছে</p>
+      <h2 class="balance-hero" id="netBalance">৳০</h2>
+      <div class="monthly-net">
+        <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
+        <span id="savingsRateLabel">হিসাব আপডেট</span>
+      </div>
+
+      <div class="in-out-grid">
+        <div class="stat-pill in">
+          <div class="stat-info">
+            <span class="stat-title">টাকা এলো</span>
+            <div class="stat-val" id="totalIncome">৳০</div>
+          </div>
+          <div class="stat-arrow">
+            <i data-lucide="arrow-up" style="width: 15px; height: 15px;"></i>
+          </div>
+        </div>
+
+        <div class="stat-pill out">
+          <div class="stat-info">
+            <span class="stat-title">খরচ হলো</span>
+            <div class="stat-val" id="totalExpense">৳০</div>
+          </div>
+          <div class="stat-arrow">
+            <i data-lucide="arrow-down" style="width: 15px; height: 15px;"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- বড় দুটি অ্যাকশন বাটন -->
+    <section class="action-grid">
+      <button class="big-btn big-btn-in" id="openIncomeModal">
+        <div class="plus-circle">
+          <i data-lucide="plus" style="width: 20px; height: 20px;"></i>
+        </div>
+        <span>টাকা যোগ করুন</span>
+      </button>
+
+      <button class="big-btn big-btn-out" id="openExpenseModal">
+        <div class="plus-circle">
+          <i data-lucide="plus" style="width: 20px; height: 20px;"></i>
+        </div>
+        <span>খরচ যোগ করুন</span>
+      </button>
+    </section>
+
+    <!-- সাম্প্রতিক লেনদেন -->
+    <section>
+      <div class="section-head">
+        <div>
+          <h3>সাম্প্রতিক লেনদেন</h3>
+          <span>লেনদেনের সম্পূর্ণ খাতা</span>
+        </div>
+        <button id="exportBtn" style="background:none; border:none; color:#2563eb; font-size:13px; font-weight:600; cursor:pointer;">Excel রফতানি</button>
+      </div>
+
+      <div class="tx-stream" id="transactionList" style="margin-top: 12px;">
+        <p style="text-align: center; color: #94a3b8; font-size: 14px; margin-top: 24px;">এখনও কোনো লেনদেন যোগ করা হয়নি।</p>
+      </div>
+    </section>
+
+    <!-- ফিক্সড বটম নেভিগেশন বার -->
+    <nav class="bottom-nav">
+      <div class="nav-item active">
+        <i data-lucide="layout-grid" style="width: 20px; height: 20px;"></i>
+        <span>ড্যাশবোর্ড</span>
+      </div>
+      <div class="nav-item" onclick="alert('সব লেনদেনের সম্পূর্ণ তালিকা স্ক্রিন')">
+        <i data-lucide="arrow-left-right" style="width: 20px; height: 20px;"></i>
+        <span>লেনদেন</span>
+      </div>
+      <div class="nav-item" onclick="alert('বাজেট লিমিট ও নিয়ন্ত্রণ স্ক্রিন')">
+        <i data-lucide="pie-chart" style="width: 20px; height: 20px;"></i>
+        <span>বাজেট</span>
+      </div>
+      <div class="nav-item" onclick="document.getElementById('exportBtn').click()">
+        <i data-lucide="bar-chart-3" style="width: 20px; height: 20px;"></i>
+        <span>রিপোর্ট</span>
+      </div>
+      <div class="nav-item" onclick="document.getElementById('setPinBtn').click()">
+        <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
+        <span>সেটিংস</span>
+      </div>
+    </nav>
+
+    <!-- এন্ট্রি মডাল পপআপ -->
+    <div class="modal" id="entryModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">টাকা যোগ করুন</h3>
+          <button class="close-btn" id="closeModal">
+            <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+          </button>
+        </div>
+        <form id="entryForm">
+          <input type="hidden" id="entryType" value="income">
+          
+          <div class="form-group">
+            <label for="amount">টাকার পরিমাণ (৳)</label>
+            <input type="number" id="amount" placeholder="যেমন: ১,৫০০" required>
+          </div>
+
+          <div class="form-group">
+            <label for="category">খাত / বিষয়</label>
+            <select id="category" required>
+              <option value="মুদি বাজার">মুদি বাজার ও খাবার</option>
+              <option value="বাসা ভাড়া">বাসা ভাড়া ও ইউটিলিটি</option>
+              <option value="বিদ্যুৎ বিল">বিদ্যুৎ ও গ্যাস বিল</option>
+              <option value="যাতায়াত">যাতায়াত ও জ্বালানি</option>
+              <option value="চিকিৎসা">চিকিৎসা ও ওষুধ</option>
+              <option value="কেনাকাটা">কেনাকাটা ও উপহার</option>
+              <option value="বেতন / আয়">বেতন / প্রধান আয়</option>
+              <option value="ব্যবসা">ব্যবসার জমা</option>
+              <option value="অন্যান্য">অন্যান্য খাত</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="method">পেমেন্ট মাধ্যম</label>
+            <select id="method" required>
+              <option value="বিকাশ">বিকাশ (bKash)</option>
+              <option value="নগদ">নগদ (Nagad)</option>
+              <option value="ক্যাশ">ক্যাশ (Cash)</option>
+              <option value="রকেট">রকেট (Rocket)</option>
+              <option value="ব্যাংক">ব্যাংক / কার্ড</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="note">কেন খরচ হয়েছে? (বিস্তারিত কারণ)</label>
+            <input type="text" id="note" placeholder="যেমন: চাল, ডাল, তেল কেনা হলো" required>
+          </div>
+
+          <button type="submit" class="btn-submit">সংরক্ষণ করুন</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- বিস্তারিত দেখার রসিদ পপআপ -->
+    <div class="modal" id="detailModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>লেনদেনের মেমো / ভাউচার</h3>
+          <button class="close-btn" id="closeDetailModal">
+            <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+          </button>
+        </div>
+        <div class="receipt-box" id="receiptContent"></div>
+        <button class="btn-delete" id="deleteTxBtn">লেনদেনটি মুছে ফেলুন</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Lucide Icons ইনজেকশন ফাংশন
+    function refreshIcons() {
+      if (window.lucide) lucide.createIcons();
+    }
+
+    const STORAGE_KEY = 'taka_hisab_modern_data';
+    const PIN_KEY = 'taka_hisab_user_pin';
+    const INSTALL_DATE_KEY = 'taka_hisab_install_date';
+    const SUBSCRIBED_KEY = 'taka_hisab_is_subscribed';
+
+    let transactions = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let selectedTxId = null;
+
+    // ক্যাটাগরি আইকন ও ব্যাকগ্রাউন্ড কালার ম্যাপিং
+    const categoryConfig = {
+      'মুদি বাজার': { icon: 'shopping-cart', bg: '#eff6ff', color: '#2563eb' },
+      'বাসা ভাড়া': { icon: 'home', bg: '#fdf2f8', color: '#db2777' },
+      'বিদ্যুৎ বিল': { icon: 'lightbulb', bg: '#fffbeb', color: '#d97706' },
+      'যাতায়াত': { icon: 'car', bg: '#f0fdf4', color: '#16a34a' },
+      'চিকিৎসা': { icon: 'heart-pulse', bg: '#fef2f2', color: '#dc2626' },
+      'কেনাকাটা': { icon: 'shopping-bag', bg: '#faf5ff', color: '#9333ea' },
+      'বেতন / আয়': { icon: 'banknote', bg: '#f0fdf4', color: '#16a34a' },
+      'ব্যবসা': { icon: 'briefcase', bg: '#f0fdfa', color: '#0d9488' },
+      'অন্যান্য': { icon: 'receipt', bg: '#f1f5f9', color: '#475569' }
+    };
+
+    // সাবস্ক্রিপশন ও ট্রায়াল
+    function checkSubscription() {
+      const isSubscribed = localStorage.getItem(SUBSCRIBED_KEY) === 'true';
+      if (isSubscribed) {
+        document.getElementById('trialBadge').textContent = 'প্রো গ্রাহক';
+        return;
+      }
+      let installDate = localStorage.getItem(INSTALL_DATE_KEY);
+      if (!installDate) {
+        installDate = Date.now();
+        localStorage.setItem(INSTALL_DATE_KEY, installDate);
+      }
+      const daysPassed = (Date.now() - parseInt(installDate)) / (1000 * 60 * 60 * 24);
+      if (daysPassed > 7) {
+        document.getElementById('paywallScreen').classList.add('active');
+      } else {
+        const daysLeft = Math.ceil(7 - daysPassed);
+        document.getElementById('trialBadge').textContent = `ট্রায়াল: ${daysLeft} দিন`;
+      }
+    }
+
+    document.getElementById('activateLicenseBtn').addEventListener('click', () => {
+      const key = document.getElementById('licenseKeyInput').value.trim();
+      if (key === '2026FREE' || key.length >= 8) {
+        localStorage.setItem(SUBSCRIBED_KEY, 'true');
+        alert('সাবস্ক্রিপশন সফলভাবে সক্রিয় হয়েছে!');
+        document.getElementById('paywallScreen').classList.remove('active');
+        document.getElementById('trialBadge').textContent = 'প্রো গ্রাহক';
+      } else {
+        alert('সঠিক লাইসেন্স কোড দিন!');
+      }
+    });
+
+    // পিন লক
+    const pinLockScreen = document.getElementById('pinLockScreen');
+    const pinInput = document.getElementById('pinInput');
+
+    function checkPinOnStart() {
+      if (localStorage.getItem(PIN_KEY)) pinLockScreen.classList.add('active');
+    }
+
+    document.getElementById('pinSubmitBtn').addEventListener('click', () => {
+      if (pinInput.value === localStorage.getItem(PIN_KEY)) {
+        pinLockScreen.classList.remove('active');
+        pinInput.value = '';
+      } else {
+        alert('ভুল পিন!');
+        pinInput.value = '';
+      }
+    });
+
+    document.getElementById('setPinBtn').addEventListener('click', () => {
+      const newPin = prompt('নতুন ৪ সংখ্যার পিন দিন:');
+      if (newPin && newPin.length === 4 && !isNaN(newPin)) {
+        localStorage.setItem(PIN_KEY, newPin);
+        alert('পিন আপডেট হয়েছে!');
+      }
+    });
+
+    document.getElementById('lockAppBtn').addEventListener('click', () => {
+      if (!localStorage.getItem(PIN_KEY)) alert('আগে পিন সেট করুন!');
+      else pinLockScreen.classList.add('active');
+    });
+
+    // ফর্ম হ্যান্ডলিং
+    const netBalanceEl = document.getElementById('netBalance');
+    const totalIncomeEl = document.getElementById('totalIncome');
+    const totalExpenseEl = document.getElementById('totalExpense');
+    const transactionListEl = document.getElementById('transactionList');
+    const entryModal = document.getElementById('entryModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const entryForm = document.getElementById('entryForm');
+    const entryTypeInput = document.getElementById('entryType');
+    const exportBtn = document.getElementById('exportBtn');
+    
+    const detailModal = document.getElementById('detailModal');
+    const receiptContent = document.getElementById('receiptContent');
+
+    document.getElementById('openIncomeModal').addEventListener('click', () => openModal('income'));
+    document.getElementById('openExpenseModal').addEventListener('click', () => openModal('expense'));
+    document.getElementById('closeModal').addEventListener('click', () => {
+      entryModal.classList.remove('active');
+      entryForm.reset();
+    });
+    document.getElementById('closeDetailModal').addEventListener('click', () => {
+      detailModal.classList.remove('active');
+      selectedTxId = null;
+    });
+
+    function openModal(type){
+  entryTypeInput.value = type;
+  const noteLabel = document.querySelector('label[for="note"]');
+  const noteInput = document.getElementById('note');
+
+  if (type === 'income') {
+    modalTitle.textContent = 'টাকা জমা যোগ করুন';
+    noteLabel.textContent = 'টাকা কোথা থেকে এলো? (উৎস বা বিবরণ)';
+    noteInput.placeholder = 'যেমন: সেপ্টেম্বর মাসের বেতন, দোকান বিক্রি';
+  } else {
+    modalTitle.textContent = 'খরচের হিসাব যোগ করুন';
+    noteLabel.textContent = 'কেন খরচ হয়েছে? (বিস্তারিত কারণ)';
+    noteInput.placeholder = 'যেমন: চাল, ডাল, তেল কেনা হলো';
+  }
+
+  entryModal.classList.add('active');
+}
+
+    entryForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const amount = parseFloat(document.getElementById('amount').value);
+      const category = document.getElementById('category').value;
+      const method = document.getElementById('method').value;
+      const note = document.getElementById('note').value.trim();
+      const type = entryTypeInput.value;
+
+      if (isNaN(amount) || amount <= 0) return;
+
+      const now = new Date();
+      const newTx = {
+        id: Date.now(),
+        type,
+        amount,
+        category,
+        method,
+        note: note || 'বিবরণ নেই',
+        date: now.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' }),
+        time: now.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      transactions.unshift(newTx);
+      saveAndRender();
+      entryModal.classList.remove('active');
+      entryForm.reset();
+    });
+
+    function saveAndRender() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+      updateDashboard();
+      renderList();
+      refreshIcons();
+    }
+
+    function updateDashboard() {
+      let income = 0;
+      let expense = 0;
+
+      transactions.forEach(t => {
+        if (t.type === 'income') income += t.amount;
+        else expense += t.amount;
+      });
+
+      const net = income - expense;
+      netBalanceEl.textContent = `৳${net.toLocaleString('bn-BD')}`;
+      totalIncomeEl.textContent = `৳${income.toLocaleString('bn-BD')}`;
+      totalExpenseEl.textContent = `৳${expense.toLocaleString('bn-BD')}`;
+    }
+
+    // পেমেন্ট মেথড ট্যাগ ক্লাস নির্ধারণ
+    function getMethodBadge(method) {
+      if (method.includes('বিকাশ')) return `<span class="mfs-tag tag-bkash">bKash</span>`;
+      if (method.includes('নগদ')) return `<span class="mfs-tag tag-nagad">Nagad</span>`;
+      if (method.includes('রকেট')) return `<span class="mfs-tag tag-rocket">Rocket</span>`;
+      if (method.includes('ব্যাংক')) return `<span class="mfs-tag tag-bank">Bank</span>`;
+      return `<span class="mfs-tag tag-cash">Cash</span>`;
+    }
+
+    function renderList() {
+      if (transactions.length === 0) {
+        transactionListEl.innerHTML = '<p style="text-align: center; color: #94a3b8; font-size: 14px; margin-top: 24px;">এখনও কোনো লেনদেন যোগ করা হয়নি।</p>';
+        return;
+      }
+
+      transactionListEl.innerHTML = transactions.map(t => {
+        const conf = categoryConfig[t.category] || { icon: 'receipt', bg: '#f1f5f9', color: '#475569' };
+        return `
+          <div class="card-item" onclick="showDetails(${t.id})">
+            <div class="item-left">
+              <div class="item-icon-box" style="background: ${conf.bg}; color: ${conf.color};">
+                <i data-lucide="${conf.icon}" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div class="item-meta">
+                <h4>${t.category}</h4>
+                <p class="item-subtext">${t.method} • ${t.note}</p>
+              </div>
+            </div>
+            <div class="item-right">
+              <div class="amount-display ${t.type}">
+                ${t.type === 'income' ? '+' : '-'}৳${t.amount.toLocaleString('bn-BD')}
+              </div>
+              ${getMethodBadge(t.method)}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.showDetails = function(id) {
+      const item = transactions.find(t => t.id === id);
+      if (!item) return;
+      selectedTxId = id;
+
+      receiptContent.innerHTML = `
+        <div class="receipt-row">
+          <span class="receipt-label">ধরন:</span>
+          <span class="receipt-val" style="color:${item.type === 'income' ? '#16a34a' : '#dc2626'}">
+            ${item.type === 'income' ? 'টাকা জমা (+)' : 'খরচ (-)'}
+          </span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">টাকা:</span>
+          <span class="receipt-val" style="font-size:18px;">৳${item.amount.toLocaleString('bn-BD')}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">খাত:</span>
+          <span class="receipt-val">${item.category}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">পেমেন্ট মেথড:</span>
+          <span class="receipt-val">${item.method}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-label">সময়:</span>
+          <span class="receipt-val">${item.date} (${item.time || ''})</span>
+        </div>
+        <div style="margin-top:12px;">
+          <span class="receipt-label">বিস্তারিত বিবরণ / কারণ:</span>
+          <div class="receipt-note">${item.note}</div>
+        </div>
+      `;
+      detailModal.classList.add('active');
+    };
+
+    document.getElementById('deleteTxBtn').addEventListener('click', () => {
+      if (!selectedTxId) return;
+      if (confirm('এই হিসাবটি মুছে ফেলতে চান?')) {
+        transactions = transactions.filter(t => t.id !== selectedTxId);
+        saveAndRender();
+        detailModal.classList.remove('active');
+      }
+    });
+
+    exportBtn.addEventListener('click', () => {
+      if (transactions.length === 0) return alert('কোনো তথ্য নেই!');
+      let csv = '\uFEFFতারিখ,ধরণ,খাত,মাধ্যম,টাকা,নোট\n';
+      transactions.forEach(t => {
+        csv += `"${t.date}","${t.type === 'income' ? 'টাকা এলো' : 'খরচ হলো'}","${t.category}","${t.method}","${t.amount}","${t.note}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `হিসেব_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+    });
+
+    // শুরুতেই চালু হবে
+    checkSubscription();
+    checkPinOnStart();
+    updateDashboard();
+    renderList();
+    setTimeout(refreshIcons, 100);
+  </script>
+</body>
+</html>
