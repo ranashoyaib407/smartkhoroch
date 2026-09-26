@@ -25,37 +25,6 @@
       overflow: hidden;
     }
 
-    /* অ্যাপ খোলার সময় Firebase সেশন/ডাটা প্রস্তুত হওয়া পর্যন্ত শুধু লোগো দেখাবে */
-    .splash-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fafcfb;
-      opacity: 1;
-      visibility: visible;
-      transition: opacity .22s ease, visibility .22s ease;
-    }
-    .splash-screen.hide {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .splash-logo {
-      font-size: 34px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      animation: splashLogo .9s ease-in-out infinite alternate;
-    }
-    .splash-smart { color: #1e293b; }
-    .splash-khoroch { color: #059669; display: inline-block; }
-    @keyframes splashLogo {
-      from { transform: translateY(3px) rotate(-2deg) scale(.97); }
-      to { transform: translateY(-3px) rotate(2deg) scale(1.02); }
-    }
-
     .app-container { 
       width: 100%; 
       max-width: 420px; 
@@ -142,8 +111,6 @@
     .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }
     .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 14px; outline: none; }
     .btn-submit { width: 100%; background: #059669; color: #fff; padding: 14px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; }
-    .auth-error { display: none; color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 9px 11px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 10px; text-align: left; }
-    .auth-error.show { display: block; }
     
     .fullscreen-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px; overflow-y: auto; text-align: center; }
     .fullscreen-overlay.active { display: flex; }
@@ -175,10 +142,6 @@
   </style>
 </head>
 <body class="logged-out">
-
-  <div class="splash-screen" id="splashScreen" aria-hidden="true">
-    <div class="splash-logo"><span class="splash-smart">Smart</span><span class="splash-khoroch">Khoroch</span></div>
-  </div>
 
   <div class="app-container">
 
@@ -436,7 +399,6 @@
             <a id="whatsappForgotLink" href="https://wa.me/8801315937654" target="_blank" style="font-size: 12px; color: #059669; font-weight: 600; text-decoration: none;">পাসওয়ার্ড ভুলে গেছেন? হোয়াটসঅ্যাপে যোগাযোগ করুন</a>
           </div>
 
-          <div id="authError" class="auth-error" role="alert"></div>
           <button type="submit" class="btn-submit" id="authSubmitBtn">লগইন</button>
         </form>
       </div>
@@ -812,7 +774,7 @@
         <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">আপনি কি সত্যি SmartKhoroch অ্যাপ বন্ধ করতে চাচ্ছেন?</p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <button onclick="document.getElementById('exitModal').classList.remove('active')" style="background: #f1f5f9; color: #334155; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer;">না</button>
-          <button onclick="confirmExit()" style="background: #e11d48; color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer;">হ্যাঁ, বের হবো</button>
+          <button onclick="window.close()" style="background: #e11d48; color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer;">হ্যাঁ, বের হবো</button>
         </div>
       </div>
     </div>
@@ -968,8 +930,6 @@
           bottomNav.style.display = 'none';
           switchTab('admin');
           loadAdminData();
-          const splash = document.getElementById('splashScreen');
-          if (splash) splash.classList.add('hide');
           return;
         } else {
           bottomNav.style.display = 'flex';
@@ -1039,8 +999,6 @@
         authBox.style.display = 'block';
         switchTab('settings');
       }
-      const splash = document.getElementById('splashScreen');
-      if (splash) splash.classList.add('hide');
       if(window.lucide) lucide.createIcons();
     });
 
@@ -1061,38 +1019,28 @@
       const phoneOrEmail = document.getElementById('authPhone').value.trim();
       const pass = document.getElementById('authPass').value.trim();
       const name = document.getElementById('regName') ? document.getElementById('regName').value.trim() : '';
-      const submitBtn = document.getElementById('authSubmitBtn');
-      const errorBox = document.getElementById('authError');
-
-      if (errorBox) { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+      
       const email = phoneOrEmail.includes('@') ? phoneOrEmail : `${phoneOrEmail}@smartkhoroch.app`;
 
       if (authMode === 'register') {
-        if (!name) {
-          if (errorBox) { errorBox.textContent = 'আপনার নাম লিখুন।'; errorBox.classList.add('show'); }
-          return;
-        }
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'রেজিস্ট্রেশন হচ্ছে...';
+        if (!name) return alert('নাম লিখুন!');
         try {
           const cred = await createUserWithEmailAndPassword(auth, email, pass);
           await setDoc(doc(db, "users", cred.user.uid), { name, phone: phoneOrEmail, email, isSubscribed: false, subDays: 30, createdAt: new Date(), lastActive: new Date() });
-        } catch (err) {
-          if (errorBox) { errorBox.textContent = 'রেজিস্ট্রেশন করা যায়নি। তথ্যগুলো সঠিকভাবে দিন।'; errorBox.classList.add('show'); }
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
-        }
+          alert('রেজিস্ট্রেশন সফল হয়েছে!');
+          switchTab('dashboard');
+        } catch (err) { alert('ত্রুটি: ' + err.message); }
       } else {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'লগইন হচ্ছে...';
         try {
           await signInWithEmailAndPassword(auth, email, pass);
-          // onAuthStateChanged সফল লগইনের পর সরাসরি Dashboard/অ্যাডমিনে নিয়ে যাবে।
-        } catch (err) {
-          if (errorBox) { errorBox.textContent = 'আপনার মোবাইল নম্বর/পাসওয়ার্ড ভুল।'; errorBox.classList.add('show'); }
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'লগইন';
-        }
+          alert('লগইন সফল হয়েছে!');
+          if(email === ADMIN_EMAIL) {
+            switchTab('admin');
+            loadAdminData();
+          } else {
+            switchTab('dashboard');
+          }
+        } catch (err) { alert('ভুল নম্বর/ইমেল বা পাসওয়ার্ড!'); }
       }
     };
 
@@ -1320,9 +1268,7 @@
       document.getElementById('paywallScreen').classList.remove('active');
       switchTab('dashboard');
     };
-  </script>
 
-  <script>
     let currentPlan = { id: '1m', price: 49, name: '১ মাস', days: 30 };
     window.selectPlan = function(id, price, name, days) {
       currentPlan = { id, price, name, days };
@@ -1442,11 +1388,7 @@
       document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
       document.getElementById('groupName').style.display = mode === 'register' ? 'block' : 'none';
       document.getElementById('forgotPassWrapper').style.display = mode === 'register' ? 'none' : 'block';
-      const authBtn = document.getElementById('authSubmitBtn');
-      authBtn.disabled = false;
-      authBtn.textContent = mode === 'register' ? 'রেজিস্ট্রেশন করুন' : 'লগইন';
-      const authError = document.getElementById('authError');
-      if (authError) { authError.textContent = ''; authError.classList.remove('show'); }
+      document.getElementById('authSubmitBtn').textContent = mode === 'register' ? 'রেজিস্ট্রেশন করুন' : 'লগইন';
     };
 
     window.setBudgetPrompt = async function() {
@@ -1893,19 +1835,7 @@
       `;
     }
 
-    let allowBackNavigation = false;
-
-    window.confirmExit = function() {
-      document.getElementById('exitModal').classList.remove('active');
-      allowBackNavigation = true;
-      history.back();
-    };
-
     window.addEventListener('popstate', (e) => {
-      if (allowBackNavigation) {
-        allowBackNavigation = false;
-        return;
-      }
       e.preventDefault();
       document.getElementById('exitModal').classList.add('active');
       history.pushState(null, '', window.location.href);
@@ -1932,34 +1862,21 @@
 
     window.toggleNotification = function(checkbox) {
       if (checkbox.checked) {
-        if (!('Notification' in window)) {
-          checkbox.checked = false;
-          setNotificationUI(false);
-          return;
-        }
-
-        if (Notification.permission === 'granted') {
-          localStorage.setItem('smartkhoroch_notif', 'true');
-          setNotificationUI(true);
-          return;
-        }
-
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
+            alert('নোটিফিকেশন সফলভাবে অন করা হয়েছে! প্রতিদিন রাত ৯টায় আপনাকে রিমাইন্ডার দেওয়া হবে।');
             localStorage.setItem('smartkhoroch_notif', 'true');
             setNotificationUI(true);
           } else {
+            alert('ব্রাউজার থেকে নোটিফিকেশন পারমিশন দেওয়া হয়নি।');
             checkbox.checked = false;
             setNotificationUI(false);
-            localStorage.setItem('smartkhoroch_notif', 'false');
           }
-        }).catch(() => {
-          checkbox.checked = false;
-          setNotificationUI(false);
         });
       } else {
         localStorage.setItem('smartkhoroch_notif', 'false');
         setNotificationUI(false);
+        alert('নোটিফিকেশন বন্ধ করা হয়েছে।');
       }
     };
 
