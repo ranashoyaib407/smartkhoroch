@@ -393,7 +393,14 @@
         <form id="authForm" onsubmit="handleFirebaseAuth(event)">
           <div class="form-group" id="groupName" style="display:none;"><label>নাম</label><input type="text" id="regName" placeholder="আপনার নাম"></div>
           <div class="form-group"><label>মোবাইল নম্বর বা ইমেল</label><input type="text" id="authPhone" autocomplete="off" spellcheck="false" placeholder="01712345678 বা জিমেইল" required></div>
-          <div class="form-group" id="groupPass"><label>পাসওয়ার্ড</label><input type="password" id="authPass" autocomplete="off" spellcheck="false" placeholder="••••••••" required></div>
+          <div class="form-group" id="groupPass"><label>পাসওয়ার্ড</label>
+            <div style="position:relative;">
+              <input type="password" id="authPass" autocomplete="off" spellcheck="false" placeholder="••••••••" required style="padding-right:44px;">
+              <button type="button" id="authPassToggle" onclick="togglePasswordVisibility('authPass','authPassToggle')" aria-label="পাসওয়ার্ড দেখুন" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); border:none; background:transparent; color:#64748b; cursor:pointer; padding:6px;">
+                <i data-lucide="eye" style="width:18px;height:18px;"></i>
+              </button>
+            </div>
+          </div>
           
           <div style="text-align: right; margin-bottom: 10px;" id="forgotPassWrapper">
             <a id="whatsappForgotLink" href="https://wa.me/8801315937654" target="_blank" style="font-size: 12px; color: #059669; font-weight: 600; text-decoration: none;">পাসওয়ার্ড ভুলে গেছেন? হোয়াটসঅ্যাপে যোগাযোগ করুন</a>
@@ -925,6 +932,14 @@
 
       if (user) {
         document.body.classList.remove('logged-out');
+        authBox.style.display = 'none';
+        profileCard.style.display = 'block';
+
+        if (user.email !== ADMIN_EMAIL) {
+          bottomNav.style.display = 'flex';
+          // লগইন/সেশন পাওয়া মাত্রই সরাসরি ড্যাশবোর্ড খুলবে।
+          switchTab('dashboard');
+        }
 
         if (user.email === ADMIN_EMAIL) {
           bottomNav.style.display = 'none';
@@ -1014,6 +1029,17 @@
       }
     };
 
+    window.togglePasswordVisibility = function(inputId, buttonId) {
+      const input = document.getElementById(inputId);
+      const button = document.getElementById(buttonId);
+      if (!input || !button) return;
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      button.setAttribute('aria-label', showing ? 'পাসওয়ার্ড দেখুন' : 'পাসওয়ার্ড লুকান');
+      button.innerHTML = `<i data-lucide="${showing ? 'eye' : 'eye-off'}" style="width:18px;height:18px;"></i>`;
+      if (window.lucide) lucide.createIcons();
+    };
+
     window.handleFirebaseAuth = async function(e) {
       e.preventDefault();
       const phoneOrEmail = document.getElementById('authPhone').value.trim();
@@ -1033,13 +1059,7 @@
       } else {
         try {
           await signInWithEmailAndPassword(auth, email, pass);
-          alert('লগইন সফল হয়েছে!');
-          if(email === ADMIN_EMAIL) {
-            switchTab('admin');
-            loadAdminData();
-          } else {
-            switchTab('dashboard');
-          }
+          // Firebase auth state handler লগইনের পর সঠিক স্ক্রিনে নিয়ে যাবে।
         } catch (err) { alert('ভুল নম্বর/ইমেল বা পাসওয়ার্ড!'); }
       }
     };
@@ -1356,16 +1376,23 @@
       }
     }
 
+    function getActiveUser() {
+      return auth.currentUser || currentUserGlobal || null;
+    }
+
     async function saveBudgetToCloud(value) {
-      if (!currentUserGlobal) return false;
+      const activeUser = auth.currentUser || currentUserGlobal;
+      if (!activeUser || !activeUser.uid) {
+        console.error('Budget save: no authenticated user');
+        return false;
+      }
       try {
-        await setDoc(doc(db, 'users', currentUserGlobal.uid), {
+        await setDoc(doc(db, 'users', activeUser.uid), {
           monthlyBudget: Number(value)
         }, { merge: true });
         return true;
       } catch (err) {
         console.error('Budget save error:', err);
-        alert('বাজেট সেভ করা যায়নি।');
         return false;
       }
     }
@@ -1392,13 +1419,31 @@
     };
 
     window.setBudgetPrompt = async function() {
-      if (!requireLogin()) return;
-      const b = prompt('মাসিক বাজেট লিখুন:', monthlyBudget);
-      const value = parseFloat(b);
-      if(Number.isFinite(value) && value > 0) {
+      const activeUser = auth.currentUser || currentUserGlobal;
+      if (!activeUser || !activeUser.uid) {
+        alert('প্রথমে লগইন করুন।');
+        return;
+      }
+
+      const b = window.prompt('মাসিক বাজেট লিখুন:', monthlyBudget);
+      if (b === null) return;
+
+      const value = Number(String(b).replace(/[৳,\s]/g, '').trim());
+      if (!Number.isFinite(value) || value <= 0) {
+        alert('সঠিক বাজেটের পরিমাণ লিখুন।');
+        return;
+      }
+
+      try {
+        await setDoc(doc(db, 'users', activeUser.uid), {
+          monthlyBudget: value
+        }, { merge: true });
+
         monthlyBudget = value;
-        await saveBudgetToCloud(monthlyBudget);
         updateDashboard();
+      } catch (err) {
+        console.error('Budget save error:', err);
+        alert('বাজেট সেভ করা যায়নি। আবার চেষ্টা করুন।');
       }
     };
 
@@ -1817,7 +1862,7 @@
       else if(t.method === 'Bank') badgeClass = 'badge-bank';
 
       return `
-        <div onclick="openVoucher(${t.id})" style="background: #fff; padding: 14px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2ece6; box-shadow: 0 2px 6px rgba(0,0,0,0.02); cursor: pointer; transition: transform 0.1s; margin-bottom: 8px;">
+        <div onclick='openVoucher(${JSON.stringify(t.id)})' style="background: #fff; padding: 14px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2ece6; box-shadow: 0 2px 6px rgba(0,0,0,0.02); cursor: pointer; transition: transform 0.1s; margin-bottom: 8px;">
           <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
             <div style="width: 40px; height: 40px; border-radius: 12px; background: ${isInc ? '#ecfdf5' : '#fff1f2'}; color: ${isInc ? '#059669' : '#e11d48'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
               <i data-lucide="${iconName}" style="width: 20px; height: 20px;"></i>
