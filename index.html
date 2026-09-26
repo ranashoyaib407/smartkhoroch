@@ -30,16 +30,21 @@
       max-width: 420px; 
       height: 100vh;
       background: #fafcfb; 
-      padding: 16px 16px 80px 16px; 
+      padding: 12px 12px 72px 12px; 
       display: flex; 
       flex-direction: column; 
-      gap: 16px; 
+      gap: 12px; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
       position: relative; 
       overflow-y: auto;
     }
 
-    .tab-view { display: none; flex-direction: column; gap: 16px; }
+    .tab-view { display: none; flex-direction: column; gap: 12px; }
+    /* লগইন না করা পর্যন্ত অ্যাপের কোনো অপশন/নেভিগেশন দেখা বা ব্যবহার করা যাবে না */
+    body.logged-out .tab-view:not(#viewSettings) { display: none !important; }
+    body.logged-out #viewSettings > *:not(#authContainer) { display: none !important; }
+    body.logged-out #bottomNavContainer { display: none !important; }
+    body.logged-out .app-container { padding-bottom: 16px; }
     .tab-view.active { display: flex; }
     .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
     
@@ -66,7 +71,7 @@
     }
     .running-notice-bar marquee { width: 100%; }
 
-    .hero-card { background: #ffffff; border-radius: 24px; padding: 20px; text-align: center; box-shadow: 0 8px 24px rgba(5, 150, 105, 0.05); border: 1px solid #e2ece6; }
+    .hero-card { background: #ffffff; border-radius: 20px; padding: 15px; text-align: center; box-shadow: 0 8px 24px rgba(5, 150, 105, 0.05); border: 1px solid #e2ece6; }
     .balance-subtitle { font-size: 13px; color: #64748b; font-weight: 500; }
     .balance-hero { font-size: 36px; font-weight: 800; color: #064e3b; margin: 4px 0; }
     .balance-hero.negative { color: #e11d48 !important; }
@@ -86,17 +91,17 @@
     .safe-budget-card { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #a7f3d0; border-radius: 18px; padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     
     .slogan-banner { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #a7f3d0; border-radius: 14px; padding: 10px 14px; text-align: center; font-size: 12px; font-weight: 700; color: #065f46; }
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .big-btn { border: none; border-radius: 18px; padding: 16px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #fff; font-size: 15px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .big-btn { border: none; border-radius: 16px; padding: 12px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #fff; font-size: 13px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
     .big-btn-in { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
     .big-btn-out { background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%); }
     
     .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
     .section-head h3 { font-size: 17px; font-weight: 700; color: #064e3b; }
-    .budget-card, .report-card, .settings-card { background: #fff; border-radius: 20px; padding: 18px; border: 1px solid #e2ece6; display: flex; flex-direction: column; gap: 12px; }
+    .budget-card, .report-card, .settings-card { background: #fff; border-radius: 18px; padding: 14px; border: 1px solid #e2ece6; display: flex; flex-direction: column; gap: 12px; }
     
-    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #fff; border-top: 1px solid #e2ece6; display: flex; justify-content: space-around; padding: 10px 0; z-index: 50; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 12px; font-weight: 500; cursor: pointer; }
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #fff; border-top: 1px solid #e2ece6; display: flex; justify-content: space-around; padding: 7px 0; z-index: 50; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #94a3b8; font-size: 11px; font-weight: 500; cursor: pointer; }
     .nav-item.active { color: #059669; font-weight: 600; }
     
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); justify-content: center; align-items: flex-end; z-index: 100; }
@@ -136,7 +141,7 @@
     .admin-sub-box.active { display: flex; }
   </style>
 </head>
-<body>
+<body class="logged-out">
 
   <div class="app-container">
 
@@ -215,7 +220,7 @@
     </div>
 
     <!-- ড্যাশবোর্ড ট্যাব -->
-    <div class="tab-view active" id="viewDashboard">
+    <div class="tab-view" id="viewDashboard">
       <div class="slogan-banner">স্মার্ট খরচ, গোছানো মন; জমবে টাকা, বাড়বে ধন।</div>
 
       <section class="hero-card">
@@ -377,7 +382,7 @@
     </div>
 
     <!-- সেটিংস ও প্রোফাইল ট্যাব (অ্যাকর্ডিয়ন প্রোফাইল কার্ড সহ) -->
-    <div class="tab-view" id="viewSettings">
+    <div class="tab-view active" id="viewSettings">
       <div class="section-head"><h3>প্রোফাইল ও সেটিংস</h3></div>
       
       <div id="authContainer" class="settings-card">
@@ -919,6 +924,8 @@
       const bottomNav = document.getElementById('bottomNavContainer');
 
       if (user) {
+        document.body.classList.remove('logged-out');
+
         if (user.email === ADMIN_EMAIL) {
           bottomNav.style.display = 'none';
           switchTab('admin');
@@ -931,6 +938,7 @@
         await setDoc(doc(db, "users", user.uid), { lastActive: new Date() }, { merge: true });
 
         const userDocSnap = await getDoc(doc(db, "users", user.uid));
+        await loadUserData(user.uid);
         let userName = "ব্যবহারকারী", userPhone = "";
         let isApproved = false;
         let createdAt = Date.now();
@@ -985,7 +993,8 @@
           document.getElementById('profileExpiry').textContent = 'মেয়াদ শেষ';
         }
       } else {
-        bottomNav.style.display = 'flex';
+        document.body.classList.add('logged-out');
+        bottomNav.style.display = 'none';
         profileCard.style.display = 'none';
         authBox.style.display = 'block';
         switchTab('settings');
@@ -1245,7 +1254,14 @@
       } catch(e) { alert('আপডেট করা যায়নি!'); }
     };
 
-    window.logoutUser = async () => { await signOut(auth); switchTab('settings'); };
+    window.logoutUser = async () => {
+      transactions = [];
+      monthlyBudget = 20000;
+      userDataLoaded = false;
+      await signOut(auth);
+      document.body.classList.add('logged-out');
+      switchTab('settings');
+    };
     window.logoutAdmin = async () => { await signOut(auth); switchTab('settings'); };
 
     window.closePaywall = function() {
@@ -1268,12 +1284,96 @@
       if(currentUserGlobal) checkPendingRequestLock(currentUserGlobal.uid);
     }
 
-    let transactions = JSON.parse(localStorage.getItem('smartkhoroch_modern_data')) || [];
-    let monthlyBudget = parseFloat(localStorage.getItem('smartkhoroch_monthly_budget')) || 20000;
+    // ইউজারের হিসাব এখন UID-ভিত্তিক Firestore-এ থাকবে।
+    // এতে একই অ্যাকাউন্ট যেকোনো ফোন/ডিভাইস থেকে লগইন করলে একই ডাটা পাওয়া যাবে।
+    let transactions = [];
+    let monthlyBudget = 20000;
     let authMode = 'login';
     let currentTxFilter = 'all';
+    let userDataLoaded = false;
+
+    function requireLogin(message = 'এই অপশনটি ব্যবহার করতে আগে লগইন করুন।') {
+      if (!currentUserGlobal) {
+        alert(message);
+        document.body.classList.add('logged-out');
+        switchTab('settings');
+        return false;
+      }
+      return true;
+    }
+
+    async function loadUserData(uid) {
+      if (!uid) return;
+      try {
+        const userRef = doc(db, 'users', uid);
+        const userSnap = await getDoc(userRef);
+
+        monthlyBudget = userSnap.exists() && Number(userSnap.data().monthlyBudget) > 0
+          ? Number(userSnap.data().monthlyBudget)
+          : 20000;
+
+        const txSnap = await getDocs(collection(db, 'users', uid, 'transactions'));
+        transactions = txSnap.docs.map(d => {
+          const data = d.data();
+          let createdAtMs = Date.now();
+          if (data.createdAt?.toMillis) createdAtMs = data.createdAt.toMillis();
+          else if (data.createdAt) {
+            const parsed = new Date(data.createdAt).getTime();
+            if (!Number.isNaN(parsed)) createdAtMs = parsed;
+          }
+          return { ...data, id: d.id, createdAtMs };
+        }).sort((a, b) => b.createdAtMs - a.createdAtMs);
+
+        // পুরোনো ডিভাইসের localStorage ডাটা একবার ক্লাউডে তোলার সুবিধা।
+        // ক্লাউডে আগে থেকেই ডাটা থাকলে স্থানীয় ডাটা আর মেশানো হবে না।
+        if (txSnap.empty) {
+          const legacy = JSON.parse(localStorage.getItem('smartkhoroch_modern_data') || '[]');
+          if (Array.isArray(legacy) && legacy.length > 0) {
+            for (const oldTx of legacy) {
+              const ref = await addDoc(collection(db, 'users', uid, 'transactions'), {
+                type: oldTx.type,
+                amount: Number(oldTx.amount) || 0,
+                category: oldTx.category || '',
+                method: oldTx.method || '',
+                note: oldTx.note || '',
+                date: oldTx.date || new Date().toLocaleDateString('bn-BD'),
+                createdAt: new Date(Number(oldTx.id) || Date.now())
+              });
+              transactions.push({
+                ...oldTx,
+                id: ref.id,
+                amount: Number(oldTx.amount) || 0,
+                createdAtMs: Number(oldTx.id) || Date.now()
+              });
+            }
+            transactions.sort((a, b) => b.createdAtMs - a.createdAtMs);
+          }
+        }
+
+        userDataLoaded = true;
+        updateDashboard();
+      } catch (err) {
+        console.error('User data load error:', err);
+        alert('আপনার হিসাবের ডাটা লোড করা যায়নি। ইন্টারনেট সংযোগ ও Firebase সেটিংস পরীক্ষা করুন।');
+      }
+    }
+
+    async function saveBudgetToCloud(value) {
+      if (!currentUserGlobal) return false;
+      try {
+        await setDoc(doc(db, 'users', currentUserGlobal.uid), {
+          monthlyBudget: Number(value)
+        }, { merge: true });
+        return true;
+      } catch (err) {
+        console.error('Budget save error:', err);
+        alert('বাজেট সেভ করা যায়নি।');
+        return false;
+      }
+    }
 
     window.switchTab = function(tabName) {
+      if (!currentUserGlobal && tabName !== 'settings') tabName = 'settings';
       document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       const targetView = document.getElementById('view' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
@@ -1293,17 +1393,25 @@
       document.getElementById('authSubmitBtn').textContent = mode === 'register' ? 'রেজিস্ট্রেশন করুন' : 'লগইন';
     };
 
-    window.setBudgetPrompt = function() {
+    window.setBudgetPrompt = async function() {
+      if (!requireLogin()) return;
       const b = prompt('মাসিক বাজেট লিখুন:', monthlyBudget);
-      if(b) { monthlyBudget = parseFloat(b); localStorage.setItem('smartkhoroch_monthly_budget', monthlyBudget); updateDashboard(); }
+      const value = parseFloat(b);
+      if(Number.isFinite(value) && value > 0) {
+        monthlyBudget = value;
+        await saveBudgetToCloud(monthlyBudget);
+        updateDashboard();
+      }
     };
 
     window.openIncomeModal = function() {
+      if (!requireLogin()) return;
       document.getElementById('incomeModal').classList.add('active');
       if(window.lucide) lucide.createIcons();
     }
 
     window.openExpenseModal = function() {
+      if (!requireLogin()) return;
       document.getElementById('expenseModal').classList.add('active');
       switchExpenseTab('single');
       if(window.lucide) lucide.createIcons();
@@ -1364,6 +1472,7 @@
     }
 
     window.exportToExcel = function() {
+      if (!requireLogin()) return;
       if(transactions.length === 0) return alert('রফতানি করার মতো কোনো হিসাব নেই!');
       let csv = 'তারিখ,ধরন,খাত,পরিমাণ,মাধ্যম,বিবরণ\n';
       transactions.forEach(t => {
@@ -1377,32 +1486,54 @@
       a.click();
     }
 
-    document.getElementById('incomeForm').addEventListener('submit', (e) => {
+    document.getElementById('incomeForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!requireLogin()) return;
       const amount = parseFloat(document.getElementById('incAmount').value);
       const category = document.getElementById('incCategory').value;
       const method = document.getElementById('incMethod').value;
       const note = document.getElementById('incNote').value.trim() || 'বিবরণ নেই';
+      if (!Number.isFinite(amount) || amount <= 0) return alert('সঠিক টাকার পরিমাণ দিন!');
 
-      transactions.unshift({ id: Date.now(), type: 'income', amount, category, method, note, date: new Date().toLocaleDateString() });
-      localStorage.setItem('smartkhoroch_modern_data', JSON.stringify(transactions));
-      document.getElementById('incomeModal').classList.remove('active');
-      document.getElementById('incomeForm').reset();
-      updateDashboard();
+      try {
+        const createdAt = new Date();
+        const ref = await addDoc(collection(db, 'users', currentUserGlobal.uid, 'transactions'), {
+          type: 'income', amount, category, method, note,
+          date: createdAt.toLocaleDateString('bn-BD'), createdAt
+        });
+        transactions.unshift({ id: ref.id, type: 'income', amount, category, method, note, date: createdAt.toLocaleDateString('bn-BD'), createdAtMs: createdAt.getTime() });
+        document.getElementById('incomeModal').classList.remove('active');
+        document.getElementById('incomeForm').reset();
+        updateDashboard();
+      } catch (err) {
+        console.error(err);
+        alert('হিসাব সংরক্ষণ করা যায়নি।');
+      }
     });
 
-    document.getElementById('singleExpenseForm').addEventListener('submit', (e) => {
+    document.getElementById('singleExpenseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!requireLogin()) return;
       const amount = parseFloat(document.getElementById('expAmount').value);
       const category = document.getElementById('expCategory').value;
       const method = document.getElementById('expMethod').value;
       const note = document.getElementById('expNote').value.trim() || 'বিবরণ নেই';
+      if (!Number.isFinite(amount) || amount <= 0) return alert('সঠিক টাকার পরিমাণ দিন!');
 
-      transactions.unshift({ id: Date.now(), type: 'expense', amount, category, method, note, date: new Date().toLocaleDateString() });
-      localStorage.setItem('smartkhoroch_modern_data', JSON.stringify(transactions));
-      document.getElementById('expenseModal').classList.remove('active');
-      document.getElementById('singleExpenseForm').reset();
-      updateDashboard();
+      try {
+        const createdAt = new Date();
+        const ref = await addDoc(collection(db, 'users', currentUserGlobal.uid, 'transactions'), {
+          type: 'expense', amount, category, method, note,
+          date: createdAt.toLocaleDateString('bn-BD'), createdAt
+        });
+        transactions.unshift({ id: ref.id, type: 'expense', amount, category, method, note, date: createdAt.toLocaleDateString('bn-BD'), createdAtMs: createdAt.getTime() });
+        document.getElementById('expenseModal').classList.remove('active');
+        document.getElementById('singleExpenseForm').reset();
+        updateDashboard();
+      } catch (err) {
+        console.error(err);
+        alert('হিসাব সংরক্ষণ করা যায়নি।');
+      }
     });
 
     document.getElementById('memoExpenseForm').addEventListener('submit', (e) => {
@@ -1423,17 +1554,25 @@
         }
       });
 
-      transactions.unshift({
-        id: Date.now(),
-        type: 'expense',
-        amount: totalAmount,
-        category: category,
-        method: method,
-        note: notesArr.join(', ') || 'বাজার মেমো',
-        date: new Date().toLocaleDateString()
-      });
+      if (!requireLogin()) return;
 
-      localStorage.setItem('smartkhoroch_modern_data', JSON.stringify(transactions));
+      try {
+        const createdAt = new Date();
+        const memoTx = {
+          type: 'expense',
+          amount: totalAmount,
+          category: category,
+          method: method,
+          note: notesArr.join(', ') || 'বাজার মেমো',
+          date: createdAt.toLocaleDateString('bn-BD'),
+          createdAt
+        };
+        const ref = await addDoc(collection(db, 'users', currentUserGlobal.uid, 'transactions'), memoTx);
+        transactions.unshift({ ...memoTx, id: ref.id, createdAtMs: createdAt.getTime() });
+      } catch (err) {
+        console.error(err);
+        return alert('বাজার মেমো সংরক্ষণ করা যায়নি।');
+      }
       document.getElementById('expenseModal').classList.remove('active');
       document.getElementById('memoExpenseForm').reset();
       document.getElementById('memoTotalAmount').value = '';
@@ -1442,6 +1581,7 @@
     });
 
     window.openVoucher = function(id) {
+      if (!requireLogin()) return;
       const t = transactions.find(x => x.id === id);
       if(!t) return;
       document.getElementById('vType').textContent = t.type === 'income' ? 'টাকা জমা (+)' : 'খরচ (-)';
@@ -1454,10 +1594,16 @@
       
       document.getElementById('deleteTxBtn').onclick = function() {
         if(confirm('এই লেনদেনটি মুছে ফেলতে চান?')) {
-          transactions = transactions.filter(x => x.id !== id);
-          localStorage.setItem('smartkhoroch_modern_data', JSON.stringify(transactions));
-          document.getElementById('voucherModal').classList.remove('active');
-          updateDashboard();
+          if (!currentUserGlobal) return alert('প্রথমে লগইন করুন।');
+          try {
+            await deleteDoc(doc(db, 'users', currentUserGlobal.uid, 'transactions', String(id)));
+            transactions = transactions.filter(x => x.id !== id);
+            document.getElementById('voucherModal').classList.remove('active');
+            updateDashboard();
+          } catch (err) {
+            console.error(err);
+            alert('হিসাবটি মুছে ফেলা যায়নি।');
+          }
         }
       };
 
@@ -1466,6 +1612,7 @@
     };
 
     window.openCategoryDrillDown = function(categoryName) {
+      if (!requireLogin()) return;
       const filtered = transactions.filter(t => t.type === 'expense' && t.category === categoryName);
       let totalCatExp = filtered.reduce((sum, t) => sum + t.amount, 0);
       let totalAllExp = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
@@ -1489,6 +1636,7 @@
     };
 
     window.openCategoryDrillDownFromAlert = function() {
+      if (!requireLogin()) return;
       let catTotals = {};
       transactions.forEach(t => {
         if(t.type === 'expense') {
