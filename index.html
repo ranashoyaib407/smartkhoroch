@@ -798,7 +798,7 @@
   <!-- Firebase & App Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -1054,35 +1054,116 @@
 
     window.handleFirebaseAuth = async function(e) {
       e.preventDefault();
-      const phoneOrEmail = document.getElementById('authPhone').value.trim();
+
+      const rawPhoneOrEmail = document.getElementById('authPhone').value.trim();
       const pass = document.getElementById('authPass').value.trim();
       const name = document.getElementById('regName') ? document.getElementById('regName').value.trim() : '';
       const submitBtn = document.getElementById('authSubmitBtn');
       const errorBox = document.getElementById('authError');
+
       const showError = (message) => {
-        if (errorBox) { errorBox.textContent = message; errorBox.style.display = 'block'; }
+        if (errorBox) {
+          errorBox.textContent = message;
+          errorBox.style.display = 'block';
+        }
       };
-      if (errorBox) { errorBox.textContent = ''; errorBox.style.display = 'none'; }
-      
-      const email = phoneOrEmail.includes('@') ? phoneOrEmail : `${phoneOrEmail}@smartkhoroch.app`;
+
+      if (errorBox) {
+        errorBox.textContent = '';
+        errorBox.style.display = 'none';
+      }
+
+      const toEnglishDigits = (value) =>
+        String(value).replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
+
+      const normalizeBdPhone = (value) => {
+        let v = toEnglishDigits(value).replace(/[\s\-()]/g, '');
+        if (v.startsWith('+880')) v = '0' + v.slice(4);
+        else if (v.startsWith('880')) v = '0' + v.slice(3);
+        return v;
+      };
+
+      const isPhoneInput = !rawPhoneOrEmail.includes('@');
+      const phoneForAccount = isPhoneInput ? normalizeBdPhone(rawPhoneOrEmail) : rawPhoneOrEmail;
+      const email = isPhoneInput ? `${phoneForAccount}@smartkhoroch.app` : rawPhoneOrEmail;
 
       if (authMode === 'register') {
-        if (!name) { showError('আপনার নাম লিখুন।'); return; }
+        if (!name) {
+          showError('আপনার নাম লিখুন।');
+          return;
+        }
+
+        if (isPhoneInput && !/^01[3-9]\d{8}$/.test(phoneForAccount)) {
+          showError('সঠিক ১১ সংখ্যার মোবাইল নম্বর লিখুন।');
+          return;
+        }
+
+        if (pass.length < 6) {
+          showError('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।');
+          return;
+        }
+
         submitBtn.disabled = true;
         submitBtn.textContent = 'রেজিস্ট্রেশন হচ্ছে...';
+
         try {
+          if (isPhoneInput) {
+            try {
+              const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+              if (Array.isArray(signInMethods) && signInMethods.length > 0) {
+                showError('এই মোবাইল নম্বর দিয়ে ইতিমধ্যে একটি আইডি খোলা আছে।');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
+                return;
+              }
+            } catch (precheckErr) {
+              // Pre-check ব্যর্থ হলে Firebase-এর নিজস্ব duplicate check-এ যাওয়া হবে।
+            }
+          }
+
           const cred = await createUserWithEmailAndPassword(auth, email, pass);
-          await setDoc(doc(db, "users", cred.user.uid), { name, phone: phoneOrEmail, email, isSubscribed: false, subDays: 30, createdAt: new Date(), lastActive: new Date() });
+
+          await setDoc(doc(db, "users", cred.user.uid), {
+            name,
+            phone: isPhoneInput ? phoneForAccount : rawPhoneOrEmail,
+            email,
+            isSubscribed: false,
+            subDays: 30,
+            createdAt: new Date(),
+            lastActive: new Date()
+          });
         } catch (err) {
-          showError('রেজিস্ট্রেশন করা যায়নি। তথ্যগুলো সঠিকভাবে দিন।');
+          let message = 'রেজিস্ট্রেশন করা যায়নি।';
+
+          if (err && err.code === 'auth/email-already-in-use') {
+            message = isPhoneInput
+              ? 'এই মোবাইল নম্বর দিয়ে ইতিমধ্যে একটি আইডি খোলা আছে।'
+              : 'এই ইমেল দিয়ে ইতিমধ্যে একটি আইডি খোলা আছে।';
+          } else if (err && err.code === 'auth/weak-password') {
+            message = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।';
+          } else if (err && err.code === 'auth/invalid-email') {
+            message = isPhoneInput
+              ? 'মোবাইল নম্বরটি সঠিক নয়।'
+              : 'সঠিক ইমেল ঠিকানা লিখুন।';
+          } else if (err && err.code === 'auth/operation-not-allowed') {
+            message = 'রেজিস্ট্রেশন সেবা এখন চালু নেই। Firebase Authentication-এ Email/Password চালু করুন।';
+          }
+
+          showError(message);
           submitBtn.disabled = false;
-          submitBtn.textContent = 'রেজিস্ট্রেশন';
+          submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
         }
       } else {
+        // লগইনের পুরোনো mapping অপরিবর্তিত রাখা হয়েছে।
+        const loginEmail = rawPhoneOrEmail.includes('@')
+          ? rawPhoneOrEmail
+          : `${rawPhoneOrEmail}@smartkhoroch.app`;
+
         submitBtn.disabled = true;
         submitBtn.textContent = 'লগইন হচ্ছে...';
+
         try {
-          await signInWithEmailAndPassword(auth, email, pass);
+          await signInWithEmailAndPassword(auth, loginEmail, pass);
           // Firebase auth state handler লগইনের পর সঠিক স্ক্রিনে নিয়ে যাবে।
         } catch (err) {
           showError('আপনার মোবাইল নম্বর/পাসওয়ার্ড ভুল।');
