@@ -145,6 +145,10 @@
 
   <div class="app-container">
 
+    <div id="dataLoadingScreen" class="fullscreen-overlay active" style="z-index:1200;">
+      <div style="font-size:28px;font-weight:800;letter-spacing:-0.5px;"><span style="color:#1e293b;">Smart</span><span style="color:#059669;">Khoroch</span></div>
+    </div>
+
     <!-- পেওয়াল স্ক্রিন -->
     <div class="fullscreen-overlay" id="paywallScreen">
       <div style="width: 100%; max-width: 340px; display: flex; justify-content: flex-start; margin-bottom: -10px;">
@@ -162,16 +166,18 @@
       </p>
 
       <div class="plans-container">
-        <div class="plan-card selected" id="plan1m" onclick="selectPlan('1m', 49, '১ মাস', 30)">
-          <div><div class="plan-title">১ মাসের প্যাকেজ</div></div>
+        <div class="plan-card selected" id="plan1m" onclick="selectPlan('1m', 49, '১ মাস', 30)" style="position:relative;">
+          <div><div class="plan-title">১ মাসের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">মাসিক ব্যবহারের জন্য</div></div>
           <div class="plan-price" id="price1m">৳49</div>
         </div>
-        <div class="plan-card" id="plan6m" onclick="selectPlan('6m', 249, '৬ মাস', 182)">
-          <div><div class="plan-title">৬ মাসের প্যাকেজ</div></div>
+        <div class="plan-card" id="plan6m" onclick="selectPlan('6m', 249, '৬ মাস', 182)" style="position:relative;">
+          <span id="saveBadge6m" style="position:absolute; right:8px; top:-9px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; display:none;"></span>
+          <div><div class="plan-title">৬ মাসের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">আগামী বছরের জন্য নিশ্চিন্ত</div></div>
           <div class="plan-price" id="price6m">৳249</div>
         </div>
-        <div class="plan-card" id="plan1y" onclick="selectPlan('1y', 399, '১ বছর', 365)">
-          <div><div class="plan-title">১ বছরের প্যাকেজ</div></div>
+        <div class="plan-card" id="plan1y" onclick="selectPlan('1y', 399, '১ বছর', 365)" style="position:relative;">
+          <span id="saveBadge1y" style="position:absolute; right:8px; top:-9px; background:#059669; color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; display:none;"></span>
+          <div><div class="plan-title">১ বছরের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">স্মার্ট ও সাশ্রয়ী দীর্ঘমেয়াদি হিসাব</div></div>
           <div class="plan-price" id="price1y">৳399</div>
         </div>
       </div>
@@ -205,7 +211,7 @@
 
     <!-- লোগো ও হেডার -->
     <header class="top-bar">
-      <div class="app-title">
+      <div class="app-title" onclick="goHome()" style="cursor:pointer;" role="button" aria-label="হোমে যান">
         <span class="brand-smart">Smart</span><span class="brand-khoroch">Khoroch</span>
         <span class="trial-pill" id="trialBadge" onclick="openSubscriptionModal()">
           <i data-lucide="sparkles" style="width: 13px; height: 13px;"></i>
@@ -406,6 +412,7 @@
             <a id="whatsappForgotLink" href="https://wa.me/8801315937654" target="_blank" style="font-size: 12px; color: #059669; font-weight: 600; text-decoration: none;">পাসওয়ার্ড ভুলে গেছেন? হোয়াটসঅ্যাপে যোগাযোগ করুন</a>
           </div>
 
+          <div id="authError" style="display:none; color:#dc2626; background:#fef2f2; border:1px solid #fecaca; padding:9px 11px; border-radius:10px; font-size:12px; font-weight:600; margin-bottom:10px; text-align:center;"></div>
           <button type="submit" class="btn-submit" id="authSubmitBtn">লগইন</button>
         </form>
       </div>
@@ -781,7 +788,7 @@
         <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">আপনি কি সত্যি SmartKhoroch অ্যাপ বন্ধ করতে চাচ্ছেন?</p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <button onclick="document.getElementById('exitModal').classList.remove('active')" style="background: #f1f5f9; color: #334155; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer;">না</button>
-          <button onclick="window.close()" style="background: #e11d48; color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer;">হ্যাঁ, বের হবো</button>
+          <button onclick="confirmExit()" style="background: #e11d48; color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer;">হ্যাঁ, বের হবো</button>
         </div>
       </div>
     </div>
@@ -861,6 +868,7 @@
             document.getElementById('price1m').textContent = `৳${data.prices['1m'] || 49}`;
             document.getElementById('price6m').textContent = `৳${data.prices['6m'] || 249}`;
             document.getElementById('price1y').textContent = `৳${data.prices['1y'] || 399}`;
+            updatePlanSavingsBadges(data.prices);
             selectPlan(currentPlan.id, data.prices[currentPlan.id], currentPlan.name, currentPlan.days);
           }
 
@@ -937,13 +945,14 @@
 
         if (user.email !== ADMIN_EMAIL) {
           bottomNav.style.display = 'flex';
-          // লগইন/সেশন পাওয়া মাত্রই সরাসরি ড্যাশবোর্ড খুলবে।
-          switchTab('dashboard');
         }
 
         if (user.email === ADMIN_EMAIL) {
           bottomNav.style.display = 'none';
-          switchTab('admin');
+          switchTab('admin', false);
+          navigationReady = true;
+          const adminLoadingScreen = document.getElementById('dataLoadingScreen');
+          if (adminLoadingScreen) adminLoadingScreen.classList.remove('active');
           loadAdminData();
           return;
         } else {
@@ -987,7 +996,7 @@
             document.getElementById('paywallScreen').classList.remove('active');
             document.getElementById('profileStatusBadge').textContent = 'প্রো অ্যাকাউন্ট';
             document.getElementById('profileExpiry').textContent = `মেয়াদ বাকি: ${subDaysLeft} দিন`;
-            switchTab('dashboard');
+            switchTab('dashboard', false);
           } else {
             document.getElementById('trialBadgeText').textContent = 'সাবস্ক্রিপশন মেয়াদ শেষ';
             document.getElementById('paywallScreen').classList.add('active');
@@ -1000,7 +1009,7 @@
           document.getElementById('paywallScreen').classList.remove('active');
           document.getElementById('profileStatusBadge').textContent = `ফ্রি ট্রায়াল`;
           document.getElementById('profileExpiry').textContent = `ট্রায়াল বাকি: ${trialLeft} দিন`;
-          switchTab('dashboard');
+          switchTab('dashboard', false);
         } else {
           document.getElementById('trialBadgeText').textContent = 'সাবস্ক্রিপশন প্রয়োজন';
           document.getElementById('paywallScreen').classList.add('active');
@@ -1014,6 +1023,9 @@
         authBox.style.display = 'block';
         switchTab('settings');
       }
+      navigationReady = true;
+      const loadingScreen = document.getElementById('dataLoadingScreen');
+      if (loadingScreen) loadingScreen.classList.remove('active');
       if(window.lucide) lucide.createIcons();
     });
 
@@ -1045,22 +1057,38 @@
       const phoneOrEmail = document.getElementById('authPhone').value.trim();
       const pass = document.getElementById('authPass').value.trim();
       const name = document.getElementById('regName') ? document.getElementById('regName').value.trim() : '';
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const errorBox = document.getElementById('authError');
+      const showError = (message) => {
+        if (errorBox) { errorBox.textContent = message; errorBox.style.display = 'block'; }
+      };
+      if (errorBox) { errorBox.textContent = ''; errorBox.style.display = 'none'; }
       
       const email = phoneOrEmail.includes('@') ? phoneOrEmail : `${phoneOrEmail}@smartkhoroch.app`;
 
       if (authMode === 'register') {
-        if (!name) return alert('নাম লিখুন!');
+        if (!name) { showError('আপনার নাম লিখুন।'); return; }
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'রেজিস্ট্রেশন হচ্ছে...';
         try {
           const cred = await createUserWithEmailAndPassword(auth, email, pass);
           await setDoc(doc(db, "users", cred.user.uid), { name, phone: phoneOrEmail, email, isSubscribed: false, subDays: 30, createdAt: new Date(), lastActive: new Date() });
-          alert('রেজিস্ট্রেশন সফল হয়েছে!');
-          switchTab('dashboard');
-        } catch (err) { alert('ত্রুটি: ' + err.message); }
+        } catch (err) {
+          showError('রেজিস্ট্রেশন করা যায়নি। তথ্যগুলো সঠিকভাবে দিন।');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'রেজিস্ট্রেশন';
+        }
       } else {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'লগইন হচ্ছে...';
         try {
           await signInWithEmailAndPassword(auth, email, pass);
           // Firebase auth state handler লগইনের পর সঠিক স্ক্রিনে নিয়ে যাবে।
-        } catch (err) { alert('ভুল নম্বর/ইমেল বা পাসওয়ার্ড!'); }
+        } catch (err) {
+          showError('আপনার মোবাইল নম্বর/পাসওয়ার্ড ভুল।');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'লগইন';
+        }
       }
     };
 
@@ -1290,6 +1318,17 @@
     };
 
     let currentPlan = { id: '1m', price: 49, name: '১ মাস', days: 30 };
+    function updatePlanSavingsBadges(prices) {
+      const p1 = Number(prices['1m']) || 49;
+      const p6 = Number(prices['6m']) || 249;
+      const p12 = Number(prices['1y']) || 399;
+      const save6 = Math.max(0, (p1 * 6) - p6);
+      const monthly12 = Math.floor(p12 / 12);
+      const badge6 = document.getElementById('saveBadge6m');
+      const badge1y = document.getElementById('saveBadge1y');
+      if (badge6) { badge6.textContent = save6 > 0 ? `৳${save6} ছাড়` : ''; badge6.style.display = save6 > 0 ? 'inline-block' : 'none'; }
+      if (badge1y) { badge1y.textContent = p12 < (p1 * 12) ? `সেরা অফার (মাসিক ৳${monthly12})` : ''; badge1y.style.display = p12 < (p1 * 12) ? 'inline-block' : 'none'; }
+    }
     window.selectPlan = function(id, price, name, days) {
       currentPlan = { id, price, name, days };
       document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
@@ -1372,6 +1411,8 @@
         updateDashboard();
       } catch (err) {
         console.error('User data load error:', err);
+        const loadingScreen = document.getElementById('dataLoadingScreen');
+        if (loadingScreen) loadingScreen.classList.remove('active');
         alert('আপনার হিসাবের ডাটা লোড করা যায়নি। ইন্টারনেট সংযোগ ও Firebase সেটিংস পরীক্ষা করুন।');
       }
     }
@@ -1397,7 +1438,11 @@
       }
     }
 
-    window.switchTab = function(tabName) {
+    let allowBackNavigation = false;
+    let currentTabName = 'settings';
+    let navigationReady = false;
+
+    window.switchTab = function(tabName, addHistory = true) {
       if (!currentUserGlobal && tabName !== 'settings') tabName = 'settings';
       document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1405,8 +1450,24 @@
       const targetNav = document.getElementById('nav' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
       if(targetView) targetView.classList.add('active');
       if(targetNav) targetNav.classList.add('active');
+      currentTabName = tabName;
+      if (currentUserGlobal && navigationReady) {
+        if (addHistory && tabName !== 'settings') {
+          history.pushState({ smartKhorochTab: tabName }, '', window.location.href);
+        } else if (!addHistory) {
+          history.replaceState({ smartKhorochTab: tabName }, '', window.location.href);
+        }
+      }
       updateDashboard();
       if(window.lucide) lucide.createIcons();
+    };
+
+    window.goHome = function() {
+      if (!currentUserGlobal) {
+        switchTab('settings');
+        return;
+      }
+      switchTab(currentUserGlobal.email === ADMIN_EMAIL ? 'admin' : 'dashboard');
     };
 
     window.switchAuthMode = function(mode) {
@@ -1881,11 +1942,25 @@
     }
 
     window.addEventListener('popstate', (e) => {
-      e.preventDefault();
+      if (allowBackNavigation) {
+        allowBackNavigation = false;
+        return;
+      }
+      const state = e.state;
+      if (state && state.smartKhorochTab && currentUserGlobal) {
+        switchTab(state.smartKhorochTab, false);
+        return;
+      }
       document.getElementById('exitModal').classList.add('active');
-      history.pushState(null, '', window.location.href);
+      history.pushState({ smartKhorochTab: currentTabName }, '', window.location.href);
     });
-    history.pushState(null, '', window.location.href);
+    history.replaceState({ smartKhorochTab: 'settings' }, '', window.location.href);
+
+    window.confirmExit = function() {
+      document.getElementById('exitModal').classList.remove('active');
+      allowBackNavigation = true;
+      history.back();
+    };
 
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -1907,21 +1982,24 @@
 
     window.toggleNotification = function(checkbox) {
       if (checkbox.checked) {
+        if (!('Notification' in window)) {
+          checkbox.checked = false;
+          setNotificationUI(false);
+          return;
+        }
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
-            alert('নোটিফিকেশন সফলভাবে অন করা হয়েছে! প্রতিদিন রাত ৯টায় আপনাকে রিমাইন্ডার দেওয়া হবে।');
             localStorage.setItem('smartkhoroch_notif', 'true');
             setNotificationUI(true);
           } else {
-            alert('ব্রাউজার থেকে নোটিফিকেশন পারমিশন দেওয়া হয়নি।');
             checkbox.checked = false;
             setNotificationUI(false);
+            localStorage.setItem('smartkhoroch_notif', 'false');
           }
         });
       } else {
         localStorage.setItem('smartkhoroch_notif', 'false');
         setNotificationUI(false);
-        alert('নোটিফিকেশন বন্ধ করা হয়েছে।');
       }
     };
 
@@ -1940,6 +2018,14 @@
 
     if(localStorage.getItem('smartkhoroch_notif') === 'true') {
       setNotificationUI(true);
+    }
+
+    updatePlanSavingsBadges({ '1m': 49, '6m': 249, '1y': 399 });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
     }
 
     setInterval(() => {
