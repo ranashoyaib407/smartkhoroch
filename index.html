@@ -2169,7 +2169,7 @@
           ]
         }
       });
-     // Desktop paste cleanup - preserve Bold/Heading/List
+ // Desktop paste cleanup - preserve formatting and fix Bengali line breaks
 blogQuill.root.addEventListener('paste', function(e) {
   e.preventDefault();
 
@@ -2179,57 +2179,80 @@ blogQuill.root.addEventListener('paste', function(e) {
   const range = blogQuill.getSelection(true);
   if (!range) return;
 
-  if (html) {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-
-    doc.body.querySelectorAll('script, style, meta, link').forEach(el => el.remove());
-
-    doc.body.querySelectorAll('*').forEach(el => {
-      el.removeAttribute('class');
-
-      if (el.hasAttribute('style')) {
-        const style = el.getAttribute('style');
-
-        const allowed = style
-          .split(';')
-          .map(s => s.trim())
-          .filter(s =>
-            /^(font-weight|font-style|text-decoration|text-align)\s*:/i.test(s)
-          )
-          .join('; ');
-
-        if (allowed) {
-          el.setAttribute('style', allowed);
-        } else {
-          el.removeAttribute('style');
-        }
-      }
-    });
-
-    const beforeLength = blogQuill.getLength();
-
-    blogQuill.clipboard.dangerouslyPasteHTML(
-      range.index,
-      doc.body.innerHTML,
-      'user'
-    );
-
-    const afterLength = blogQuill.getLength();
-
-    blogQuill.setSelection(
-      range.index + (afterLength - beforeLength),
-      0,
-      'user'
-    );
-  } else {
+  if (!html) {
     blogQuill.insertText(range.index, text, 'user');
-
-    blogQuill.setSelection(
-      range.index + text.length,
-      0,
-      'user'
-    );
+    blogQuill.setSelection(range.index + text.length, 0, 'user');
+    return;
   }
+
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+
+  // Remove unwanted elements
+  doc.body.querySelectorAll('script, style, meta, link').forEach(el => {
+    el.remove();
+  });
+
+  // Clean text nodes so desktop clipboard line-breaks do not split Bengali words
+  const walker = document.createTreeWalker(
+    doc.body,
+    NodeFilter.SHOW_TEXT
+  );
+
+  const textNodes = [];
+  let node;
+
+  while ((node = walker.nextNode())) {
+    textNodes.push(node);
+  }
+
+  textNodes.forEach(node => {
+    node.nodeValue = node.nodeValue
+      .replace(/[\r\n\t]+/g, ' ')
+      .replace(/ {2,}/g, ' ');
+  });
+
+  // Remove classes/styles that may cause unwanted wrapping,
+  // but keep HTML tags such as strong, em, h2, h3, ul, ol, li, a, etc.
+  doc.body.querySelectorAll('*').forEach(el => {
+    el.removeAttribute('class');
+    el.removeAttribute('id');
+
+    if (el.hasAttribute('style')) {
+      const style = el.getAttribute('style');
+
+      const allowed = style
+        .split(';')
+        .map(s => s.trim())
+        .filter(s =>
+          /^(font-weight|font-style|text-decoration|text-align)\s*:/i.test(s)
+        )
+        .join('; ');
+
+      if (allowed) {
+        el.setAttribute('style', allowed);
+      } else {
+        el.removeAttribute('style');
+      }
+    }
+  });
+
+  const cleanHtml = doc.body.innerHTML;
+
+  const oldLength = blogQuill.getLength();
+
+  blogQuill.clipboard.dangerouslyPasteHTML(
+    range.index,
+    cleanHtml,
+    'user'
+  );
+
+  const newLength = blogQuill.getLength();
+
+  blogQuill.setSelection(
+    range.index + (newLength - oldLength),
+    0,
+    'user'
+  );
 });
 
       const toolbar = blogQuill.getModule('toolbar');
