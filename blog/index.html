@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>খরচ, বাজেট ও সঞ্চয় নিয়ে উপকারী লেখা | SmartKhoroch</title>
+<meta name="description" content="অতিরিক্ত খরচ কমানো, সংসারের বাজেট, দৈনিক হিসাব, সঞ্চয় ও টাকা ব্যবস্থাপনা নিয়ে সহজ বাংলা লেখা পড়ুন SmartKhoroch ব্লগে।">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="/blog/">
+<link rel="stylesheet" href="/blog/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="topbar"><div class="container topbar-inner"><a class="brand" href="/"><span class="brand-smart">Smart</span><span class="brand-khoroch">Khoroch</span></a><a class="cta" href="/">হিসাবের অ্যাপে যান</a></div></header>
+<main class="container">
+<section class="hero"><h1>খরচ কমানো, বাজেট ও সঞ্চয়ের উপকারী লেখা</h1><p>সংসারের খরচ, দৈনিক হিসাব, মাসিক বাজেট, অতিরিক্ত ব্যয় এবং টাকা সঞ্চয় নিয়ে সহজ বাংলায় ব্যবহারিক টিপস।</p></section>
+<section id="blogGrid" class="grid" aria-live="polite"><div class="empty">ব্লগ লোড হচ্ছে...</div></section>
+</main>
+<footer class="footer"><div class="container">SmartKhoroch — স্মার্ট খরচ ও হিসাবের খাতা</div></footer>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getFirestore,collection,getDocs,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const db=getFirestore(initializeApp({"apiKey": "AIzaSyBmBqMYex_qjSuiVuF2GWAkOLnfcti3wWM", "authDomain": "smartkhoroch.firebaseapp.com", "projectId": "smartkhoroch", "storageBucket": "smartkhoroch.firebasestorage.app", "messagingSenderId": "527246087111", "appId": "1:527246087111:web:038798401b3eebefd47fe2", "measurementId": "G-MGGJ1XM8S2"}));
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+const fmt=v=>{const d=v?.toDate?v.toDate():new Date(v||0);return Number.isNaN(d.getTime())?'':d.toLocaleDateString('bn-BD')};
+try{
+ const snap=await getDocs(query(collection(db,'blogs'),where('status','==','published')));
+ const blogs=snap.docs.map(d=>({id:d.id,...d.data()}));
+ blogs.sort((a,b)=>{
+   const ad=a.publishedAt?.toMillis?a.publishedAt.toMillis():new Date(a.publishedAt||a.updatedAt||0).getTime();
+   const bd=b.publishedAt?.toMillis?b.publishedAt.toMillis():new Date(b.publishedAt||b.updatedAt||0).getTime();
+   return bd-ad;
+ });
+ const grid=document.getElementById('blogGrid');
+ grid.innerHTML=blogs.length?blogs.map(b=>{
+   const slug=encodeURIComponent(b.slug||b.id);
+   const image=b.featuredImage?`<img class="card-image" src="${esc(b.featuredImage)}" alt="${esc(b.title)}" loading="lazy">`:'';
+   return `<article class="card">${image}<div class="card-body"><span class="badge">${esc(b.category||'সাধারণ')}</span><h2><a href="/blog/${slug}/">${esc(b.title)}</a></h2><div class="excerpt">${esc(b.excerpt||'')}</div><span class="date">${esc(fmt(b.publishedAt||b.updatedAt))}</span></div></article>`;
+ }).join(''):'<div class="empty">এখনও কোনো প্রকাশিত ব্লগ নেই।</div>';
+}catch(e){console.error(e);document.getElementById('blogGrid').innerHTML='<div class="error">ব্লগ লোড করা যাচ্ছে না।</div>';}
+</script>
+</body>
+</html>
