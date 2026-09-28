@@ -2169,6 +2169,19 @@
           ]
         }
       });
+      // Desktop paste cleanup for Bengali Blog Editor
+blogQuill.root.addEventListener('paste', function(e) {
+  e.preventDefault();
+
+  const text = e.clipboardData.getData('text/plain');
+
+  const range = blogQuill.getSelection(true);
+
+  if (!range) return;
+
+  blogQuill.insertText(range.index, text, 'user');
+  blogQuill.setSelection(range.index + text.length, 0, 'user');
+});
 
       const toolbar = blogQuill.getModule('toolbar');
       toolbar.addHandler('image', function() {
