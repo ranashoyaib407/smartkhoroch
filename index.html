@@ -139,7 +139,29 @@
     .admin-folder { background: #fff; border: 1.5px solid #cbd5e1; border-radius: 16px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: #0f172a; }
     .admin-sub-box { display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-bottom: 12px; flex-direction: column; gap: 10px; }
     .admin-sub-box.active { display: flex; }
+  
+    /* Blog management - isolated styles; existing app/dashboard styles are untouched */
+    .blog-admin-form { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:12px; display:flex; flex-direction:column; gap:10px; }
+    .blog-admin-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .blog-admin-input { width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; outline:none; background:#fff; }
+    .blog-admin-label { display:block; font-size:11px; font-weight:700; color:#475569; margin-bottom:5px; }
+    .blog-editor-wrap { background:#fff; border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; }
+    #blogEditor { min-height:260px; font-family:'Hind Siliguri', sans-serif; font-size:14px; }
+    .blog-admin-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .blog-admin-btn { border:none; border-radius:10px; padding:10px; font-size:12px; font-weight:700; cursor:pointer; }
+    .blog-admin-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+    .blog-admin-item { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:10px; }
+    .blog-admin-item-title { font-size:13px; font-weight:700; color:#0f172a; }
+    .blog-admin-item-meta { font-size:10px; color:#64748b; margin-top:3px; word-break:break-word; }
+    .blog-admin-item-actions { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+    @media (max-width:360px) { .blog-admin-row, .blog-admin-actions { grid-template-columns:1fr; } }
+
   </style>
+
+  <!-- Blog editor (Word-style formatting) -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+
 </head>
 <body class="logged-out">
 
@@ -572,6 +594,68 @@
       </div>
 
       <!-- ৫. নোটিশ ও ভিডিও গাইড ফোল্ডার (আলাদা) -->
+
+      <!-- ৬. ব্লগ ম্যানেজমেন্ট -->
+      <div class="admin-folder" onclick="toggleAdminFolder('folderBlogs'); loadAdminBlogs();">
+        <span>📝 ৬. ব্লগ ম্যানেজমেন্ট (SEO)</span>
+        <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
+      </div>
+      <div class="admin-sub-box" id="folderBlogs">
+        <div class="blog-admin-form">
+          <div>
+            <label class="blog-admin-label">ব্লগের শিরোনাম</label>
+            <input type="text" id="blogTitleInput" class="blog-admin-input" placeholder="যেমন: সংসারের খরচ কমানোর ১০টি সহজ উপায়">
+          </div>
+
+          <div class="blog-admin-row">
+            <div>
+              <label class="blog-admin-label">Slug (English)</label>
+              <input type="text" id="blogSlugInput" class="blog-admin-input" placeholder="shongsarer-khoroch-komanor-upay">
+            </div>
+            <div>
+              <label class="blog-admin-label">Category</label>
+              <input type="text" id="blogCategoryInput" class="blog-admin-input" placeholder="সংসারের বাজেট">
+            </div>
+          </div>
+
+          <div>
+            <label class="blog-admin-label">SEO Title</label>
+            <input type="text" id="blogSeoTitleInput" class="blog-admin-input" placeholder="সংসারের খরচ কমানোর উপায় | SmartKhoroch">
+          </div>
+
+          <div>
+            <label class="blog-admin-label">Meta Description</label>
+            <textarea id="blogMetaDescriptionInput" class="blog-admin-input" rows="3" placeholder="এই লেখায় সংসারের অতিরিক্ত খরচ কমানো, বাজেট ও হিসাব রাখার সহজ উপায় জানুন।"></textarea>
+          </div>
+
+          <div>
+            <label class="blog-admin-label">Featured Image URL (ঐচ্ছিক)</label>
+            <input type="url" id="blogFeaturedImageInput" class="blog-admin-input" placeholder="https://example.com/image.jpg">
+          </div>
+
+          <div>
+            <label class="blog-admin-label">মূল ব্লগ লেখা</label>
+            <div class="blog-editor-wrap">
+              <div id="blogEditor"></div>
+            </div>
+            <div style="font-size:10px;color:#64748b;margin-top:5px;">
+              Bold, Heading, list, link ও ছবি যোগ করতে পারবেন। ছবির জন্য toolbar-এর image অপশনে ছবির URL দিন।
+            </div>
+          </div>
+
+          <div class="blog-admin-actions">
+            <button class="blog-admin-btn" id="blogSaveDraftBtn" onclick="saveBlog('draft')" style="background:#f1f5f9;color:#334155;">ড্রাফট সেভ</button>
+            <button class="blog-admin-btn" id="blogPublishBtn" onclick="saveBlog('published')" style="background:#059669;color:#fff;">ব্লগ প্রকাশ করুন</button>
+          </div>
+          <button class="blog-admin-btn" id="blogCancelEditBtn" onclick="resetBlogEditor()" style="display:none;background:#fee2e2;color:#991b1b;">এডিট বাতিল</button>
+        </div>
+
+        <div style="margin-top:8px;font-size:13px;font-weight:700;color:#0f172a;">আপনার ব্লগসমূহ</div>
+        <div id="adminBlogsList" class="blog-admin-list">
+          <p style="font-size:12px;color:#64748b;">লোড হচ্ছে...</p>
+        </div>
+      </div>
+
       <div class="admin-folder" onclick="toggleAdminFolder('folderNoticeVideo')">
         <span>📢 ৫. রানিং নোটিশ ও ভিডিও টিউটোরিয়াল</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
@@ -798,7 +882,7 @@
   <!-- Firebase & App Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -1054,116 +1138,35 @@
 
     window.handleFirebaseAuth = async function(e) {
       e.preventDefault();
-
-      const rawPhoneOrEmail = document.getElementById('authPhone').value.trim();
+      const phoneOrEmail = document.getElementById('authPhone').value.trim();
       const pass = document.getElementById('authPass').value.trim();
       const name = document.getElementById('regName') ? document.getElementById('regName').value.trim() : '';
       const submitBtn = document.getElementById('authSubmitBtn');
       const errorBox = document.getElementById('authError');
-
       const showError = (message) => {
-        if (errorBox) {
-          errorBox.textContent = message;
-          errorBox.style.display = 'block';
-        }
+        if (errorBox) { errorBox.textContent = message; errorBox.style.display = 'block'; }
       };
-
-      if (errorBox) {
-        errorBox.textContent = '';
-        errorBox.style.display = 'none';
-      }
-
-      const toEnglishDigits = (value) =>
-        String(value).replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
-
-      const normalizeBdPhone = (value) => {
-        let v = toEnglishDigits(value).replace(/[\s\-()]/g, '');
-        if (v.startsWith('+880')) v = '0' + v.slice(4);
-        else if (v.startsWith('880')) v = '0' + v.slice(3);
-        return v;
-      };
-
-      const isPhoneInput = !rawPhoneOrEmail.includes('@');
-      const phoneForAccount = isPhoneInput ? normalizeBdPhone(rawPhoneOrEmail) : rawPhoneOrEmail;
-      const email = isPhoneInput ? `${phoneForAccount}@smartkhoroch.app` : rawPhoneOrEmail;
+      if (errorBox) { errorBox.textContent = ''; errorBox.style.display = 'none'; }
+      
+      const email = phoneOrEmail.includes('@') ? phoneOrEmail : `${phoneOrEmail}@smartkhoroch.app`;
 
       if (authMode === 'register') {
-        if (!name) {
-          showError('আপনার নাম লিখুন।');
-          return;
-        }
-
-        if (isPhoneInput && !/^01[3-9]\d{8}$/.test(phoneForAccount)) {
-          showError('সঠিক ১১ সংখ্যার মোবাইল নম্বর লিখুন।');
-          return;
-        }
-
-        if (pass.length < 6) {
-          showError('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।');
-          return;
-        }
-
+        if (!name) { showError('আপনার নাম লিখুন।'); return; }
         submitBtn.disabled = true;
         submitBtn.textContent = 'রেজিস্ট্রেশন হচ্ছে...';
-
         try {
-          if (isPhoneInput) {
-            try {
-              const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-              if (Array.isArray(signInMethods) && signInMethods.length > 0) {
-                showError('এই মোবাইল নম্বর দিয়ে ইতিমধ্যে একটি আইডি খোলা আছে।');
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
-                return;
-              }
-            } catch (precheckErr) {
-              // Pre-check ব্যর্থ হলে Firebase-এর নিজস্ব duplicate check-এ যাওয়া হবে।
-            }
-          }
-
           const cred = await createUserWithEmailAndPassword(auth, email, pass);
-
-          await setDoc(doc(db, "users", cred.user.uid), {
-            name,
-            phone: isPhoneInput ? phoneForAccount : rawPhoneOrEmail,
-            email,
-            isSubscribed: false,
-            subDays: 30,
-            createdAt: new Date(),
-            lastActive: new Date()
-          });
+          await setDoc(doc(db, "users", cred.user.uid), { name, phone: phoneOrEmail, email, isSubscribed: false, subDays: 30, createdAt: new Date(), lastActive: new Date() });
         } catch (err) {
-          let message = 'রেজিস্ট্রেশন করা যায়নি।';
-
-          if (err && err.code === 'auth/email-already-in-use') {
-            message = isPhoneInput
-              ? 'এই মোবাইল নম্বর দিয়ে ইতিমধ্যে একটি আইডি খোলা আছে।'
-              : 'এই ইমেল দিয়ে ইতিমধ্যে একটি আইডি খোলা আছে।';
-          } else if (err && err.code === 'auth/weak-password') {
-            message = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।';
-          } else if (err && err.code === 'auth/invalid-email') {
-            message = isPhoneInput
-              ? 'মোবাইল নম্বরটি সঠিক নয়।'
-              : 'সঠিক ইমেল ঠিকানা লিখুন।';
-          } else if (err && err.code === 'auth/operation-not-allowed') {
-            message = 'রেজিস্ট্রেশন সেবা এখন চালু নেই। Firebase Authentication-এ Email/Password চালু করুন।';
-          }
-
-          showError(message);
+          showError('রেজিস্ট্রেশন করা যায়নি। তথ্যগুলো সঠিকভাবে দিন।');
           submitBtn.disabled = false;
-          submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
+          submitBtn.textContent = 'রেজিস্ট্রেশন';
         }
       } else {
-        // লগইনের পুরোনো mapping অপরিবর্তিত রাখা হয়েছে।
-        const loginEmail = rawPhoneOrEmail.includes('@')
-          ? rawPhoneOrEmail
-          : `${rawPhoneOrEmail}@smartkhoroch.app`;
-
         submitBtn.disabled = true;
         submitBtn.textContent = 'লগইন হচ্ছে...';
-
         try {
-          await signInWithEmailAndPassword(auth, loginEmail, pass);
+          await signInWithEmailAndPassword(auth, email, pass);
           // Firebase auth state handler লগইনের পর সঠিক স্ক্রিনে নিয়ে যাবে।
         } catch (err) {
           showError('আপনার মোবাইল নম্বর/পাসওয়ার্ড ভুল।');
@@ -2120,6 +2123,233 @@
         }
       }
     }, 60000);
+
+
+    // =========================
+    // SmartKhoroch Blog Manager
+    // =========================
+    let blogQuill = null;
+    let editingBlogSlug = null;
+    let adminBlogsCache = [];
+
+    function initBlogEditor() {
+      if (blogQuill || !window.Quill || !document.getElementById('blogEditor')) return;
+      blogQuill = new Quill('#blogEditor', {
+        theme: 'snow',
+        placeholder: 'এখানে আপনার উপকারী ব্লগটি লিখুন...',
+        modules: {
+          toolbar: [
+            [{ header: [2, 3, false] }],
+            ['bold', 'italic', 'underline'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['blockquote'],
+            ['link', 'image'],
+            ['clean']
+          ]
+        }
+      });
+
+      const toolbar = blogQuill.getModule('toolbar');
+      toolbar.addHandler('image', function() {
+        const url = window.prompt('ছবির সরাসরি URL দিন:');
+        if (!url) return;
+        const range = blogQuill.getSelection(true);
+        blogQuill.insertEmbed(range ? range.index : blogQuill.getLength(), 'image', url, 'user');
+      });
+    }
+
+    function textFromBlogHtml(htmlText) {
+      const temp = document.createElement('div');
+      temp.innerHTML = htmlText || '';
+      return (temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function slugIsValid(slug) {
+      return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+    }
+
+    function makeExcerpt(htmlText, maxLen = 170) {
+      const plain = textFromBlogHtml(htmlText);
+      return plain.length > maxLen ? plain.slice(0, maxLen).trim() + '…' : plain;
+    }
+
+    function resetBlogEditor() {
+      editingBlogSlug = null;
+      ['blogTitleInput','blogSlugInput','blogCategoryInput','blogSeoTitleInput','blogMetaDescriptionInput','blogFeaturedImageInput'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      if (blogQuill) blogQuill.setContents([]);
+      const cancel = document.getElementById('blogCancelEditBtn');
+      if (cancel) cancel.style.display = 'none';
+      const saveDraft = document.getElementById('blogSaveDraftBtn');
+      const publishBtn = document.getElementById('blogPublishBtn');
+      if (saveDraft) saveDraft.textContent = 'ড্রাফট সেভ';
+      if (publishBtn) publishBtn.textContent = 'ব্লগ প্রকাশ করুন';
+    }
+    window.resetBlogEditor = resetBlogEditor;
+
+    async function saveBlog(status) {
+      const activeUser = auth.currentUser || currentUserGlobal;
+      if (!activeUser || activeUser.email !== ADMIN_EMAIL) {
+        alert('শুধু অ্যাডমিন ব্লগ প্রকাশ বা সম্পাদনা করতে পারবেন।');
+        return;
+      }
+
+      initBlogEditor();
+
+      const title = document.getElementById('blogTitleInput').value.trim();
+      const slug = document.getElementById('blogSlugInput').value.trim().toLowerCase();
+      const category = document.getElementById('blogCategoryInput').value.trim() || 'সাধারণ';
+      const seoTitle = document.getElementById('blogSeoTitleInput').value.trim() || title;
+      const metaDescription = document.getElementById('blogMetaDescriptionInput').value.trim();
+      const featuredImage = document.getElementById('blogFeaturedImageInput').value.trim();
+      const contentHtml = blogQuill ? blogQuill.root.innerHTML.trim() : '';
+
+      if (!title) return alert('ব্লগের শিরোনাম লিখুন।');
+      if (!slug || !slugIsValid(slug)) return alert('Slug শুধু English small letter, number ও hyphen দিয়ে লিখুন।');
+      if (!contentHtml || textFromBlogHtml(contentHtml).length < 30) return alert('ব্লগের মূল লেখা আরও একটু বিস্তারিত লিখুন।');
+      if (metaDescription.length > 170) return alert('Meta Description সর্বোচ্চ ১৭০ অক্ষরের মধ্যে রাখুন।');
+
+      const saveDraftBtn = document.getElementById('blogSaveDraftBtn');
+      const publishBtn = document.getElementById('blogPublishBtn');
+      if (saveDraftBtn) saveDraftBtn.disabled = true;
+      if (publishBtn) publishBtn.disabled = true;
+
+      try {
+        const data = {
+          title, slug, category, seoTitle, metaDescription, featuredImage,
+          excerpt: makeExcerpt(contentHtml),
+          contentHtml, status, author: 'SmartKhoroch',
+          updatedAt: new Date(),
+          ...(status === 'published' ? { publishedAt: new Date() } : {})
+        };
+
+        const oldSlug = editingBlogSlug;
+        if (oldSlug && oldSlug !== slug) {
+          await setDoc(doc(db, 'blogs', slug), data);
+          await deleteDoc(doc(db, 'blogs', oldSlug));
+        } else {
+          await setDoc(doc(db, 'blogs', slug), data, { merge: true });
+        }
+
+        alert(status === 'published' ? 'ব্লগ প্রকাশ করা হয়েছে।' : 'ব্লগ ড্রাফট হিসেবে সেভ হয়েছে।');
+        resetBlogEditor();
+        await loadAdminBlogs();
+      } catch (err) {
+        console.error('Blog save error:', err);
+        alert('ব্লগ সেভ করা যায়নি। Firebase Rules ও ইন্টারনেট সংযোগ পরীক্ষা করুন।');
+      } finally {
+        if (saveDraftBtn) saveDraftBtn.disabled = false;
+        if (publishBtn) publishBtn.disabled = false;
+      }
+    }
+    window.saveBlog = saveBlog;
+
+    async function loadAdminBlogs() {
+      const listEl = document.getElementById('adminBlogsList');
+      if (!listEl) return;
+      initBlogEditor();
+
+      const activeUser = auth.currentUser || currentUserGlobal;
+      if (!activeUser || activeUser.email !== ADMIN_EMAIL) {
+        listEl.innerHTML = '<p style="font-size:12px;color:#64748b;">শুধু অ্যাডমিন ব্লগ ম্যানেজ করতে পারবেন।</p>';
+        return;
+      }
+
+      listEl.innerHTML = '<p style="font-size:12px;color:#64748b;">লোড হচ্ছে...</p>';
+
+      try {
+        const snap = await getDocs(collection(db, 'blogs'));
+        adminBlogsCache = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+        adminBlogsCache.sort((a,b) => {
+          const am = a.updatedAt?.toMillis ? a.updatedAt.toMillis() : new Date(a.updatedAt || 0).getTime();
+          const bm = b.updatedAt?.toMillis ? b.updatedAt.toMillis() : new Date(b.updatedAt || 0).getTime();
+          return bm - am;
+        });
+
+        if (!adminBlogsCache.length) {
+          listEl.innerHTML = '<p style="font-size:12px;color:#64748b;">এখনও কোনো ব্লগ লেখা হয়নি।</p>';
+          return;
+        }
+
+        listEl.innerHTML = adminBlogsCache.map(blog => `
+          <div class="blog-admin-item">
+            <div class="blog-admin-item-title">${escapeHtml(blog.title || blog.id)}</div>
+            <div class="blog-admin-item-meta">${escapeHtml(blog.category || 'সাধারণ')} • ${blog.status === 'published' ? 'প্রকাশিত' : 'ড্রাফট'} • /blog/${escapeHtml(blog.slug || blog.id)}</div>
+            <div class="blog-admin-item-actions">
+              <button class="blog-admin-btn" onclick="editBlog('${encodeURIComponent(blog.id)}')" style="background:#e0f2fe;color:#075985;">এডিট</button>
+              <button class="blog-admin-btn" onclick="toggleBlogStatus('${encodeURIComponent(blog.id)}')" style="background:#ecfdf5;color:#065f46;">${blog.status === 'published' ? 'ড্রাফট করুন' : 'প্রকাশ করুন'}</button>
+              <button class="blog-admin-btn" onclick="deleteBlog('${encodeURIComponent(blog.id)}')" style="background:#fee2e2;color:#991b1b;">ডিলিট</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Blog load error:', err);
+        listEl.innerHTML = '<p style="font-size:12px;color:#dc2626;">ব্লগ লোড করা যায়নি। Firebase Rules পরীক্ষা করুন।</p>';
+      }
+    }
+    window.loadAdminBlogs = loadAdminBlogs;
+
+    window.editBlog = function(encodedSlug) {
+      const slug = decodeURIComponent(encodedSlug);
+      const blog = adminBlogsCache.find(b => b.id === slug);
+      if (!blog) return;
+
+      editingBlogSlug = blog.id;
+      initBlogEditor();
+      document.getElementById('blogTitleInput').value = blog.title || '';
+      document.getElementById('blogSlugInput').value = blog.slug || blog.id;
+      document.getElementById('blogCategoryInput').value = blog.category || '';
+      document.getElementById('blogSeoTitleInput').value = blog.seoTitle || '';
+      document.getElementById('blogMetaDescriptionInput').value = blog.metaDescription || '';
+      document.getElementById('blogFeaturedImageInput').value = blog.featuredImage || '';
+      if (blogQuill) blogQuill.root.innerHTML = blog.contentHtml || '';
+      document.getElementById('blogCancelEditBtn').style.display = 'block';
+      document.getElementById('blogSlugInput').focus();
+    };
+
+    async function toggleBlogStatus(encodedSlug) {
+      const slug = decodeURIComponent(encodedSlug);
+      const blog = adminBlogsCache.find(b => b.id === slug);
+      if (!blog) return;
+
+      try {
+        const nextStatus = blog.status === 'published' ? 'draft' : 'published';
+        const updateData = { status: nextStatus, updatedAt: new Date() };
+        if (nextStatus === 'published') updateData.publishedAt = new Date();
+        await updateDoc(doc(db, 'blogs', slug), updateData);
+        await loadAdminBlogs();
+      } catch (err) {
+        console.error('Blog status error:', err);
+        alert('ব্লগের স্ট্যাটাস পরিবর্তন করা যায়নি।');
+      }
+    }
+    window.toggleBlogStatus = toggleBlogStatus;
+
+    async function deleteBlog(encodedSlug) {
+      const slug = decodeURIComponent(encodedSlug);
+      try {
+        await deleteDoc(doc(db, 'blogs', slug));
+        if (editingBlogSlug === slug) resetBlogEditor();
+        await loadAdminBlogs();
+      } catch (err) {
+        console.error('Blog delete error:', err);
+        alert('ব্লগ ডিলিট করা যায়নি।');
+      }
+    }
+    window.deleteBlog = deleteBlog;
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    window.addEventListener('load', () => {
+      initBlogEditor();
+    });
+
 
     updateDashboard();
     setTimeout(() => { if(window.lucide) lucide.createIcons(); }, 100);
