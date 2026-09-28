@@ -147,6 +147,25 @@
     .blog-admin-label { display:block; font-size:11px; font-weight:700; color:#475569; margin-bottom:5px; }
     .blog-editor-wrap { background:#fff; border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; }
     #blogEditor { min-height:260px; font-family:'Hind Siliguri', sans-serif; font-size:14px; }
+    /* বাংলা Blog Editor word wrapping fix */
+#blogEditor,
+#blogEditor .ql-editor {
+  font-family: 'Hind Siliguri', sans-serif !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+  line-height: 1.8 !important;
+}
+
+#blogEditor .ql-editor p,
+#blogEditor .ql-editor h1,
+#blogEditor .ql-editor h2,
+#blogEditor .ql-editor h3,
+#blogEditor .ql-editor li {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+}
     .blog-admin-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .blog-admin-btn { border:none; border-radius:10px; padding:10px; font-size:12px; font-weight:700; cursor:pointer; }
     .blog-admin-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
