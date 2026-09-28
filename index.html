@@ -6,6 +6,10 @@
   <title>SmartKhoroch — স্মার্ট খরচ ও হিসাবের খাতা</title>
   
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/app-icon-192.png">
   <meta name="theme-color" content="#059669">
   
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -48,7 +52,8 @@
     .tab-view.active { display: flex; }
     .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
     
-    .app-title { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .app-title { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .site-logo { width: 185px; max-width: calc(100vw - 125px); height: auto; display: block; object-fit: contain; }
     .app-title .brand-smart { color: #1e293b; }
     .app-title .brand-khoroch { color: #059669; }
 
@@ -145,29 +150,12 @@
     .blog-admin-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .blog-admin-input { width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:13px; outline:none; background:#fff; }
     .blog-admin-label { display:block; font-size:11px; font-weight:700; color:#475569; margin-bottom:5px; }
-    .blog-editor-wrap { background:#fff; border:1px solid #cbd5e1; border-radius:10px; overflow:hidden; }
+    .blog-editor-wrap { background:#fff; border:1px solid #cbd5e1; border-radius:10px; overflow:visible; }
+    .blog-editor-wrap .ql-toolbar.ql-snow { position:sticky; top:0; z-index:100; background:#fff; border-top:none; border-left:none; border-right:none; box-shadow:0 2px 6px rgba(15,23,42,0.06); }
+    .blog-editor-wrap .ql-container.ql-snow { border-left:none; border-right:none; border-bottom:none; }
     #blogEditor { min-height:260px; font-family:'Hind Siliguri', sans-serif; font-size:14px; }
-   /* বাংলা Blog Editor fix */
-#blogEditor .ql-editor {
-  font-family: 'Hind Siliguri', sans-serif !important;
-  font-size: 14px !important;
-  line-height: 1.8 !important;
-  white-space: pre-wrap !important;
-  word-break: normal !important;
-  word-wrap: normal !important;
-  overflow-wrap: normal !important;
-}
-
-#blogEditor .ql-editor p,
-#blogEditor .ql-editor h1,
-#blogEditor .ql-editor h2,
-#blogEditor .ql-editor h3,
-#blogEditor .ql-editor li {
-  white-space: normal !important;
-  word-break: normal !important;
-  word-wrap: normal !important;
-  overflow-wrap: normal !important;
-}
+    #blogEditor .ql-editor { font-family:'Hind Siliguri', sans-serif; font-size:14px; line-height:1.8; word-break:normal; overflow-wrap:normal; white-space:normal; }
+    #blogEditor .ql-editor p, #blogEditor .ql-editor h1, #blogEditor .ql-editor h2, #blogEditor .ql-editor h3, #blogEditor .ql-editor li { word-break:normal; overflow-wrap:normal; white-space:normal; }
     .blog-admin-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .blog-admin-btn { border:none; border-radius:10px; padding:10px; font-size:12px; font-weight:700; cursor:pointer; }
     .blog-admin-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
@@ -176,6 +164,32 @@
     .blog-admin-item-meta { font-size:10px; color:#64748b; margin-top:3px; word-break:break-word; }
     .blog-admin-item-actions { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
     @media (max-width:360px) { .blog-admin-row, .blog-admin-actions { grid-template-columns:1fr; } }
+
+
+    /* Loading animation: keeps users engaged while Firebase/session data loads */
+    .smart-loading-wrap { width: 100%; max-width: 330px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .smart-loading-brand { font-size: 29px; font-weight: 800; letter-spacing: -0.7px; }
+    .smart-loading-brand .smart { color: #1e293b; }
+    .smart-loading-brand .khoroch { color: #059669; }
+    .smart-loading-subtitle { font-size: 13px; color: #64748b; font-weight: 600; }
+    .smart-loading-sheet { width: 100%; background: #ffffff; border: 1px solid #e2ece6; border-radius: 18px; padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: left; }
+    .smart-loading-sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .smart-loading-sheet-title { font-size: 12px; color: #64748b; font-weight: 700; }
+    .smart-loading-live { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: #059669; font-weight: 800; }
+    .smart-loading-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #059669; animation: smartLoadingPulse 1s ease-in-out infinite; }
+    .smart-loading-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-top: 1px dashed #e2ece6; }
+    .smart-loading-label { font-size: 12px; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .smart-loading-value { width: 86px; height: 12px; border-radius: 999px; background: linear-gradient(90deg, #eef7f2 0%, #dff2e8 50%, #eef7f2 100%); background-size: 200% 100%; animation: smartLoadingShimmer 1.2s linear infinite; flex-shrink: 0; }
+    .smart-loading-status { font-size: 12px; color: #334155; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .smart-loading-dots span { display: inline-block; animation: smartLoadingDots 1.2s infinite; opacity: 0.2; }
+    .smart-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .smart-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    .smart-loading-progress { width: 100%; height: 5px; border-radius: 999px; background: #ecfdf5; overflow: hidden; margin-top: 2px; }
+    .smart-loading-progress::before { content: ''; display: block; width: 45%; height: 100%; border-radius: inherit; background: #059669; transform: translateX(-120%); animation: smartLoadingProgress 1.5s ease-in-out infinite; }
+    @keyframes smartLoadingPulse { 0%,100% { transform: scale(0.75); opacity: 0.45; } 50% { transform: scale(1.15); opacity: 1; } }
+    @keyframes smartLoadingShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    @keyframes smartLoadingDots { 0%,100% { opacity: 0.2; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
+    @keyframes smartLoadingProgress { 0% { transform: translateX(-120%); } 70%,100% { transform: translateX(300%); } }
 
   </style>
 
@@ -189,7 +203,35 @@
   <div class="app-container">
 
     <div id="dataLoadingScreen" class="fullscreen-overlay active" style="z-index:1200;">
-      <div style="font-size:28px;font-weight:800;letter-spacing:-0.5px;"><span style="color:#1e293b;">Smart</span><span style="color:#059669;">Khoroch</span></div>
+      <div class="smart-loading-wrap" aria-live="polite" aria-label="SmartKhoroch প্রস্তুত হচ্ছে">
+        <div class="smart-loading-brand"><span class="smart">Smart</span><span class="khoroch">Khoroch</span></div>
+        <div class="smart-loading-subtitle">আপনার হিসাব গুছিয়ে প্রস্তুত করা হচ্ছে</div>
+
+        <div class="smart-loading-sheet">
+          <div class="smart-loading-sheet-head">
+            <div class="smart-loading-sheet-title">সাম্প্রতিক হিসাব</div>
+            <div class="smart-loading-live"><span class="smart-loading-live-dot"></span>লাইভ</div>
+          </div>
+
+          <div class="smart-loading-row">
+            <span class="smart-loading-label">আয়</span>
+            <span class="smart-loading-value"></span>
+          </div>
+          <div class="smart-loading-row">
+            <span class="smart-loading-label">বাজার ও দৈনন্দিন খরচ</span>
+            <span class="smart-loading-value"></span>
+          </div>
+          <div class="smart-loading-row">
+            <span class="smart-loading-label">বিল ও অন্যান্য</span>
+            <span class="smart-loading-value"></span>
+          </div>
+          <div class="smart-loading-row">
+            <span class="smart-loading-status">হিসাব প্রস্তুত হচ্ছে<span class="smart-loading-dots"><span>.</span><span>.</span><span>.</span></span></span>
+            <span class="smart-loading-value"></span>
+          </div>
+          <div class="smart-loading-progress" aria-hidden="true"></div>
+        </div>
+      </div>
     </div>
 
     <!-- পেওয়াল স্ক্রিন -->
@@ -255,7 +297,7 @@
     <!-- লোগো ও হেডার -->
     <header class="top-bar">
       <div class="app-title" onclick="goHome()" style="cursor:pointer;" role="button" aria-label="হোমে যান">
-        <span class="brand-smart">Smart</span><span class="brand-khoroch">Khoroch</span>
+        <img class="site-logo" src="/logo.png" alt="SmartKhoroch">
         <span class="trial-pill" id="trialBadge" onclick="openSubscriptionModal()">
           <i data-lucide="sparkles" style="width: 13px; height: 13px;"></i>
           <span id="trialBadgeText">লোডিং...</span>
@@ -270,7 +312,6 @@
 
     <!-- ড্যাশবোর্ড ট্যাব -->
     <div class="tab-view" id="viewDashboard">
-      <div class="slogan-banner">স্মার্ট খরচ, গোছানো মন; জমবে টাকা, বাড়বে ধন।</div>
 
       <section class="hero-card">
         <p class="balance-subtitle">বর্তমানে হাতে আছে</p>
@@ -658,9 +699,6 @@
             <label class="blog-admin-label">মূল ব্লগ লেখা</label>
             <div class="blog-editor-wrap">
               <div id="blogEditor"></div>
-            </div>
-            <div style="font-size:10px;color:#64748b;margin-top:5px;">
-              Bold, Heading, list, link ও ছবি যোগ করতে পারবেন। ছবির জন্য toolbar-এর image অপশনে ছবির URL দিন।
             </div>
           </div>
 
@@ -2152,6 +2190,28 @@
     let blogQuill = null;
     let editingBlogSlug = null;
     let adminBlogsCache = [];
+    let blogLastSelection = null;
+
+    function getCleanBlogClipboardText(clipboardData) {
+      if (!clipboardData) return '';
+      return (clipboardData.getData('text/plain') || '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n');
+    }
+
+    function insertPlainBlogText(text) {
+      if (!blogQuill || !text) return;
+
+      const range = blogQuill.getSelection(true) || blogLastSelection || {
+        index: Math.max(0, blogQuill.getLength() - 1),
+        length: 0
+      };
+
+      blogQuill.insertText(range.index, text, 'user');
+      blogQuill.setSelection(range.index + text.length, 0, 'user');
+      blogLastSelection = { index: range.index + text.length, length: 0 };
+      blogQuill.focus();
+    }
 
     function initBlogEditor() {
       if (blogQuill || !window.Quill || !document.getElementById('blogEditor')) return;
@@ -2169,97 +2229,22 @@
           ]
         }
       });
- // Desktop paste cleanup - preserve formatting and fix Bengali line breaks
-blogQuill.root.addEventListener('paste', function(e) {
-  e.preventDefault();
 
-  const html = e.clipboardData.getData('text/html');
-  const text = e.clipboardData.getData('text/plain');
+      blogQuill.on('selection-change', function(range) {
+        if (range) blogLastSelection = range;
+      });
 
-  const range = blogQuill.getSelection(true);
-  if (!range) return;
-
-  if (!html) {
-    blogQuill.insertText(range.index, text, 'user');
-    blogQuill.setSelection(range.index + text.length, 0, 'user');
-    return;
-  }
-
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-
-  // Remove unwanted elements
-  doc.body.querySelectorAll('script, style, meta, link').forEach(el => {
-    el.remove();
-  });
-
-  // Clean text nodes so desktop clipboard line-breaks do not split Bengali words
-  const walker = document.createTreeWalker(
-    doc.body,
-    NodeFilter.SHOW_TEXT
-  );
-
-  const textNodes = [];
-  let node;
-
-  while ((node = walker.nextNode())) {
-    textNodes.push(node);
-  }
-
-  textNodes.forEach(node => {
-    node.nodeValue = node.nodeValue
-      .replace(/[\r\n\t]+/g, ' ')
-      .replace(/ {2,}/g, ' ');
-  });
-
-  // Remove classes/styles that may cause unwanted wrapping,
-  // but keep HTML tags such as strong, em, h2, h3, ul, ol, li, a, etc.
-  doc.body.querySelectorAll('*').forEach(el => {
-    el.removeAttribute('class');
-    el.removeAttribute('id');
-
-    if (el.hasAttribute('style')) {
-      const style = el.getAttribute('style');
-
-      const allowed = style
-        .split(';')
-        .map(s => s.trim())
-        .filter(s =>
-          /^(font-weight|font-style|text-decoration|text-align)\s*:/i.test(s)
-        )
-        .join('; ');
-
-      if (allowed) {
-        el.setAttribute('style', allowed);
-      } else {
-        el.removeAttribute('style');
-      }
-    }
-  });
-
-  const cleanHtml = doc.body.innerHTML;
-
-  const oldLength = blogQuill.getLength();
-
-  blogQuill.clipboard.dangerouslyPasteHTML(
-    range.index,
-    cleanHtml,
-    'user'
-  );
-
-  const newLength = blogQuill.getLength();
-
-  blogQuill.setSelection(
-    range.index + (newLength - oldLength),
-    0,
-    'user'
-  );
-});
+      // Always paste as plain text so desktop clipboard HTML cannot break Bengali lines.
+      blogQuill.root.addEventListener('paste', function(e) {
+        e.preventDefault();
+        insertPlainBlogText(getCleanBlogClipboardText(e.clipboardData));
+      });
 
       const toolbar = blogQuill.getModule('toolbar');
       toolbar.addHandler('image', function() {
         const url = window.prompt('ছবির সরাসরি URL দিন:');
         if (!url) return;
-        const range = blogQuill.getSelection(true);
+        const range = blogQuill.getSelection(true) || blogLastSelection;
         blogQuill.insertEmbed(range ? range.index : blogQuill.getLength(), 'image', url, 'user');
       });
     }
@@ -2281,6 +2266,7 @@ blogQuill.root.addEventListener('paste', function(e) {
 
     function resetBlogEditor() {
       editingBlogSlug = null;
+      blogLastSelection = null;
       ['blogTitleInput','blogSlugInput','blogCategoryInput','blogSeoTitleInput','blogMetaDescriptionInput','blogFeaturedImageInput'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
