@@ -2169,18 +2169,67 @@
           ]
         }
       });
-      // Desktop paste cleanup for Bengali Blog Editor
+     // Desktop paste cleanup - preserve Bold/Heading/List
 blogQuill.root.addEventListener('paste', function(e) {
   e.preventDefault();
 
+  const html = e.clipboardData.getData('text/html');
   const text = e.clipboardData.getData('text/plain');
 
   const range = blogQuill.getSelection(true);
-
   if (!range) return;
 
-  blogQuill.insertText(range.index, text, 'user');
-  blogQuill.setSelection(range.index + text.length, 0, 'user');
+  if (html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    doc.body.querySelectorAll('script, style, meta, link').forEach(el => el.remove());
+
+    doc.body.querySelectorAll('*').forEach(el => {
+      el.removeAttribute('class');
+
+      if (el.hasAttribute('style')) {
+        const style = el.getAttribute('style');
+
+        const allowed = style
+          .split(';')
+          .map(s => s.trim())
+          .filter(s =>
+            /^(font-weight|font-style|text-decoration|text-align)\s*:/i.test(s)
+          )
+          .join('; ');
+
+        if (allowed) {
+          el.setAttribute('style', allowed);
+        } else {
+          el.removeAttribute('style');
+        }
+      }
+    });
+
+    const beforeLength = blogQuill.getLength();
+
+    blogQuill.clipboard.dangerouslyPasteHTML(
+      range.index,
+      doc.body.innerHTML,
+      'user'
+    );
+
+    const afterLength = blogQuill.getLength();
+
+    blogQuill.setSelection(
+      range.index + (afterLength - beforeLength),
+      0,
+      'user'
+    );
+  } else {
+    blogQuill.insertText(range.index, text, 'user');
+
+    blogQuill.setSelection(
+      range.index + text.length,
+      0,
+      'user'
+    );
+  }
 });
 
       const toolbar = blogQuill.getModule('toolbar');
