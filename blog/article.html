@@ -1,46 +1,681 @@
 <!DOCTYPE html>
 <html lang="bn">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>SmartKhoroch ব্লগ</title>
-<meta name="description" content="SmartKhoroch-এর উপকারী বাংলা ব্লগ।">
+
+<meta
+  name="description"
+  content="SmartKhoroch-এর উপকারী বাংলা ব্লগ।"
+>
+
 <meta name="robots" content="index,follow">
+
 <meta property="og:type" content="article">
-<meta property="og:title" content="SmartKhoroch ব্লগ">
-<meta property="og:description" content="খরচ, বাজেট ও সঞ্চয় নিয়ে উপকারী লেখা।">
-<link id="canonicalLink" rel="canonical" href="/blog/">
-<link rel="stylesheet" href="/blog/styles.css">
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<meta
+  property="og:title"
+  content="SmartKhoroch ব্লগ"
+>
+
+<meta
+  property="og:description"
+  content="খরচ, বাজেট ও সঞ্চয় নিয়ে উপকারী লেখা।"
+>
+
+<link
+  id="canonicalLink"
+  rel="canonical"
+  href="/blog/"
+>
+
+<link
+  rel="stylesheet"
+  href="/blog/styles.css"
+>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+>
+
 </head>
+
+
 <body>
-<header class="topbar"><div class="container topbar-inner"><a class="brand" href="/"><span class="brand-smart">Smart</span><span class="brand-khoroch">Khoroch</span></a><a class="back-btn" href="/blog/">ব্লগে ফিরে যান</a></div></header>
-<main class="container article-wrap"><article class="article-card" id="articleCard"><div class="empty">লেখা লোড হচ্ছে...</div></article></main>
-<footer class="footer"><div class="container">SmartKhoroch — স্মার্ট খরচ ও হিসাবের খাতা</div></footer>
+
+
+<header class="topbar">
+
+  <div class="container topbar-inner">
+
+    <a class="brand" href="/">
+      <img
+        src="/logo.png"
+        alt="SmartKhoroch"
+      >
+    </a>
+
+    <a
+      class="back-btn"
+      href="/blog/"
+    >
+      ব্লগে ফিরে যান
+    </a>
+
+  </div>
+
+</header>
+
+
+<main class="container article-wrap">
+
+  <article
+    class="article-card"
+    id="articleCard"
+  >
+
+    <div class="empty">
+      লেখা লোড হচ্ছে...
+    </div>
+
+  </article>
+
+</main>
+
+
+<footer class="footer">
+
+  <div class="container">
+    SmartKhoroch — স্মার্ট খরচ ও হিসাবের খাতা
+  </div>
+
+</footer>
+
+
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,doc,getDoc,getDocs,collection,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const db=getFirestore(initializeApp({"apiKey": "AIzaSyBmBqMYex_qjSuiVuF2GWAkOLnfcti3wWM", "authDomain": "smartkhoroch.firebaseapp.com", "projectId": "smartkhoroch", "storageBucket": "smartkhoroch.firebasestorage.app", "messagingSenderId": "527246087111", "appId": "1:527246087111:web:038798401b3eebefd47fe2", "measurementId": "G-MGGJ1XM8S2"}));
-const params=new URLSearchParams(location.search);
-const slug=decodeURIComponent(params.get('slug')||location.pathname.split('/').filter(Boolean).pop()||'');
-const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-const fmt=v=>{const d=v?.toDate?v.toDate():new Date(v||0);return Number.isNaN(d.getTime())?'':d.toLocaleDateString('bn-BD')};
-const setMeta=(name,content)=>{let e=document.querySelector(`meta[name="${name}"]`);if(!e){e=document.createElement('meta');e.setAttribute('name',name);document.head.appendChild(e)}e.content=content||''};
-const setOg=(property,content)=>{let e=document.querySelector(`meta[property="${property}"]`);if(!e){e=document.createElement('meta');e.setAttribute('property',property);document.head.appendChild(e)}e.content=content||''};
-try{
- if(!slug)throw new Error('missing');
- const snap=await getDoc(doc(db,'blogs',slug));
- if(!snap.exists()||snap.data().status!=='published')throw new Error('not-found');
- const blog=snap.data(), canonical=`${location.origin}/blog/${encodeURIComponent(blog.slug||slug)}/`;
- const seoTitle=blog.seoTitle||blog.title||'SmartKhoroch ব্লগ', desc=blog.metaDescription||blog.excerpt||'SmartKhoroch-এর উপকারী বাংলা ব্লগ।';
- document.title=seoTitle;setMeta('description',desc);setOg('og:title',seoTitle);setOg('og:description',desc);setOg('og:url',canonical);document.getElementById('canonicalLink').href=canonical;if(blog.featuredImage)setOg('og:image',blog.featuredImage);
- const rs=await getDocs(query(collection(db,'blogs'),where('status','==','published')));
- const related=rs.docs.map(d=>({id:d.id,...d.data()})).filter(b=>b.id!==snap.id).sort((a,b)=>(b.publishedAt?.toMillis?b.publishedAt.toMillis():new Date(b.publishedAt||b.updatedAt||0).getTime())-(a.publishedAt?.toMillis?a.publishedAt.toMillis():new Date(a.publishedAt||a.updatedAt||0).getTime())).slice(0,3);
- const rel=related.length?`<section class="related"><h2 style="color:#064e3b;font-size:20px;margin-bottom:10px;">আরও পড়ুন</h2><div class="related-grid">${related.map(b=>`<a class="related-card" href="/blog/${encodeURIComponent(b.slug||b.id)}/"><strong>${esc(b.title)}</strong><span>${esc(b.category||'সাধারণ')}</span></a>`).join('')}</div></section>`:'';
- const img=blog.featuredImage?`<img class="featured" src="${esc(blog.featuredImage)}" alt="${esc(blog.title)}" fetchpriority="high">`:'';
- document.getElementById('articleCard').innerHTML=`<span class="badge">${esc(blog.category||'সাধারণ')}</span><h1 class="article-title">${esc(blog.title||'')}</h1><div class="article-meta">প্রকাশ: ${esc(fmt(blog.publishedAt||blog.updatedAt))}</div>${img}<div class="article-content">${blog.contentHtml||''}</div>${rel}<div style="margin-top:24px;padding:16px;border-radius:14px;background:#ecfdf5;border:1px solid #a7f3d0;"><strong style="display:block;color:#065f46;font-size:15px;">নিজের খরচের হিসাব রাখুন</strong><span style="display:block;color:#047857;font-size:12px;margin:4px 0 10px;">দৈনিক খরচ ও মাসিক বাজেট এক জায়গায় গুছিয়ে রাখুন SmartKhoroch-এ।</span><a class="cta" href="/">SmartKhoroch ব্যবহার করুন</a></div>`;
- const ld=document.createElement('script');ld.type='application/ld+json';ld.textContent=JSON.stringify({'@context':'https://schema.org','@type':'Article',headline:blog.title||'',description:desc,image:blog.featuredImage?[blog.featuredImage]:undefined,datePublished:blog.publishedAt?.toDate?blog.publishedAt.toDate().toISOString():new Date(blog.publishedAt||blog.updatedAt||Date.now()).toISOString(),dateModified:blog.updatedAt?.toDate?blog.updatedAt.toDate().toISOString():new Date(blog.updatedAt||Date.now()).toISOString(),author:{'@type':'Organization',name:'SmartKhoroch'},publisher:{'@type':'Organization',name:'SmartKhoroch'},mainEntityOfPage:{'@type':'WebPage','@id':canonical}});document.head.appendChild(ld);
-}catch(e){document.title='ব্লগ পাওয়া যায়নি | SmartKhoroch';setMeta('robots','noindex,follow');document.getElementById('articleCard').innerHTML='<div class="empty"><h1 style="margin:0 0 6px;color:#0f172a;">এই ব্লগটি পাওয়া যায়নি</h1><p>লেখাটি ড্রাফট হতে পারে, অথবা URL সঠিক নয়।</p><a class="cta" href="/blog/">সব ব্লগ দেখুন</a></div>';}
+
+
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  getDocs,
+  collection,
+  query,
+  where
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const db = getFirestore(
+
+  initializeApp({
+
+    "apiKey":
+      "AIzaSyBmBqMYex_qjSuiVuF2GWAkOLnfcti3wWM",
+
+    "authDomain":
+      "smartkhoroch.firebaseapp.com",
+
+    "projectId":
+      "smartkhoroch",
+
+    "storageBucket":
+      "smartkhoroch.firebasestorage.app",
+
+    "messagingSenderId":
+      "527246087111",
+
+    "appId":
+      "1:527246087111:web:038798401b3eebefd47fe2",
+
+    "measurementId":
+      "G-MGGJ1XM8S2"
+
+  })
+
+);
+
+
+const params =
+  new URLSearchParams(location.search);
+
+
+const slug =
+  decodeURIComponent(
+
+    params.get('slug') ||
+
+    location.pathname
+      .split('/')
+      .filter(Boolean)
+      .pop() ||
+
+    ''
+
+  );
+
+
+const esc = v =>
+
+  String(v ?? '')
+
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+
+
+const fmt = v => {
+
+  const d =
+    v?.toDate
+      ? v.toDate()
+      : new Date(v || 0);
+
+  return Number.isNaN(d.getTime())
+    ? ''
+    : d.toLocaleDateString('bn-BD');
+
+};
+
+
+const setMeta = (name, content) => {
+
+  let e =
+    document.querySelector(
+      `meta[name="${name}"]`
+    );
+
+  if(!e){
+
+    e =
+      document.createElement('meta');
+
+    e.setAttribute(
+      'name',
+      name
+    );
+
+    document.head.appendChild(e);
+
+  }
+
+  e.content =
+    content || '';
+
+};
+
+
+const setOg = (property, content) => {
+
+  let e =
+    document.querySelector(
+      `meta[property="${property}"]`
+    );
+
+  if(!e){
+
+    e =
+      document.createElement('meta');
+
+    e.setAttribute(
+      'property',
+      property
+    );
+
+    document.head.appendChild(e);
+
+  }
+
+  e.content =
+    content || '';
+
+};
+
+
+try {
+
+
+  if(!slug)
+    throw new Error('missing');
+
+
+  const snap =
+    await getDoc(
+      doc(
+        db,
+        'blogs',
+        slug
+      )
+    );
+
+
+  if(
+    !snap.exists() ||
+    snap.data().status !== 'published'
+  ){
+
+    throw new Error('not-found');
+
+  }
+
+
+  const blog =
+    snap.data();
+
+
+  const canonical =
+    `${location.origin}/blog/${encodeURIComponent(blog.slug || slug)}/`;
+
+
+  const seoTitle =
+    blog.seoTitle ||
+    blog.title ||
+    'SmartKhoroch ব্লগ';
+
+
+  const desc =
+    blog.metaDescription ||
+    blog.excerpt ||
+    'SmartKhoroch-এর উপকারী বাংলা ব্লগ।';
+
+
+  document.title =
+    seoTitle;
+
+
+  setMeta(
+    'description',
+    desc
+  );
+
+
+  setOg(
+    'og:title',
+    seoTitle
+  );
+
+
+  setOg(
+    'og:description',
+    desc
+  );
+
+
+  setOg(
+    'og:url',
+    canonical
+  );
+
+
+  document
+    .getElementById('canonicalLink')
+    .href = canonical;
+
+
+  if(blog.featuredImage){
+
+    setOg(
+      'og:image',
+      blog.featuredImage
+    );
+
+  }
+
+
+  const rs =
+    await getDocs(
+
+      query(
+        collection(db,'blogs'),
+        where(
+          'status',
+          '==',
+          'published'
+        )
+      )
+
+    );
+
+
+  const related =
+
+    rs.docs
+
+      .map(d => ({
+        id:d.id,
+        ...d.data()
+      }))
+
+      .filter(
+        b =>
+          b.id !== snap.id
+      )
+
+      .sort(
+
+        (a,b) =>
+
+          (
+            b.publishedAt?.toMillis
+              ? b.publishedAt.toMillis()
+              : new Date(
+                  b.publishedAt ||
+                  b.updatedAt ||
+                  0
+                ).getTime()
+          )
+
+          -
+
+          (
+            a.publishedAt?.toMillis
+              ? a.publishedAt.toMillis()
+              : new Date(
+                  a.publishedAt ||
+                  a.updatedAt ||
+                  0
+                ).getTime()
+          )
+
+      )
+
+      .slice(0,3);
+
+
+  const rel =
+
+    related.length
+
+      ? `
+
+        <section class="related">
+
+          <h2
+            style="
+              color:#064e3b;
+              font-size:20px;
+              margin-bottom:10px;
+            "
+          >
+            আরও পড়ুন
+          </h2>
+
+          <div class="related-grid">
+
+            ${related.map(b => `
+
+              <a
+                class="related-card"
+                href="/blog/${encodeURIComponent(
+                  b.slug || b.id
+                )}/"
+              >
+
+                <strong>
+                  ${esc(b.title)}
+                </strong>
+
+                <span>
+                  ${esc(
+                    b.category ||
+                    'সাধারণ'
+                  )}
+                </span>
+
+              </a>
+
+            `).join('')}
+
+          </div>
+
+        </section>
+
+      `
+
+      : '';
+
+
+  const img =
+
+    blog.featuredImage
+
+      ? `
+
+        <img
+          class="featured"
+          src="${esc(
+            blog.featuredImage
+          )}"
+          alt="${esc(
+            blog.title
+          )}"
+          fetchpriority="high"
+        >
+
+      `
+
+      : '';
+
+
+  document
+    .getElementById('articleCard')
+    .innerHTML = `
+
+      <span class="badge">
+        ${esc(
+          blog.category ||
+          'সাধারণ'
+        )}
+      </span>
+
+      <h1 class="article-title">
+        ${esc(
+          blog.title || ''
+        )}
+      </h1>
+
+      <div class="article-meta">
+        প্রকাশ:
+        ${esc(
+          fmt(
+            blog.publishedAt ||
+            blog.updatedAt
+          )
+        )}
+      </div>
+
+      ${img}
+
+      <div class="article-content">
+        ${blog.contentHtml || ''}
+      </div>
+
+      ${rel}
+
+      <div
+        style="
+          margin-top:24px;
+          padding:16px;
+          border-radius:14px;
+          background:#ecfdf5;
+          border:1px solid #a7f3d0;
+        "
+      >
+
+        <strong
+          style="
+            display:block;
+            color:#065f46;
+            font-size:15px;
+          "
+        >
+          নিজের খরচের হিসাব রাখুন
+        </strong>
+
+        <span
+          style="
+            display:block;
+            color:#047857;
+            font-size:12px;
+            margin:4px 0 10px;
+          "
+        >
+          দৈনিক খরচ ও মাসিক বাজেট এক জায়গায় গুছিয়ে রাখুন SmartKhoroch-এ।
+        </span>
+
+        <a
+          class="cta"
+          href="/"
+        >
+          SmartKhoroch ব্যবহার করুন
+        </a>
+
+      </div>
+
+    `;
+
+
+  const ld =
+    document.createElement('script');
+
+  ld.type =
+    'application/ld+json';
+
+
+  ld.textContent =
+    JSON.stringify({
+
+      '@context':
+        'https://schema.org',
+
+      '@type':
+        'Article',
+
+      headline:
+        blog.title || '',
+
+      description:
+        desc,
+
+      image:
+        blog.featuredImage
+          ? [blog.featuredImage]
+          : undefined,
+
+      datePublished:
+
+        blog.publishedAt?.toDate
+
+          ? blog.publishedAt
+              .toDate()
+              .toISOString()
+
+          : new Date(
+              blog.publishedAt ||
+              blog.updatedAt ||
+              Date.now()
+            ).toISOString(),
+
+      dateModified:
+
+        blog.updatedAt?.toDate
+
+          ? blog.updatedAt
+              .toDate()
+              .toISOString()
+
+          : new Date(
+              blog.updatedAt ||
+              Date.now()
+            ).toISOString(),
+
+      author:{
+        '@type':
+          'Organization',
+        name:
+          'SmartKhoroch'
+      },
+
+      publisher:{
+        '@type':
+          'Organization',
+        name:
+          'SmartKhoroch'
+      },
+
+      mainEntityOfPage:{
+        '@type':
+          'WebPage',
+        '@id':
+          canonical
+      }
+
+    });
+
+
+  document.head.appendChild(ld);
+
+
+} catch(e) {
+
+
+  document.title =
+    'ব্লগ পাওয়া যায়নি | SmartKhoroch';
+
+
+  setMeta(
+    'robots',
+    'noindex,follow'
+  );
+
+
+  document
+    .getElementById('articleCard')
+    .innerHTML = `
+
+      <div class="empty">
+
+        <h1
+          style="
+            margin:0 0 6px;
+            color:#0f172a;
+          "
+        >
+          এই ব্লগটি পাওয়া যায়নি
+        </h1>
+
+        <p>
+          লেখাটি ড্রাফট হতে পারে,
+          অথবা URL সঠিক নয়।
+        </p>
+
+        <a
+          class="cta"
+          href="/blog/"
+        >
+          সব ব্লগ দেখুন
+        </a>
+
+      </div>
+
+    `;
+
+}
+
 </script>
+
 </body>
 </html>
