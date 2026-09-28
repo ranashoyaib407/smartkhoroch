@@ -119,6 +119,11 @@
     
     .fullscreen-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px; overflow-y: auto; text-align: center; }
     .fullscreen-overlay.active { display: flex; }
+    /* Premium subscription page: fixed/sticky brand header first, then back button */
+    #paywallScreen { justify-content: flex-start; padding-top: 0; padding-bottom: 28px; }
+    #paywallScreen .premium-topbar { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; position: sticky; top: 0; z-index: 30; padding: 10px 0 12px; background: #fff; }
+    #paywallScreen .premium-logo { width: 185px; max-width: 72vw; height: auto; display: block; object-fit: contain; margin: 0 auto 7px; }
+    #paywallScreen .premium-back-btn { background: #f1f5f9; border: none; padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; color: #475569; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
     .plans-container { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 340px; margin: 14px 0; }
     .plan-card { border: 2px solid #e2ece6; background: #fff; border-radius: 16px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: left; }
     .plan-card.selected { border-color: #059669; background: #ecfdf5; }
@@ -241,13 +246,14 @@
 
     <!-- পেওয়াল স্ক্রিন -->
     <div class="fullscreen-overlay" id="paywallScreen">
-      <div style="width: 100%; max-width: 340px; display: flex; justify-content: flex-start; margin-bottom: -10px;">
-        <button onclick="closePaywall()" style="background: #f1f5f9; border: none; padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; color: #475569; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+      <div class="premium-topbar">
+        <img class="premium-logo" src="/logo.png" alt="SmartKhoroch">
+        <button class="premium-back-btn" onclick="closePaywall()">
           <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> পেছনে যান
         </button>
       </div>
 
-      <div style="background: #fff7ed; padding: 14px; border-radius: 50%; color: #ea580c; margin-top: 10px; margin-bottom: 8px;">
+      <div style="background: #fff7ed; padding: 14px; border-radius: 50%; color: #ea580c; margin-top: 4px; margin-bottom: 8px;">
         <i data-lucide="crown" style="width: 32px; height: 32px; color: #d97706;"></i>
       </div>
       <h2 style="font-size: 20px; color: #0f172a;">প্রিমিয়াম সাবস্ক্রিপশন</h2>
