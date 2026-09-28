@@ -158,6 +158,11 @@
     #blogEditor .ql-editor p, #blogEditor .ql-editor h1, #blogEditor .ql-editor h2, #blogEditor .ql-editor h3, #blogEditor .ql-editor li { word-break:normal; overflow-wrap:normal; white-space:normal; }
     .blog-admin-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .blog-admin-btn { border:none; border-radius:10px; padding:10px; font-size:12px; font-weight:700; cursor:pointer; }
+    .blog-manager-choice { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+    .blog-manager-choice-btn { border:1px solid #d1fae5; background:#fff; border-radius:14px; padding:14px 10px; font-size:13px; font-weight:700; color:#0f172a; cursor:pointer; text-align:center; }
+    .blog-manager-choice-btn:hover { border-color:#059669; background:#ecfdf5; }
+    .blog-manager-panel { display:none; }
+    .blog-manager-panel.active { display:block; }
     .blog-admin-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
     .blog-admin-item { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:10px; }
     .blog-admin-item-title { font-size:13px; font-weight:700; color:#0f172a; }
@@ -663,6 +668,12 @@
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderBlogs">
+        <div class="blog-manager-choice">
+          <button type="button" class="blog-manager-choice-btn" onclick="showBlogManagerPanel('write')">✍️ নতুন ব্লগ লিখুন</button>
+          <button type="button" class="blog-manager-choice-btn" onclick="showBlogManagerPanel('history')">📚 আগের ব্লগসমূহ</button>
+        </div>
+
+        <div id="blogWritePanel" class="blog-manager-panel">
         <div class="blog-admin-form">
           <div>
             <label class="blog-admin-label">ব্লগের শিরোনাম</label>
@@ -708,10 +719,13 @@
           </div>
           <button class="blog-admin-btn" id="blogCancelEditBtn" onclick="resetBlogEditor()" style="display:none;background:#fee2e2;color:#991b1b;">এডিট বাতিল</button>
         </div>
+        </div>
 
-        <div style="margin-top:8px;font-size:13px;font-weight:700;color:#0f172a;">আপনার ব্লগসমূহ</div>
-        <div id="adminBlogsList" class="blog-admin-list">
-          <p style="font-size:12px;color:#64748b;">লোড হচ্ছে...</p>
+        <div id="blogHistoryPanel" class="blog-manager-panel">
+          <div style="margin-top:8px;font-size:13px;font-weight:700;color:#0f172a;">আপনার ব্লগসমূহ</div>
+          <div id="adminBlogsList" class="blog-admin-list">
+            <p style="font-size:12px;color:#64748b;">ব্লগ দেখতে উপরের অপশন থেকে নির্বাচন করুন।</p>
+          </div>
         </div>
       </div>
 
@@ -2281,6 +2295,25 @@
     }
     window.resetBlogEditor = resetBlogEditor;
 
+    window.showBlogManagerPanel = function(mode) {
+      const writePanel = document.getElementById('blogWritePanel');
+      const historyPanel = document.getElementById('blogHistoryPanel');
+      if (!writePanel || !historyPanel) return;
+
+      writePanel.classList.toggle('active', mode === 'write');
+      historyPanel.classList.toggle('active', mode === 'history');
+
+      if (mode === 'write') {
+        initBlogEditor();
+        const titleInput = document.getElementById('blogTitleInput');
+        if (titleInput) titleInput.focus();
+      } else {
+        loadAdminBlogs();
+      }
+
+      setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 50);
+    };
+
     async function saveBlog(status) {
       const activeUser = auth.currentUser || currentUserGlobal;
       if (!activeUser || activeUser.email !== ADMIN_EMAIL) {
@@ -2389,6 +2422,7 @@
       if (!blog) return;
 
       editingBlogSlug = blog.id;
+      showBlogManagerPanel('write');
       initBlogEditor();
       document.getElementById('blogTitleInput').value = blog.title || '';
       document.getElementById('blogSlugInput').value = blog.slug || blog.id;
@@ -2437,11 +2471,6 @@
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
-
-    window.addEventListener('load', () => {
-      initBlogEditor();
-    });
-
 
     updateDashboard();
     setTimeout(() => { if(window.lucide) lucide.createIcons(); }, 100);
