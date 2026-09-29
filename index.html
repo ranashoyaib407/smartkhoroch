@@ -377,6 +377,15 @@
         <p style="font-size: 11px; color: #64748b; margin-top: -2px;">সর্বশেষ ৫টি হিসাব</p>
         <div class="tx-stream" id="recentTransactionList" style="margin-top: 8px;"><p style="text-align: center; color: #94a3b8; font-size: 14px;">এখনও কোনো লেনদেন নেই।</p></div>
       </section>
+      <section style="margin-top:2px;">
+        <div onclick="openFeedbackModal()" style="background:#fff;border:1px solid #d1fae5;border-radius:16px;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(5,150,105,0.04);">
+          <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+            <div style="width:38px;height:38px;border-radius:11px;background:#ecfdf5;color:#059669;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="message-circle" style="width:19px;height:19px;"></i></div>
+            <div style="min-width:0;"><div style="font-size:13px;font-weight:700;color:#0f172a;">আপনার মতামত আমাদের জন্য গুরুত্বপূর্ণ</div><div style="font-size:11px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">SmartKhoroch ব্যবহার করে কেমন লাগছে?</div></div>
+          </div>
+          <span style="background:#059669;color:#fff;padding:7px 11px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;">💬 মতামত দিন</span>
+        </div>
+      </section>
     </div>
 
     <!-- লেনদেন ট্যাব -->
@@ -619,15 +628,11 @@
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderOverview">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center;">
-          <div style="background: #fff; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1;">
-            <span style="font-size: 11px; color: #64748b;">মোট রেজিস্টার্ড ইউজার</span>
-            <div id="statTotalUsers" style="font-size: 20px; font-weight: 800; color: #0f172a;">০</div>
-          </div>
-          <div style="background: #fff; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1;">
-            <span style="font-size: 11px; color: #64748b;">প্রো (Pro) ইউজার</span>
-            <div id="statProUsers" style="font-size: 20px; font-weight: 800; color: #059669;">০</div>
-          </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center;">
+          <div style="background:#fff;padding:12px;border-radius:12px;border:1px solid #cbd5e1;"><span style="font-size:11px;color:#64748b;">মোট রেজিস্টার্ড ইউজার</span><div id="statTotalUsers" style="font-size:20px;font-weight:800;color:#0f172a;">০</div></div>
+          <div style="background:#fff;padding:12px;border-radius:12px;border:1px solid #cbd5e1;"><span style="font-size:11px;color:#64748b;">প্রো (Pro) ইউজার</span><div id="statProUsers" style="font-size:20px;font-weight:800;color:#059669;">০</div></div>
+          <div onclick="openAdminActivity()" style="background:#fff;padding:12px;border-radius:12px;border:1px solid #a7f3d0;cursor:pointer;"><span style="font-size:11px;color:#059669;">🟢 গত ৭ দিনে সক্রিয়</span><div id="statActiveUsers" style="font-size:20px;font-weight:800;color:#059669;">০</div></div>
+          <div onclick="openAdminActivity()" style="background:#fff;padding:12px;border-radius:12px;border:1px solid #cbd5e1;cursor:pointer;"><span style="font-size:11px;color:#64748b;">💬 মোট Feedback</span><div id="statFeedbackCount" style="font-size:20px;font-weight:800;color:#0f172a;">০</div></div>
         </div>
       </div>
 
@@ -657,9 +662,16 @@
         </div>
       </div>
 
-      <!-- ৪. পেমেন্ট গেটওয়ে ফোল্ডার (আলাদা) -->
+      <!-- ৪. ইউজার Activity ও Feedback -->
+      <div class="admin-folder" onclick="toggleAdminFolder('folderActivity'); loadAdminActivity();"><span>📊 ৪. ইউজার Activity ও Feedback</span><i data-lucide="chevron-down" style="width:18px;height:18px;"></i></div>
+      <div class="admin-sub-box" id="folderActivity">
+        <div style="background:#fff;border:1px solid #d1fae5;border-radius:12px;padding:11px;"><div style="font-size:12px;font-weight:700;color:#0f172a;margin-bottom:6px;">🟢 গত ৭ দিনে সক্রিয় ইউজার</div><div id="adminActiveUsersList" style="display:flex;flex-direction:column;gap:7px;max-height:240px;overflow-y:auto;"><p style="font-size:12px;color:#64748b;">লোড হচ্ছে...</p></div></div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:11px;margin-top:10px;"><div style="font-size:12px;font-weight:700;color:#0f172a;margin-bottom:6px;">💬 User Feedback</div><div id="adminFeedbackList" style="display:flex;flex-direction:column;gap:7px;max-height:300px;overflow-y:auto;"><p style="font-size:12px;color:#64748b;">লোড হচ্ছে...</p></div></div>
+      </div>
+
+      <!-- ৫. পেমেন্ট গেটওয়ে ফোল্ডার (আলাদা) -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderGateway')">
-        <span>💳 ৪. পেমেন্ট গেটওয়ে নম্বর ও অন/অফ</span>
+        <span>💳 ৫. পেমেন্ট গেটওয়ে নম্বর ও অন/অফ</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderGateway">
@@ -675,11 +687,11 @@
         <button class="btn-submit" onclick="saveAdminGatewaySettings()" style="padding: 10px; background: #059669;">গেটওয়ে সেটিংস সেভ করুন</button>
       </div>
 
-      <!-- ৫. নোটিশ ও ভিডিও গাইড ফোল্ডার (আলাদা) -->
+      <!-- ৬. নোটিশ ও ভিডিও গাইড ফোল্ডার (আলাদা) -->
 
-      <!-- ৬. ব্লগ ম্যানেজমেন্ট -->
+      <!-- ৭. ব্লগ ম্যানেজমেন্ট -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderBlogs'); loadAdminBlogs();">
-        <span>📝 ৬. ব্লগ ম্যানেজমেন্ট (SEO)</span>
+        <span>📝 ৭. ব্লগ ম্যানেজমেন্ট (SEO)</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderBlogs">
@@ -745,7 +757,7 @@
       </div>
 
       <div class="admin-folder" onclick="toggleAdminFolder('folderNoticeVideo')">
-        <span>📢 ৫. রানিং নোটিশ ও ভিডিও টিউটোরিয়াল</span>
+        <span>📢 ৬. রানিং নোটিশ ও ভিডিও টিউটোরিয়াল</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderNoticeVideo">
@@ -763,6 +775,24 @@
       <div class="nav-item" id="navReport" onclick="switchTab('report')"><i data-lucide="bar-chart-3"></i><span>রিপোর্ট</span></div>
       <div class="nav-item" id="navSettings" onclick="switchTab('settings')"><i data-lucide="settings"></i><span>প্রোফাইল</span></div>
     </nav>
+
+    <!-- ইউজার Feedback মডাল -->
+    <div class="modal" id="feedbackModal"><div class="modal-content">
+      <button onclick="closeFeedbackModal()" style="position:absolute;top:20px;right:20px;background:#f1f5f9;border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#475569;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+      <div class="section-head"><h3>💬 আপনার মতামত</h3></div>
+      <p style="font-size:12px;color:#64748b;margin-top:6px;line-height:1.5;">SmartKhoroch ব্যবহার করে আপনার অভিজ্ঞতা কেমন? আপনার মতামত আমাদের পরের উন্নতিতে সাহায্য করবে।</p>
+      <div id="feedbackFormBox" style="margin-top:16px;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+          <button type="button" id="feedbackGoodBtn" onclick="selectFeedbackRating('good')" style="border:1.5px solid #cbd5e1;background:#fff;border-radius:12px;padding:10px 5px;cursor:pointer;font-size:12px;font-weight:700;">😊 ভালো</button>
+          <button type="button" id="feedbackOkayBtn" onclick="selectFeedbackRating('okay')" style="border:1.5px solid #cbd5e1;background:#fff;border-radius:12px;padding:10px 5px;cursor:pointer;font-size:12px;font-weight:700;">🙂 মোটামুটি</button>
+          <button type="button" id="feedbackProblemBtn" onclick="selectFeedbackRating('problem')" style="border:1.5px solid #cbd5e1;background:#fff;border-radius:12px;padding:10px 5px;cursor:pointer;font-size:12px;font-weight:700;">😕 সমস্যা</button>
+        </div>
+        <div class="form-group"><label>আপনার মতামত</label><textarea id="feedbackMessage" rows="5" maxlength="1000" placeholder="কোন বিষয়টি ভালো লেগেছে বা কোথায় সমস্যা হচ্ছে লিখুন..." style="width:100%;padding:12px 14px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13px;outline:none;resize:vertical;"></textarea></div>
+        <div id="feedbackError" style="display:none;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;padding:9px 11px;border-radius:10px;font-size:12px;font-weight:600;margin-bottom:10px;text-align:center;"></div>
+        <button type="button" class="btn-submit" id="feedbackSubmitBtn" onclick="submitFeedback()">মতামত পাঠান</button>
+      </div>
+      <div id="feedbackSuccessBox" style="display:none;text-align:center;padding:24px 8px 10px;"><div style="width:50px;height:50px;border-radius:50%;background:#ecfdf5;color:#059669;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;"><i data-lucide="check" style="width:26px;height:26px;"></i></div><div style="font-size:16px;font-weight:700;color:#064e3b;">ধন্যবাদ! 💚</div><p style="font-size:12px;color:#64748b;margin-top:5px;">আপনার মতামত আমরা পেয়েছি।</p></div>
+    </div></div>
 
     <!-- পাসওয়ার্ড পরিবর্তনের মডাল -->
     <div class="modal" id="changePasswordModal">
@@ -1375,21 +1405,50 @@
 
           if(isPro) proUsers++;
 
+          const lastActiveMs = u.lastActive ? (u.lastActive.toMillis ? u.lastActive.toMillis() : new Date(u.lastActive).getTime()) : 0;
           allUsersCache.push({
-            name: u.name || 'নাম নেই',
-            phone: u.phone || '-',
-            email: u.email || '',
-            isPro,
-            daysLeft,
-            lastActive: u.lastActive ? new Date(u.lastActive.toMillis ? u.lastActive.toMillis() : u.lastActive).toLocaleString('bn-BD') : 'অজানা'
+            uid: uDoc.id, name: u.name || 'নাম নেই', phone: u.phone || '-', email: u.email || '', isPro, daysLeft, lastActiveMs,
+            lastActive: lastActiveMs ? new Date(lastActiveMs).toLocaleString('bn-BD') : 'অজানা'
           });
         });
 
         document.getElementById('statTotalUsers').textContent = allUsersCache.length;
         document.getElementById('statProUsers').textContent = proUsers;
+        const activeCutoff = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        const activeUsers = allUsersCache.filter(u => u.lastActiveMs >= activeCutoff);
+        document.getElementById('statActiveUsers').textContent = activeUsers.length;
         renderAdminUserList(allUsersCache);
+        renderAdminActiveUsers(activeUsers);
       } catch(e) { document.getElementById('adminUsersList').innerHTML = `<p style="color:red; font-size:12px;">ইউজার লোড করা যায়নি।</p>`; }
+      await loadAdminActivity();
     }
+
+    function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;',"":'&quot;'}[ch])); }
+
+    function renderAdminActiveUsers(users) {
+      const el=document.getElementById('adminActiveUsersList'); if(!el) return;
+      if(!users.length){el.innerHTML='<p style="font-size:12px;color:#64748b;">গত ৭ দিনে কোনো সক্রিয় ইউজার পাওয়া যায়নি।</p>';return;}
+      el.innerHTML=users.sort((a,b)=>b.lastActiveMs-a.lastActiveMs).map(u=>`<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:9px;font-size:11px;display:flex;justify-content:space-between;gap:8px;align-items:center;"><div><strong style="color:#0f172a;">${escapeHtml(u.name)}</strong><br><span style="color:#64748b;">${escapeHtml(u.phone)} · ID: ${escapeHtml(u.uid)}</span></div><span style="font-size:10px;color:#059669;font-weight:700;white-space:nowrap;">${escapeHtml(u.lastActive)}</span></div>`).join('');
+    }
+
+    async function loadAdminActivity() {
+      const el=document.getElementById('adminFeedbackList'); if(!el) return;
+      try {
+        const snap=await getDocs(collection(db,'feedback')); const items=[]; snap.forEach(d=>items.push({id:d.id,...d.data()}));
+        items.sort((a,b)=>{const am=a.createdAt?.toMillis?a.createdAt.toMillis():new Date(a.createdAt||0).getTime();const bm=b.createdAt?.toMillis?b.createdAt.toMillis():new Date(b.createdAt||0).getTime();return bm-am;});
+        document.getElementById('statFeedbackCount').textContent=items.length;
+        if(!items.length){el.innerHTML='<p style="font-size:12px;color:#64748b;">এখনও কোনো feedback পাওয়া যায়নি।</p>';return;}
+        const labels={good:'😊 ভালো',okay:'🙂 মোটামুটি',problem:'😕 সমস্যা'};
+        el.innerHTML=items.slice(0,50).map(f=>{const dt=f.createdAt?.toMillis?f.createdAt.toMillis():new Date(f.createdAt||0).getTime();return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px;font-size:11px;"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;"><strong>${escapeHtml(f.name||'নাম নেই')}</strong><span style="color:#059669;font-weight:700;">${labels[f.rating]||'মতামত'}</span></div><div style="color:#334155;line-height:1.5;">${escapeHtml(f.message||'')}</div><div style="color:#94a3b8;margin-top:5px;">${escapeHtml(f.phone||'')} · ${dt?new Date(dt).toLocaleString('bn-BD'):'সময় নেই'}</div></div>`;}).join('');
+      } catch(e){el.innerHTML='<p style="color:#dc2626;font-size:12px;">Feedback লোড করা যায়নি। Firestore Rules পরীক্ষা করুন।</p>';}
+    }
+
+    window.openAdminActivity=function(){const box=document.getElementById('folderActivity');if(box&&!box.classList.contains('active'))box.classList.add('active');loadAdminActivity();box?.scrollIntoView({behavior:'smooth',block:'start'});};
+    let selectedFeedbackRating='';
+    window.openFeedbackModal=function(){if(!requireLogin())return;document.getElementById('feedbackModal').classList.add('active');document.getElementById('feedbackFormBox').style.display='block';document.getElementById('feedbackSuccessBox').style.display='none';document.getElementById('feedbackError').style.display='none';document.getElementById('feedbackMessage').value='';selectFeedbackRating('');if(window.lucide)lucide.createIcons();};
+    window.closeFeedbackModal=function(){document.getElementById('feedbackModal').classList.remove('active');};
+    window.selectFeedbackRating=function(rating){selectedFeedbackRating=rating;['good','okay','problem'].forEach(k=>{const b=document.getElementById('feedback'+k.charAt(0).toUpperCase()+k.slice(1)+'Btn');if(!b)return;const a=k===rating;b.style.borderColor=a?'#059669':'#cbd5e1';b.style.background=a?'#ecfdf5':'#fff';b.style.color=a?'#047857':'#334155';});};
+    window.submitFeedback=async function(){if(!requireLogin())return;const m=document.getElementById('feedbackMessage'),e=document.getElementById('feedbackError'),b=document.getElementById('feedbackSubmitBtn');e.style.display='none';const msg=m.value.trim();if(!selectedFeedbackRating){e.textContent='আপনার অভিজ্ঞতার একটি অপশন নির্বাচন করুন।';e.style.display='block';return;}if(!msg){e.textContent='আপনার মতামতটি লিখুন।';e.style.display='block';m.focus();return;}b.disabled=true;b.textContent='পাঠানো হচ্ছে...';try{const us=await getDoc(doc(db,'users',currentUserGlobal.uid));const u=us.exists()?us.data():{};await addDoc(collection(db,'feedback'),{uid:currentUserGlobal.uid,name:u.name||'ব্যবহারকারী',phone:u.phone||'',rating:selectedFeedbackRating,message:msg.slice(0,1000),createdAt:new Date()});document.getElementById('feedbackFormBox').style.display='none';document.getElementById('feedbackSuccessBox').style.display='block';if(window.lucide)lucide.createIcons();setTimeout(closeFeedbackModal,900);}catch(err){e.textContent='মতামত পাঠানো যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';e.style.display='block';b.disabled=false;b.textContent='মতামত পাঠান';}};
 
     function renderAdminUserList(users) {
       const userListEl = document.getElementById('adminUsersList');
