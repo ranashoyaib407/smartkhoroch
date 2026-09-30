@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" sizes="192x192" href="/app-icon-192.png">
   <meta name="theme-color" content="#059669">
   
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
     
     body { 
       background-color: #f0f4f2; 
@@ -104,6 +104,22 @@
     .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
     .section-head h3 { font-size: 17px; font-weight: 700; color: #064e3b; }
     .budget-card, .report-card, .settings-card { background: #fff; border-radius: 18px; padding: 14px; border: 1px solid #e2ece6; display: flex; flex-direction: column; gap: 12px; }
+    /* মোবাইলে সেটিংসের প্রধান অপশনগুলো এক নজরে দেখানোর জন্য কমপ্যাক্ট গ্রিড */
+    .settings-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .settings-menu-grid .settings-menu-item { min-width: 0; }
+    .settings-menu-grid .settings-menu-wide { grid-column: 1 / -1; }
+    .settings-menu-grid .settings-menu-half { min-height: 68px; }
+    .settings-menu-grid .settings-menu-half h5 { font-size: 12px !important; line-height: 1.25; }
+    .settings-menu-grid .settings-menu-half p { font-size: 10px !important; line-height: 1.25; }
+    .settings-menu-grid .settings-menu-half > div:first-child > div:first-child { width: 32px !important; height: 32px !important; }
+    .settings-menu-grid .settings-menu-half > div:first-child { gap: 7px !important; }
+    .settings-menu-grid .settings-menu-wide.settings-notification { min-height: 64px; }
+    .settings-menu-grid .settings-notification h4 { font-size: 13px !important; }
+    .settings-menu-grid .settings-notification p { font-size: 10px !important; line-height: 1.3; }
+    .payment-number-row { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .copy-number-btn { border: 1px solid #a7f3d0; background: #fff; color: #047857; border-radius: 8px; padding: 3px 7px; font-size: 10px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .copy-number-btn:active { transform: scale(0.97); }
+    .copy-number-status { font-size: 10px; color: #059669; font-weight: 700; }
     
     .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #fff; border-top: 1px solid #e2ece6; display: flex; justify-content: space-around; padding: 7px 0; z-index: 50; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #94a3b8; font-size: 11px; font-weight: 500; cursor: pointer; }
@@ -121,6 +137,24 @@
     .fullscreen-overlay.active { display: flex; }
 
     /* Premium uses the normal SmartKhoroch app shell: global header + bottom navigation remain visible. */
+    /* Premium mobile view: compact spacing without shrinking the readable text/buttons */
+    #paywallScreen { padding: 8px 12px 86px !important; overflow-y: auto; }
+    #paywallScreen > div:first-child { margin-top: 0 !important; margin-bottom: 5px !important; padding: 10px !important; }
+    #paywallScreen > h2 { margin: 2px 0 2px !important; }
+    #paywallScreen > p { margin: 0 0 5px !important; }
+    #paywallScreen .plans-container { margin: 6px 0 !important; gap: 6px !important; }
+    #paywallScreen .plan-card { padding: 9px 13px !important; min-height: 52px; }
+    #paywallScreen .plan-title { font-size: 13px; }
+    #paywallScreen .plan-price { font-size: 16px; }
+    #paywallScreen #gatewayOptionsGrid { gap: 5px !important; }
+    #paywallScreen .gateway-btn { padding: 8px 6px !important; font-size: 12px !important; }
+    #paywallScreen > div[style*="margin-bottom: 10px"] { margin-bottom: 6px !important; }
+    #paywallScreen > div[style*="margin-bottom: 12px"] { margin-bottom: 7px !important; padding: 10px !important; }
+    #paywallScreen > div[style*="margin-bottom: 12px"] > div { margin-top: 4px !important; padding-top: 5px !important; }
+    #paywallScreen > div[style*="background: #f8fafc"] { padding: 10px !important; }
+    #paywallScreen #payBoxTitle { margin-bottom: 5px !important; }
+    #paywallScreen #paySenderPhone { padding: 9px !important; margin-bottom: 6px !important; }
+    #paywallScreen .btn-submit { padding: 10px !important; }
     #paywallScreen {
       position: absolute;
       top: var(--premium-shell-top, 0px);
@@ -154,6 +188,90 @@
     .badge-cash { background: #e6f4ea; color: #137333; }
     .badge-bkash { background: #fce8e6; color: #c5221f; }
     .badge-nagad { background: #fef7e0; color: #b06000; }
+
+    /* Premium first-view mobile layout: keep text readable, reduce vertical stacking. */
+    #paywallScreen .plans-container {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px !important;
+      width: 100%;
+      max-width: 340px;
+      margin: 6px 0 !important;
+    }
+    #paywallScreen .plan-card {
+      min-height: 68px !important;
+      padding: 8px 7px !important;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border-radius: 13px;
+    }
+    #paywallScreen .plan-title {
+      font-size: 12px !important;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+    #paywallScreen .plan-card > div:first-of-type > div:last-child {
+      font-size: 9px !important;
+      line-height: 1.2;
+      margin-top: 1px !important;
+    }
+    #paywallScreen .plan-price {
+      font-size: 17px !important;
+      line-height: 1.1;
+      margin-top: 4px;
+    }
+    #paywallScreen #saveBadge6m,
+    #paywallScreen #saveBadge1y {
+      right: 3px !important;
+      top: -8px !important;
+      padding: 2px 5px !important;
+      font-size: 8px !important;
+      max-width: 92%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #paywallScreen > div[style*="max-width: 340px"] { max-width: 340px; }
+    #paywallScreen #gatewayOptionsGrid {
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 5px !important;
+    }
+    #paywallScreen .gateway-btn {
+      padding: 9px 3px !important;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      font-size: 11px !important;
+    }
+    #paywallScreen .payment-number-row {
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    #paywallScreen #selectedPlanLabel { font-size: 11px !important; font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; }
+    #paywallScreen #payBoxHint { font-size: 11px !important; }
+    #paywallScreen #payBoxTitle { font-size: 13px !important; }
+    /* Bengali numerals in the Premium choices are made slightly clearer without changing the app-wide font. */
+    #paywallScreen .plan-card,
+    #paywallScreen #selectedPlanLabel {
+      font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif;
+    }
+    #paywallScreen .plan-price { font-family: 'Hind Siliguri', sans-serif; }
+
+    #paywallScreen .bn-digit { font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif; font-weight: 700; }
+    @media (max-width: 360px) {
+      #paywallScreen { padding-left: 10px !important; padding-right: 10px !important; }
+      #paywallScreen .plan-card { min-height: 64px !important; padding: 7px 4px !important; }
+      #paywallScreen .plan-title { font-size: 11px !important; }
+      #paywallScreen .plan-card > div:first-of-type > div:last-child { font-size: 8px !important; }
+      #paywallScreen .plan-price { font-size: 16px !important; }
+      #paywallScreen .gateway-btn { font-size: 10px !important; padding-left: 2px !important; padding-right: 2px !important; }
+    }
+
     .badge-rocket { background: #f3e8fd; color: #6815ec; }
     .badge-upay { background: #e8f0fe; color: #1a73e8; }
     .badge-bank { background: #e8f8f5; color: #0e6251; }
@@ -161,6 +279,16 @@
 
     .gateway-btn { border: 2px solid #cbd5e1; background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: 700; font-size: 13px; cursor: pointer; color: #475569; }
     .gateway-btn.active { border-color: #059669; background: #ecfdf5; color: #059669; }
+
+    /* Payment gateways use their recognizable brand colors while staying compact and consistent with SmartKhoroch. */
+    #paywallScreen #gwBkash { border-color: #f0a7c2; background: #fff7fa; color: #e2136e; }
+    #paywallScreen #gwBkash.active { border-color: #e2136e; background: #fff0f6; color: #e2136e; }
+    #paywallScreen #gwNagad { border-color: #f4c28f; background: #fffaf4; color: #e86f00; }
+    #paywallScreen #gwNagad.active { border-color: #f58220; background: #fff3e6; color: #d95f00; }
+    #paywallScreen #gwRocket { border-color: #cbb4e8; background: #faf7ff; color: #6f2da8; }
+    #paywallScreen #gwRocket.active { border-color: #6f2da8; background: #f3eaff; color: #5a238a; }
+    #paywallScreen #gwUpay { border-color: #a9d9bd; background: #f5fcf7; color: #008f4c; }
+    #paywallScreen #gwUpay.active { border-color: #00a651; background: #eaf9f0; color: #008f4c; }
 
     .admin-folder { background: #fff; border: 1.5px solid #cbd5e1; border-radius: 16px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: #0f172a; }
     .admin-sub-box { display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-bottom: 12px; flex-direction: column; gap: 10px; }
@@ -174,8 +302,8 @@
     .blog-editor-wrap { background:#fff; border:1px solid #cbd5e1; border-radius:10px; overflow:visible; }
     .blog-editor-wrap .ql-toolbar.ql-snow { position:sticky; top:0; z-index:100; background:#fff; border-top:none; border-left:none; border-right:none; box-shadow:0 2px 6px rgba(15,23,42,0.06); }
     .blog-editor-wrap .ql-container.ql-snow { border-left:none; border-right:none; border-bottom:none; }
-    #blogEditor { min-height:260px; font-family:'Hind Siliguri', sans-serif; font-size:14px; }
-    #blogEditor .ql-editor { font-family:'Hind Siliguri', sans-serif; font-size:14px; line-height:1.8; word-break:normal; overflow-wrap:normal; white-space:normal; }
+    #blogEditor { min-height:260px; font-family:'Noto Sans Bengali', 'Hind Siliguri', sans-serif; font-size:14px; }
+    #blogEditor .ql-editor { font-family:'Noto Sans Bengali', 'Hind Siliguri', sans-serif; font-size:14px; line-height:1.8; word-break:normal; overflow-wrap:normal; white-space:normal; }
     #blogEditor .ql-editor p, #blogEditor .ql-editor h1, #blogEditor .ql-editor h2, #blogEditor .ql-editor h3, #blogEditor .ql-editor li { word-break:normal; overflow-wrap:normal; white-space:normal; }
     .blog-admin-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .blog-admin-btn { border:none; border-radius:10px; padding:10px; font-size:12px; font-weight:700; cursor:pointer; }
@@ -272,17 +400,17 @@
 
       <div class="plans-container">
         <div class="plan-card selected" id="plan1m" onclick="selectPlan('1m', 49, '১ মাস', 30)" style="position:relative;">
-          <div><div class="plan-title">১ মাসের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">মাসিক ব্যবহারের জন্য</div></div>
+          <div><div class="plan-title"><span class="bn-digit">১</span> মাসের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">মাসিক হিসাব</div></div>
           <div class="plan-price" id="price1m">৳49</div>
         </div>
         <div class="plan-card" id="plan6m" onclick="selectPlan('6m', 249, '৬ মাস', 182)" style="position:relative;">
           <span id="saveBadge6m" style="position:absolute; right:8px; top:-9px; background:#0284c7; color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; display:none;"></span>
-          <div><div class="plan-title">৬ মাসের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">আগামী বছরের জন্য নিশ্চিন্ত</div></div>
+          <div><div class="plan-title"><span class="bn-digit">৬</span> মাসের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">দীর্ঘমেয়াদি হিসাব</div></div>
           <div class="plan-price" id="price6m">৳249</div>
         </div>
         <div class="plan-card" id="plan1y" onclick="selectPlan('1y', 399, '১ বছর', 365)" style="position:relative;">
           <span id="saveBadge1y" style="position:absolute; right:8px; top:-9px; background:#059669; color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; display:none;"></span>
-          <div><div class="plan-title">১ বছরের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">স্মার্ট ও সাশ্রয়ী দীর্ঘমেয়াদি হিসাব</div></div>
+          <div><div class="plan-title"><span class="bn-digit">১</span> বছরের প্যাকেজ</div><div style="font-size:10px;color:#64748b;margin-top:2px;">সেরা সাশ্রয়</div></div>
           <div class="plan-price" id="price1y">৳399</div>
         </div>
       </div>
@@ -290,23 +418,28 @@
       <div style="width: 100%; max-width: 340px; margin-bottom: 10px;">
         <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-align: left;">পেমেন্ট মাধ্যম সিলেক্ট করুন:</label>
         <div id="gatewayOptionsGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
-          <div class="gateway-btn active" id="gwBkash" onclick="selectGateway('bkash')">বিকাশ (bKash)</div>
-          <div class="gateway-btn" id="gwNagad" onclick="selectGateway('nagad')">নগদ (Nagad)</div>
-          <div class="gateway-btn" id="gwRocket" onclick="selectGateway('rocket')">রকেট (Rocket)</div>
-          <div class="gateway-btn" id="gwUpay" onclick="selectGateway('upay')">উপায় (Upay)</div>
+          <div class="gateway-btn active" id="gwBkash" onclick="selectGateway('bkash')">bKash</div>
+          <div class="gateway-btn" id="gwNagad" onclick="selectGateway('nagad')">Nagad</div>
+          <div class="gateway-btn" id="gwRocket" onclick="selectGateway('rocket')">Rocket</div>
+          <div class="gateway-btn" id="gwUpay" onclick="selectGateway('upay')">Upay</div>
         </div>
       </div>
 
       <div style="border: 1.5px solid #a7f3d0; background: #ecfdf5; border-radius: 16px; padding: 14px; width: 100%; max-width: 340px; text-align: left; margin-bottom: 12px;">
-        <span style="font-size: 12px; font-weight: 600; color: #065f46;" id="selectedPlanLabel">নির্বাচিত: ১ মাসের প্যাকেজ (৩০ দিন - ৳49)</span>
+        <span style="font-size: 12px; font-weight: 600; color: #065f46;" id="selectedPlanLabel">নির্বাচিত: <span class="bn-digit">১</span> মাসের প্যাকেজ (<span class="bn-digit">৩০</span> দিন - ৳49)</span>
         <div style="font-size: 12px; color: #065f46; margin-top: 6px; border-top: 1px dashed #a7f3d0; padding-top: 6px;">
-          📌 <strong id="gatewayTitle">বিকাশ (bKash) Send Money:</strong><br>
-          নম্বর: <strong id="display-gateway-num" style="font-size: 15px;">লোড হচ্ছে...</strong>
+          📌 <strong id="gatewayTitle">bKash Send Money:</strong><br>
+          <span class="payment-number-row">
+            <span>নম্বর: <strong id="display-gateway-num" style="font-size: 15px;">লোড হচ্ছে...</strong></span>
+            <button type="button" id="copyGatewayNumberBtn" class="copy-number-btn" onclick="copyGatewayNumber()" aria-label="পেমেন্ট নম্বর কপি করুন">📋 কপি</button>
+            <span id="copyGatewayNumberStatus" class="copy-number-status" aria-live="polite"></span>
+          </span>
         </div>
       </div>
 
       <div style="width: 100%; max-width: 340px; background: #f8fafc; padding: 14px; border-radius: 16px; border: 1px solid #e2e8f0;">
-        <h4 style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 8px;" id="payBoxTitle">টাকা পাঠিয়ে নিচের ফর্মটি পূরণ করুন</h4>
+        <h4 style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 4px;" id="payBoxTitle">টাকা পাঠানোর পর নিচের ফর্মটি পূরণ করুন</h4>
+        <p id="payBoxHint" style="font-size: 11px; line-height: 1.4; color: #64748b; margin: 0 0 7px;">টাকা পাঠানোর পর যে নম্বর থেকে টাকা পাঠিয়েছেন, সেটি লিখুন।</p>
         <div id="payBoxContent">
           <input type="text" id="paySenderPhone" autocomplete="off" spellcheck="false" placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:10px; margin-bottom:8px; font-size:13px;">
           <button class="btn-submit" style="padding:10px; font-size:14px;" onclick="submitPaymentRequest()">অ্যাডমিনের কাছে রিকোয়েস্ট পাঠান</button>
@@ -377,6 +510,7 @@
         <p style="font-size: 11px; color: #64748b; margin-top: -2px;">সর্বশেষ ৫টি হিসাব</p>
         <div class="tx-stream" id="recentTransactionList" style="margin-top: 8px;"><p style="text-align: center; color: #94a3b8; font-size: 14px;">এখনও কোনো লেনদেন নেই।</p></div>
       </section>
+
     </div>
 
     <!-- লেনদেন ট্যাব -->
@@ -543,66 +677,73 @@
         </div>
       </div>
 
-      <div class="settings-card" style="gap: 8px;">
-        <h4 style="font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">বাজেট ও লক্ষ্য</h4>
-        
-        <div onclick="setBudgetPrompt()" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; cursor: pointer;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="background: #e0f2fe; color: #0284c7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i data-lucide="wallet" style="width: 18px; height: 18px;"></i></div>
-            <div>
-              <h5 style="font-size: 13px; font-weight: 700; color: #0f172a;">মাসিক বাজেট পরিবর্তন করুন</h5>
-              <p style="font-size: 11px; color: #64748b;">আপনার চলতি মাসের খরচের টার্গেট সেট করুন</p>
+      <div class="settings-menu-grid">
+        <div class="settings-card settings-menu-item settings-menu-half" style="gap: 8px; padding: 10px; cursor:pointer;" onclick="setBudgetPrompt()">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="background: #e0f2fe; color: #0284c7; width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink:0;"><i data-lucide="wallet" style="width: 17px; height: 17px;"></i></div>
+            <div style="min-width:0;">
+              <h5 style="font-weight: 700; color: #0f172a;">মাসিক বাজেট</h5>
+              <p style="color: #64748b; margin-top:2px;">খরচের টার্গেট সেট করুন</p>
             </div>
           </div>
-          <i data-lucide="chevron-right" style="width: 18px; height: 18px; color: #94a3b8;"></i>
+          <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #94a3b8; align-self:flex-end;"></i>
         </div>
 
-        <div onclick="openSubscriptionModal()" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; cursor: pointer; margin-top: 4px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="background: #fef3c7; color: #d97706; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><i data-lucide="crown" style="width: 18px; height: 18px;"></i></div>
-            <div>
-              <h5 style="font-size: 13px; font-weight: 700; color: #0f172a;">সাবস্ক্রিপশন প্যাকেজ দেখুন</h5>
-              <p style="font-size: 11px; color: #64748b;">মেয়াদ চেক করুন ও প্যাকেজ রিনিউ করুন</p>
+        <div class="settings-card settings-menu-item settings-menu-half" style="gap: 8px; padding: 10px; cursor:pointer;" onclick="openSubscriptionModal()">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="background: #fef3c7; color: #d97706; width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink:0;"><i data-lucide="crown" style="width: 17px; height: 17px;"></i></div>
+            <div style="min-width:0;">
+              <h5 style="font-weight: 700; color: #0f172a;">সাবস্ক্রিপশন</h5>
+              <p style="color: #64748b; margin-top:2px;">প্যাকেজ ও মেয়াদ দেখুন</p>
             </div>
           </div>
-          <i data-lucide="chevron-right" style="width: 18px; height: 18px; color: #94a3b8;"></i>
+          <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #94a3b8; align-self:flex-end;"></i>
         </div>
-      </div>
 
-      <div class="settings-card" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px;">
-        <div>
-          <h4 style="font-size: 14px; font-weight: 700; color: #0f172a;">প্রতিদিনের রিমাইন্ডার নোটিফিকেশন</h4>
-          <p style="font-size: 11px; color: #64748b; margin-top: 2px;">প্রতিদিন রাত ৯টায় হিসাব লেখার কথা মনে করিয়ে দেবে</p>
+        <div class="settings-card settings-menu-item settings-menu-wide settings-notification" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px;">
+          <div style="min-width:0;">
+            <h4 style="font-weight: 700; color: #0f172a;">প্রতিদিনের রিমাইন্ডার নোটিফিকেশন</h4>
+            <p style="color: #64748b; margin-top: 2px;">সকাল ৬টায় নিরাপদ খরচ ও রাত ৯টায় হিসাবের রিমাইন্ডার</p>
+          </div>
+          <label style="position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink:0; margin-left:8px;">
+            <input type="checkbox" id="notifToggle" onchange="toggleNotification(this)" style="opacity: 0; width: 0; height: 0;">
+            <span id="notifSlider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px;"></span>
+            <span id="notifCircle" style="position: absolute; content: ''; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;"></span>
+          </label>
         </div>
-        <label style="position: relative; display: inline-block; width: 44px; height: 24px;">
-          <input type="checkbox" id="notifToggle" onchange="toggleNotification(this)" style="opacity: 0; width: 0; height: 0;">
-          <span id="notifSlider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px;"></span>
-          <span id="notifCircle" style="position: absolute; content: ''; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;"></span>
-        </label>
-      </div>
 
-      <div class="settings-card" id="installCard" style="display: none; text-align: center; padding: 14px; background: #ecfdf5; border: 1.5px solid #a7f3d0;">
-        <h4 style="font-size: 14px; font-weight: 700; color: #065f46; margin-bottom: 4px;">মোবাইলে অ্যাপটি ইনস্টল করুন</h4>
-        <p style="font-size: 11px; color: #047857; margin-bottom: 10px;">খুব দ্রুত এক ক্লিকে ব্যবহারের জন্য হোম স্ক্রিনে যুক্ত করুন</p>
-        <button id="installAppBtn" style="background: #059669; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-          <i data-lucide="download" style="width: 16px; height: 16px;"></i> অ্যাপ ইনস্টল করুন
-        </button>
-      </div>
+        <div class="settings-card settings-menu-item settings-menu-wide" id="installCard" style="display: none; text-align: center; padding: 10px; background: #ecfdf5; border: 1.5px solid #a7f3d0;">
+          <h4 style="font-size: 13px; font-weight: 700; color: #065f46; margin-bottom: 3px;">মোবাইলে অ্যাপটি ইনস্টল করুন</h4>
+          <p style="font-size: 10px; color: #047857; margin-bottom: 7px;">হোম স্ক্রিনে যুক্ত করে দ্রুত ব্যবহার করুন</p>
+          <button id="installAppBtn" style="background: #059669; color: #fff; border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <i data-lucide="download" style="width: 15px; height: 15px;"></i> অ্যাপ ইনস্টল করুন
+          </button>
+        </div>
 
-      <div class="settings-card" style="text-align: center; padding: 14px;">
-        <p style="font-size: 13px; color: #475569; margin-bottom: 8px;">যেকোনো প্রয়োজনে বা পাসওয়ার্ড রিসেটে যোগাযোগ করুন:</p>
-        <a id="whatsappSupportBtn" href="https://wa.me/8801315937654" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #25d366; color: #fff; padding: 10px 16px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; width: 100%;">
-          💬 হোয়াটসঅ্যাপে চ্যাট করুন
-        </a>
-      </div>
+        <div class="settings-card settings-menu-item settings-menu-wide" style="text-align: center; padding: 10px; gap: 7px;">
+          <p style="font-size: 11px; color: #475569;">যেকোনো প্রয়োজনে বা পাসওয়ার্ড রিসেটে যোগাযোগ করুন</p>
+          <a id="whatsappSupportBtn" href="https://wa.me/8801315937654" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #25d366; color: #fff; padding: 8px 14px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; width: 100%;">
+            💬 হোয়াটসঅ্যাপে চ্যাট করুন
+          </a>
+        </div>
 
-      <div class="settings-card" style="padding: 14px; display: flex; flex-direction: column; gap: 8px;">
-        <button onclick="openVideoGuideModal()" style="background: #f1f5f9; border: none; color: #0f172a; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: 100%;">
-          <i data-lucide="play-circle" style="width: 16px; height: 16px; color: #059669;"></i> কীভাবে অ্যাপটি ব্যবহার করবেন? (ভিডিও)
-        </button>
-        <button onclick="document.getElementById('termsModal').classList.add('active'); if(window.lucide) lucide.createIcons();" style="background: none; border: none; color: #64748b; font-weight: 600; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: 100%; padding: 4px;">
-          <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> শর্তাবলী ও গোপনীয়তা নীতি (Terms & Policy)
-        </button>
+        <div class="settings-card settings-menu-item settings-menu-half" style="padding: 10px; gap: 6px;">
+          <button onclick="openVideoGuideModal()" style="background: #f1f5f9; border: none; color: #0f172a; padding: 9px 7px; border-radius: 10px; font-weight: 700; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; justify-content: center; width: 100%;">
+            <i data-lucide="play-circle" style="width: 15px; height: 15px; color: #059669;"></i> ভিডিও গাইড
+          </button>
+        </div>
+
+        <div class="settings-card settings-menu-item settings-menu-half" style="padding: 10px; gap: 6px;">
+          <button onclick="openFeedbackModal()" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; padding: 9px 7px; border-radius: 10px; font-weight: 700; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; justify-content: center; width: 100%;">
+            <i data-lucide="message-circle" style="width: 15px; height: 15px;"></i> আপনার মতামত দিন
+          </button>
+        </div>
+
+        <div class="settings-card settings-menu-item settings-menu-wide" style="padding: 10px; gap: 6px;">
+          <button onclick="document.getElementById('termsModal').classList.add('active'); if(window.lucide) lucide.createIcons();" style="background: #f1f5f9; border: none; color: #64748b; padding: 9px 7px; border-radius: 10px; font-weight: 600; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; justify-content: center; width: 100%;">
+            <i data-lucide="file-text" style="width: 15px; height: 15px;"></i> শর্তাবলী ও গোপনীয়তা
+          </button>
+        </div>
       </div>
     </div>
 
@@ -620,18 +761,47 @@
       </div>
       <div class="admin-sub-box" id="folderOverview">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center;">
-          <div style="background: #fff; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1;">
+          <button type="button" onclick="openAdminUserSegment('all')" style="background:#fff; padding:12px; border-radius:12px; border:1px solid #cbd5e1; cursor:pointer; text-align:center;">
             <span style="font-size: 11px; color: #64748b;">মোট রেজিস্টার্ড ইউজার</span>
             <div id="statTotalUsers" style="font-size: 20px; font-weight: 800; color: #0f172a;">০</div>
-          </div>
-          <div style="background: #fff; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1;">
+            <span style="font-size:10px;color:#64748b;">তালিকা দেখতে ক্লিক করুন</span>
+          </button>
+          <button type="button" onclick="openAdminUserSegment('pro')" style="background:#fff; padding:12px; border-radius:12px; border:1px solid #d1fae5; cursor:pointer; text-align:center;">
             <span style="font-size: 11px; color: #64748b;">প্রো (Pro) ইউজার</span>
             <div id="statProUsers" style="font-size: 20px; font-weight: 800; color: #059669;">০</div>
-          </div>
+            <span style="font-size:10px;color:#64748b;">Pro তালিকা দেখতে ক্লিক করুন</span>
+          </button>
+          <button type="button" onclick="openAdminActiveUsers()" style="background:#fff; padding:12px; border-radius:12px; border:1px solid #cbd5e1; cursor:pointer; text-align:center;">
+            <span style="font-size: 11px; color: #64748b;">গত ২৪ ঘণ্টায় সক্রিয়</span>
+            <div id="statActiveUsers" style="font-size: 20px; font-weight: 800; color: #2563eb;">০</div>
+            <span style="font-size:10px;color:#64748b;">তালিকা দেখতে ক্লিক করুন</span>
+          </button>
+        </div>
+        <div id="adminActiveUsersBox" style="display:none; margin-top:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:10px;">
+          <div style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:8px;">🟢 গত ২৪ ঘণ্টায় সক্রিয় ইউজার</div>
+          <div id="adminActiveUsersList" style="display:flex;flex-direction:column;gap:7px;max-height:260px;overflow-y:auto;"></div>
+        </div>
+        <div id="adminUserSegmentBox" style="display:none; margin-top:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:10px;">
+          <div id="adminUserSegmentTitle" style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:8px;"></div>
+          <div id="adminUserSegmentList" style="display:flex;flex-direction:column;gap:7px;max-height:320px;overflow-y:auto;"></div>
         </div>
       </div>
 
-      <!-- ২. পেমেন্ট রিকোয়েস্ট ফোল্ডার -->
+      <!-- ২. ইউজার ফিচার ব্যবহার -->
+      <div class="admin-folder" onclick="toggleAdminFolder('folderUsage'); renderAdminFeatureUsage();">
+        <span>📈 ২. ইউজার ফিচার ব্যবহার ও গ্রহণযোগ্যতা</span>
+        <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
+      </div>
+      <div class="admin-sub-box" id="folderUsage">
+        <p style="font-size:11px;color:#64748b;margin:0 0 9px;line-height:1.6;">Tracking চালু হওয়ার পর থেকে কতজন ইউজার কোন ফিচার ব্যবহার করেছেন, তা এখানে দেখা যাবে।</p>
+        <div id="adminFeatureUsageList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+        <div id="adminFeatureUsersBox" style="display:none;margin-top:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px;">
+          <div id="adminFeatureUsersTitle" style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:8px;"></div>
+          <div id="adminFeatureUsersList" style="display:flex;flex-direction:column;gap:7px;max-height:360px;overflow-y:auto;"></div>
+        </div>
+      </div>
+
+      <!-- ৩. পেমেন্ট রিকোয়েস্ট ফোল্ডার -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderPayments')">
         <span>💳 ২. পেমেন্ট রিকোয়েস্টসমূহ</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
@@ -644,7 +814,7 @@
 
       <!-- ৩. ইউজার লিস্ট ও পাসওয়ার্ড রিসেট ফোল্ডার -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderUsers')">
-        <span>👥 ৩. ইউজার লিস্ট, সার্চ ও পাসওয়ার্ড রিসেট</span>
+        <span>👥 ৪. ইউজার লিস্ট, সার্চ ও পাসওয়ার্ড রিসেট</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderUsers">
@@ -657,9 +827,24 @@
         </div>
       </div>
 
-      <!-- ৪. পেমেন্ট গেটওয়ে ফোল্ডার (আলাদা) -->
+      <!-- ৪. ব্যবহারকারীর মতামত -->
+      <div class="admin-folder" onclick="toggleAdminFolder('folderFeedback'); loadAdminFeedback();">
+        <span>💬 ৪. ব্যবহারকারীর মতামত</span>
+        <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
+      </div>
+      <div class="admin-sub-box" id="folderFeedback">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:12px;color:#64748b;">ড্যাশবোর্ড থেকে পাঠানো মতামত এখানে দেখা যাবে।</span>
+          <button type="button" onclick="loadAdminFeedback(); event.stopPropagation();" style="border:none;background:#ecfdf5;color:#047857;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:700;cursor:pointer;">রিফ্রেশ</button>
+        </div>
+        <div id="adminFeedbackList" style="display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto;">
+          <p style="font-size:12px;color:#64748b;">লোড হচ্ছে...</p>
+        </div>
+      </div>
+
+      <!-- ৫. পেমেন্ট গেটওয়ে ফোল্ডার (আলাদা) -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderGateway')">
-        <span>💳 ৪. পেমেন্ট গেটওয়ে নম্বর ও অন/অফ</span>
+        <span>💳 ৫. পেমেন্ট গেটওয়ে নম্বর ও অন/অফ</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderGateway">
@@ -675,11 +860,11 @@
         <button class="btn-submit" onclick="saveAdminGatewaySettings()" style="padding: 10px; background: #059669;">গেটওয়ে সেটিংস সেভ করুন</button>
       </div>
 
-      <!-- ৫. নোটিশ ও ভিডিও গাইড ফোল্ডার (আলাদা) -->
+      <!-- ৬. নোটিশ ও ভিডিও গাইড ফোল্ডার (আলাদা) -->
 
       <!-- ৬. ব্লগ ম্যানেজমেন্ট -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderBlogs'); loadAdminBlogs();">
-        <span>📝 ৬. ব্লগ ম্যানেজমেন্ট (SEO)</span>
+        <span>📝 ৭. ব্লগ ম্যানেজমেন্ট (SEO)</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderBlogs">
@@ -745,7 +930,7 @@
       </div>
 
       <div class="admin-folder" onclick="toggleAdminFolder('folderNoticeVideo')">
-        <span>📢 ৫. রানিং নোটিশ ও ভিডিও টিউটোরিয়াল</span>
+        <span>📢 ৬. রানিং নোটিশ ও ভিডিও টিউটোরিয়াল</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderNoticeVideo">
@@ -774,6 +959,30 @@
           <div class="form-group"><label>নতুন পাসওয়ার্ড</label><input type="password" id="newPass" placeholder="নতুন পাসওয়ার্ড দিন" required></div>
           <button type="submit" class="btn-submit">পাসওয়ার্ড আপডেট করুন</button>
         </form>
+      </div>
+    </div>
+
+    <!-- User Feedback মডাল -->
+    <div class="modal" id="feedbackModal">
+      <div class="modal-content">
+        <button type="button" onclick="closeFeedbackModal()" style="position:absolute; top:20px; right:20px; background:#f1f5f9; border:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#475569;">
+          <i data-lucide="x" style="width:18px; height:18px;"></i>
+        </button>
+        <div class="section-head"><h3>💬 আপনার মতামত</h3></div>
+        <p style="font-size:12px; color:#64748b; margin-top:2px; margin-bottom:14px;">SmartKhoroch ব্যবহার করে আপনার অভিজ্ঞতা কেমন?</p>
+
+        <div id="feedbackRatingGroup" style="display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-bottom:14px;">
+          <button type="button" class="feedback-rating-btn" data-rating="ভালো" onclick="selectFeedbackRating(this)" style="border:1px solid #d1fae5; background:#fff; border-radius:12px; padding:10px 5px; cursor:pointer; font-size:12px; font-weight:700; color:#475569;">😊 ভালো</button>
+          <button type="button" class="feedback-rating-btn" data-rating="মোটামুটি" onclick="selectFeedbackRating(this)" style="border:1px solid #cbd5e1; background:#fff; border-radius:12px; padding:10px 5px; cursor:pointer; font-size:12px; font-weight:700; color:#475569;">🙂 মোটামুটি</button>
+          <button type="button" class="feedback-rating-btn" data-rating="সমস্যা হচ্ছে" onclick="selectFeedbackRating(this)" style="border:1px solid #fecdd3; background:#fff; border-radius:12px; padding:10px 5px; cursor:pointer; font-size:12px; font-weight:700; color:#475569;">😕 সমস্যা</button>
+        </div>
+
+        <div class="form-group">
+          <label>আপনার মতামত (ঐচ্ছিক)</label>
+          <textarea id="feedbackText" rows="4" maxlength="1000" placeholder="কোন বিষয়টি ভালো লেগেছে বা কোথায় সমস্যা হচ্ছে লিখুন..." style="width:100%; padding:12px 14px; border:1.5px solid #cbd5e1; border-radius:12px; font-size:13px; outline:none; resize:vertical; font-family:'Hind Siliguri',sans-serif;"></textarea>
+        </div>
+        <div id="feedbackError" style="display:none; color:#dc2626; font-size:12px; margin-bottom:10px;"></div>
+        <button type="button" id="feedbackSubmitBtn" class="btn-submit" onclick="submitFeedback()">মতামত পাঠান</button>
       </div>
     </div>
 
@@ -971,7 +1180,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, where, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getMessaging, getToken, deleteToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBmBqMYex_qjSuiVuF2GWAkOLnfcti3wWM",
@@ -986,6 +1196,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const messaging = getMessaging(app);
 
     const ADMIN_EMAIL = "ranashoyaib407@gmail.com";
 
@@ -1057,6 +1268,53 @@
     }
     fetchAdminSettings();
 
+    window.copyGatewayNumber = async function() {
+      const numEl = document.getElementById('display-gateway-num');
+      const statusEl = document.getElementById('copyGatewayNumberStatus');
+      const number = (numEl?.textContent || '').trim();
+      if (!number || number === 'লোড হচ্ছে...') return;
+
+      let copied = false;
+
+      // প্রথমে আধুনিক Clipboard API চেষ্টা করি। এটি permission/Browser policy-র কারণে
+      // ব্যর্থ হলেও নিচের fallback-এ গিয়ে আবার কপি করার চেষ্টা করবে।
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(number);
+          copied = true;
+        } catch (err) {
+          console.warn('Clipboard API failed, trying fallback:', err);
+        }
+      }
+
+      // Mobile/older browser বা Clipboard permission block হলে fallback।
+      if (!copied) {
+        try {
+          const temp = document.createElement('textarea');
+          temp.value = number;
+          temp.setAttribute('readonly', '');
+          temp.style.position = 'fixed';
+          temp.style.left = '-9999px';
+          temp.style.top = '0';
+          temp.style.opacity = '0';
+          document.body.appendChild(temp);
+          temp.focus();
+          temp.select();
+          temp.setSelectionRange(0, temp.value.length);
+          copied = document.execCommand('copy');
+          temp.remove();
+        } catch (err) {
+          console.warn('Fallback copy failed:', err);
+        }
+      }
+
+      if (statusEl) {
+        statusEl.textContent = copied ? '✓ কপি হয়েছে' : 'কপি করা যায়নি';
+        clearTimeout(window.__copyGatewayTimer);
+        window.__copyGatewayTimer = setTimeout(() => { statusEl.textContent = ''; }, 1800);
+      }
+    };
+
     window.selectGateway = function(gw) {
       selectedGateway = gw;
       document.querySelectorAll('.gateway-btn').forEach(b => b.classList.remove('active'));
@@ -1067,14 +1325,14 @@
     function updateGatewayUI() {
       const grid = document.getElementById('gatewayOptionsGrid');
       let html = `
-        <div class="gateway-btn ${selectedGateway==='bkash'?'active':''}" id="gwBkash" onclick="selectGateway('bkash')">বিকাশ (bKash)</div>
-        <div class="gateway-btn ${selectedGateway==='nagad'?'active':''}" id="gwNagad" onclick="selectGateway('nagad')">নগদ (Nagad)</div>
+        <div class="gateway-btn ${selectedGateway==='bkash'?'active':''}" id="gwBkash" onclick="selectGateway('bkash')">bKash</div>
+        <div class="gateway-btn ${selectedGateway==='nagad'?'active':''}" id="gwNagad" onclick="selectGateway('nagad')">Nagad</div>
       `;
       if(globalGateways.rocketOn) {
-        html += `<div class="gateway-btn ${selectedGateway==='rocket'?'active':''}" id="gwRocket" onclick="selectGateway('rocket')">রকেট (Rocket)</div>`;
+        html += `<div class="gateway-btn ${selectedGateway==='rocket'?'active':''}" id="gwRocket" onclick="selectGateway('rocket')">Rocket</div>`;
       }
       if(globalGateways.upayOn) {
-        html += `<div class="gateway-btn ${selectedGateway==='upay'?'active':''}" id="gwUpay" onclick="selectGateway('upay')">উপায় (Upay)</div>`;
+        html += `<div class="gateway-btn ${selectedGateway==='upay'?'active':''}" id="gwUpay" onclick="selectGateway('upay')">Upay</div>`;
       }
       grid.innerHTML = html;
       updateGatewayDisplay();
@@ -1083,10 +1341,10 @@
     function updateGatewayDisplay() {
       const titleEl = document.getElementById('gatewayTitle');
       const numEl = document.getElementById('display-gateway-num');
-      if(selectedGateway === 'bkash') { titleEl.textContent = "বিকাশ (bKash) Send Money:"; numEl.textContent = globalGateways.bkash; }
-      else if(selectedGateway === 'nagad') { titleEl.textContent = "নগদ (Nagad) Send Money:"; numEl.textContent = globalGateways.nagad; }
-      else if(selectedGateway === 'rocket') { titleEl.textContent = "রকেট (Rocket) Send Money:"; numEl.textContent = globalGateways.rocket; }
-      else if(selectedGateway === 'upay') { titleEl.textContent = "উপায় (Upay) Send Money:"; numEl.textContent = globalGateways.upay; }
+      if(selectedGateway === 'bkash') { titleEl.textContent = "bKash Send Money:"; numEl.textContent = globalGateways.bkash; }
+      else if(selectedGateway === 'nagad') { titleEl.textContent = "Nagad Send Money:"; numEl.textContent = globalGateways.nagad; }
+      else if(selectedGateway === 'rocket') { titleEl.textContent = "Rocket Send Money:"; numEl.textContent = globalGateways.rocket; }
+      else if(selectedGateway === 'upay') { titleEl.textContent = "Upay Send Money:"; numEl.textContent = globalGateways.upay; }
     }
 
     window.openVideoGuideModal = function() {
@@ -1135,6 +1393,9 @@
 
         const userDocSnap = await getDoc(doc(db, "users", user.uid));
         await loadUserData(user.uid);
+        if (localStorage.getItem('smartkhoroch_notif') === 'true' && Notification.permission === 'granted') {
+          enablePushNotifications().catch((err) => console.warn('Existing push subscription refresh skipped:', err));
+        }
         let userName = "ব্যবহারকারী", userPhone = "";
         let isApproved = false;
         let createdAt = Date.now();
@@ -1379,17 +1640,179 @@
             name: u.name || 'নাম নেই',
             phone: u.phone || '-',
             email: u.email || '',
+            uid: uDoc.id,
             isPro,
             daysLeft,
-            lastActive: u.lastActive ? new Date(u.lastActive.toMillis ? u.lastActive.toMillis() : u.lastActive).toLocaleString('bn-BD') : 'অজানা'
+            lastActiveMs: u.lastActive ? (u.lastActive.toMillis ? u.lastActive.toMillis() : new Date(u.lastActive).getTime()) : 0,
+            lastActive: u.lastActive ? new Date(u.lastActive.toMillis ? u.lastActive.toMillis() : u.lastActive).toLocaleString('bn-BD') : 'অজানা',
+            usage: u.usage || {}
           });
         });
 
         document.getElementById('statTotalUsers').textContent = allUsersCache.length;
         document.getElementById('statProUsers').textContent = proUsers;
         renderAdminUserList(allUsersCache);
+        renderAdminActiveUsers();
+        renderAdminFeatureUsage();
       } catch(e) { document.getElementById('adminUsersList').innerHTML = `<p style="color:red; font-size:12px;">ইউজার লোড করা যায়নি।</p>`; }
     }
+
+    window.openAdminActiveUsers = function() {
+      const box = document.getElementById('adminActiveUsersBox');
+      if (!box) return;
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+      renderAdminActiveUsers();
+    };
+
+    function renderAdminActiveUsers() {
+      const listEl = document.getElementById('adminActiveUsersList');
+      const statEl = document.getElementById('statActiveUsers');
+      if (!listEl || !statEl) return;
+      const cutoff = Date.now() - (24 * 60 * 60 * 1000);
+      const active = allUsersCache.filter(u => u.lastActiveMs && u.lastActiveMs >= cutoff).sort((a,b) => b.lastActiveMs - a.lastActiveMs);
+      statEl.textContent = active.length;
+      if (!active.length) {
+        listEl.innerHTML = `<p style="font-size:12px;color:#64748b;">গত ২৪ ঘণ্টায় কোনো সক্রিয় ইউজার পাওয়া যায়নি।</p>`;
+        return;
+      }
+      listEl.innerHTML = active.map(u => `
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px;font-size:11px;">
+          <strong>${u.name}</strong> (${u.phone})<br>
+          User ID: <span style="word-break:break-all;color:#475569;">${u.uid}</span><br>
+          শেষ সক্রিয়: ${u.lastActive}
+        </div>`).join('');
+    }
+
+    window.loadAdminFeedback = async function() {
+      const el = document.getElementById('adminFeedbackList');
+      if (!el) return;
+      el.innerHTML = `<p style="font-size:12px;color:#64748b;">লোড হচ্ছে...</p>`;
+      try {
+        const snap = await getDocs(collection(db, 'feedback'));
+        const items = snap.docs.map(d => ({ id:d.id, ...d.data() })).sort((a,b) => {
+          const am = a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt || 0).getTime();
+          const bm = b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt || 0).getTime();
+          return bm - am;
+        }).slice(0, 50);
+        if (!items.length) {
+          el.innerHTML = `<p style="font-size:12px;color:#64748b;">এখনও কোনো মতামত পাওয়া যায়নি।</p>`;
+          return;
+        }
+        el.innerHTML = items.map(f => {
+          const dt = f.createdAt?.toMillis ? f.createdAt.toMillis() : new Date(f.createdAt || 0).getTime();
+          const rating = f.rating || 'রেটিং দেওয়া হয়নি';
+          const ratingIcon = rating === 'ভালো' ? '😊' : rating === 'মোটামুটি' ? '🙂' : rating === 'সমস্যা হচ্ছে' ? '😕' : '💬';
+          const msg = (f.message || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+          const name = (f.name || 'ব্যবহারকারী').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          const phone = (f.phone || '-').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">
+              <div><strong style="font-size:12px;">${name}</strong><div style="font-size:10px;color:#64748b;">${phone}</div></div>
+              <span style="font-size:11px;font-weight:700;color:#047857;white-space:nowrap;">${ratingIcon} ${rating}</span>
+            </div>
+            ${msg ? `<div style="margin-top:8px;background:#f8fafc;border-radius:8px;padding:8px;font-size:12px;color:#334155;line-height:1.6;white-space:pre-wrap;">${msg}</div>` : ''}
+            <div style="margin-top:6px;font-size:10px;color:#94a3b8;">${dt ? new Date(dt).toLocaleString('bn-BD') : 'সময় জানা নেই'}</div>
+          </div>`;
+        }).join('');
+      } catch(e) {
+        console.error('Admin feedback load error:', e);
+        el.innerHTML = `<p style="color:#dc2626;font-size:12px;">মতামত লোড করা যায়নি। Firestore permission পরীক্ষা করুন।</p>`;
+      }
+    };
+
+    window.openAdminUserSegment = function(segment) {
+      const box = document.getElementById('adminUserSegmentBox');
+      const title = document.getElementById('adminUserSegmentTitle');
+      const list = document.getElementById('adminUserSegmentList');
+      if (!box || !title || !list) return;
+      const users = segment === 'pro' ? allUsersCache.filter(u => u.isPro) : allUsersCache;
+      title.textContent = segment === 'pro' ? `💚 Pro ইউজার (${users.length})` : `👥 মোট রেজিস্টার্ড ইউজার (${users.length})`;
+      list.innerHTML = users.length ? users.slice().sort((a,b)=>(b.lastActiveMs||0)-(a.lastActiveMs||0)).map(u => `
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px;font-size:11px;">
+          <strong>${u.name}</strong> (${u.phone})<br>
+          User ID: <span style="word-break:break-all;color:#475569;">${u.uid}</span><br>
+          স্ট্যাটাস: <strong style="color:${u.isPro?'#059669':'#e11d48'}">${u.isPro ? `Pro — ${u.daysLeft} দিন বাকি` : 'Free / মেয়াদ শেষ'}</strong><br>
+          ব্যবহার করেছে: ${[['dashboard','ড্যাশবোর্ড'],['transactions','লেনদেন'],['budget','বাজেট'],['report','রিপোর্ট'],['premium','Premium'],['feedback','Feedback']].filter(([k]) => u.usage?.[k]?.used || Number(u.usage?.[k]?.count || 0) > 0).map(([,label]) => label).join(' • ') || 'এখনও Tracking ডাটা নেই'}<br>
+          শেষ সক্রিয়: ${u.lastActive}
+        </div>`).join('') : `<p style="font-size:12px;color:#64748b;">কোনো ইউজার পাওয়া যায়নি।</p>`;
+      box.style.display = 'block';
+    };
+
+    function escapeAdminText(value) {
+      return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    function getAdminPhoneHref(phone) {
+      const raw = String(phone || '').trim();
+      const digits = raw.replace(/[^0-9+]/g, '');
+      return digits ? `tel:${digits}` : '';
+    }
+
+    function getAdminWhatsAppHref(phone) {
+      let digits = String(phone || '').replace(/[^0-9]/g, '');
+      if (digits.startsWith('01')) digits = '880' + digits.slice(1);
+      else if (digits.startsWith('1')) digits = '880' + digits;
+      return digits.length >= 10 ? `https://wa.me/${digits}` : '';
+    }
+
+    window.openAdminFeatureUsers = function(feature) {
+      const box = document.getElementById('adminFeatureUsersBox');
+      const title = document.getElementById('adminFeatureUsersTitle');
+      const list = document.getElementById('adminFeatureUsersList');
+      if (!box || !title || !list) return;
+
+      const labels = { dashboard:'🏠 ড্যাশবোর্ড', transactions:'↔️ লেনদেন', budget:'🎯 বাজেট', report:'📊 রিপোর্ট', premium:'⭐ Premium', feedback:'💬 Feedback' };
+      const users = allUsersCache.filter(u => u.usage?.[feature]?.used || Number(u.usage?.[feature]?.count || 0) > 0)
+        .sort((a,b) => {
+          const am = a.usage?.[feature]?.lastUsed?.toMillis ? a.usage[feature].lastUsed.toMillis() : new Date(a.usage?.[feature]?.lastUsed || 0).getTime();
+          const bm = b.usage?.[feature]?.lastUsed?.toMillis ? b.usage[feature].lastUsed.toMillis() : new Date(b.usage?.[feature]?.lastUsed || 0).getTime();
+          return bm - am;
+        });
+
+      title.textContent = `${labels[feature] || feature} ব্যবহারকারী (${users.length})`;
+      if (!users.length) {
+        list.innerHTML = `<p style="font-size:12px;color:#64748b;">এই ফিচার এখনও কোনো ইউজার ব্যবহার করেনি।</p>`;
+      } else {
+        list.innerHTML = users.map(u => {
+          const usage = u.usage?.[feature] || {};
+          const count = Number(usage.count || 0);
+          const lastMs = usage.lastUsed?.toMillis ? usage.lastUsed.toMillis() : new Date(usage.lastUsed || 0).getTime();
+          const lastUsed = lastMs ? new Date(lastMs).toLocaleString('bn-BD') : 'সময় জানা নেই';
+          const phone = escapeAdminText(u.phone || '-');
+          const name = escapeAdminText(u.name || 'নাম নেই');
+          const uid = escapeAdminText(u.uid || '-');
+          const status = u.isPro ? `Pro — ${u.daysLeft} দিন বাকি` : 'Free / মেয়াদ শেষ';
+          const tel = getAdminPhoneHref(u.phone);
+          const wa = getAdminWhatsAppHref(u.phone);
+          return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px;font-size:11px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">
+              <div><strong style="font-size:12px;">${name}</strong><br><span style="color:#64748b;">${phone}</span></div>
+              <strong style="font-size:10px;color:${u.isPro ? '#059669' : '#64748b'};">${status}</strong>
+            </div>
+            <div style="margin-top:6px;color:#475569;line-height:1.6;">User ID: <span style="word-break:break-all;">${uid}</span><br>এই ফিচার ব্যবহার: <strong>${count} বার</strong><br>সর্বশেষ ব্যবহার: ${lastUsed}</div>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+              ${tel ? `<a href="${tel}" style="flex:1;text-align:center;text-decoration:none;background:#2563eb;color:#fff;padding:7px;border-radius:8px;font-weight:700;">📞 কল</a>` : ''}
+              ${wa ? `<a href="${wa}" target="_blank" rel="noopener noreferrer" style="flex:1;text-align:center;text-decoration:none;background:#16a34a;color:#fff;padding:7px;border-radius:8px;font-weight:700;">💬 WhatsApp</a>` : ''}
+            </div>
+          </div>`;
+        }).join('');
+      }
+      box.style.display = 'block';
+    };
+
+    window.renderAdminFeatureUsage = function() {
+      const el = document.getElementById('adminFeatureUsageList');
+      if (!el) return;
+      const features = [['dashboard','🏠 ড্যাশবোর্ড'],['transactions','↔️ লেনদেন'],['budget','🎯 বাজেট'],['report','📊 রিপোর্ট'],['premium','⭐ Premium'],['feedback','💬 Feedback']];
+      const counts = {};
+      allUsersCache.forEach(u => features.forEach(([key]) => { if (u.usage?.[key]?.used || Number(u.usage?.[key]?.count || 0) > 0) counts[key]=(counts[key]||0)+1; }));
+      el.innerHTML = features.map(([key,label]) => `
+        <button type="button" onclick="openAdminFeatureUsers('${key}')" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px;text-align:left;cursor:pointer;width:100%;">
+          <div style="font-size:11px;color:#64748b;">${label}</div>
+          <div style="font-size:20px;font-weight:800;color:#0f172a;margin-top:2px;">${counts[key]||0}</div>
+          <div style="font-size:10px;color:#94a3b8;">ইউজার ব্যবহার করেছে · তালিকা দেখতে ক্লিক করুন</div>
+        </button>`).join('');
+    };
 
     function renderAdminUserList(users) {
       const userListEl = document.getElementById('adminUsersList');
@@ -1539,6 +1962,7 @@
     };
 
     window.openSubscriptionModal = () => {
+      trackFeatureUsage('premium');
       positionPremiumShell();
       document.getElementById('paywallScreen').classList.add('active');
       premiumHistoryOpen = true;
@@ -1647,6 +2071,25 @@
     let currentTabName = 'settings';
     let navigationReady = false;
 
+    const featureTrackLabels = { dashboard:'ড্যাশবোর্ড', transactions:'লেনদেন', budget:'বাজেট', report:'রিপোর্ট', premium:'Premium', feedback:'Feedback' };
+
+    function trackFeatureUsage(feature) {
+      const activeUser = auth.currentUser || currentUserGlobal;
+      if (!activeUser || activeUser.email === ADMIN_EMAIL || !featureTrackLabels[feature]) return;
+      const key = `smartkhoroch_track_${feature}`;
+      const now = Date.now();
+      const last = Number(sessionStorage.getItem(key) || 0);
+      if (last && now - last < 10 * 60 * 1000) return;
+      sessionStorage.setItem(key, String(now));
+      setDoc(doc(db, 'users', activeUser.uid), {
+        [`usage.${feature}.count`]: increment(1),
+        [`usage.${feature}.lastUsed`]: new Date(),
+        [`usage.${feature}.used`]: true
+      }, { merge:true }).catch(err => console.warn('Feature tracking skipped:', feature, err));
+    }
+
+    window.trackFeedbackUsage = function() { trackFeatureUsage('feedback'); };
+
     window.switchTab = function(tabName, addHistory = true) {
       if (!currentUserGlobal && tabName !== 'settings') tabName = 'settings';
 
@@ -1665,6 +2108,7 @@
       if(targetView) targetView.classList.add('active');
       if(targetNav) targetNav.classList.add('active');
       currentTabName = tabName;
+      trackFeatureUsage(tabName);
       if (currentUserGlobal && navigationReady) {
         if (premiumWasOpen) {
           // Replace the Premium history entry with the destination tab so
@@ -2206,25 +2650,78 @@
       }
     });
 
-    window.toggleNotification = function(checkbox) {
+    const FCM_VAPID_KEY = 'BAem0oX3i9ZBKoSZ-4BRRE8HlTPV-W5Nl0IFR7FfCreBQ944eB5Iwr_iFFtqOJpsl4-9SjEba2YUInPWQuyZdJ4';
+
+    function getNotificationTokenKey(token) {
+      try {
+        return btoa(token).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '').slice(0, 120);
+      } catch (e) {
+        return token.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 120);
+      }
+    }
+
+    async function enablePushNotifications() {
+      if (!currentUserGlobal || !('Notification' in window) || !('serviceWorker' in navigator)) return false;
+
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') return false;
+
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      const tokenOptions = { serviceWorkerRegistration: registration };
+      if (FCM_VAPID_KEY) tokenOptions.vapidKey = FCM_VAPID_KEY;
+      const token = await getToken(messaging, tokenOptions);
+      if (!token) return false;
+
+      const tokenKey = getNotificationTokenKey(token);
+      await setDoc(doc(db, 'users', currentUserGlobal.uid), {
+        notificationEnabled: true,
+        notificationTokens: {
+          [tokenKey]: { token, updatedAt: new Date() }
+        }
+      }, { merge: true });
+
+      localStorage.setItem('smartkhoroch_notif', 'true');
+      localStorage.setItem('smartkhoroch_fcm_token', token);
+      return true;
+    }
+
+    async function disablePushNotifications() {
+      try {
+        const oldToken = localStorage.getItem('smartkhoroch_fcm_token');
+        if (oldToken && currentUserGlobal) {
+          const tokenKey = getNotificationTokenKey(oldToken);
+          const userRef = doc(db, 'users', currentUserGlobal.uid);
+          const snap = await getDoc(userRef);
+          if (snap.exists()) {
+            const data = snap.data();
+            const tokens = { ...(data.notificationTokens || {}) };
+            delete tokens[tokenKey];
+            await setDoc(userRef, { notificationEnabled: false, notificationTokens: tokens }, { merge: true });
+          }
+        }
+        await deleteToken(messaging).catch(() => {});
+      } catch (err) {
+        console.warn('Push disable skipped:', err);
+      }
+      localStorage.removeItem('smartkhoroch_fcm_token');
+      localStorage.setItem('smartkhoroch_notif', 'false');
+    }
+
+    window.toggleNotification = async function(checkbox) {
       if (checkbox.checked) {
-        if (!('Notification' in window)) {
+        try {
+          const enabled = await enablePushNotifications();
+          if (!enabled) throw new Error('Push notification setup failed');
+          setNotificationUI(true);
+        } catch (err) {
+          console.error('Push notification setup error:', err);
           checkbox.checked = false;
           setNotificationUI(false);
-          return;
+          localStorage.setItem('smartkhoroch_notif', 'false');
+          alert('নোটিফিকেশন চালু করা যায়নি। Browser permission এবং Push configuration পরীক্ষা করুন।');
         }
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            localStorage.setItem('smartkhoroch_notif', 'true');
-            setNotificationUI(true);
-          } else {
-            checkbox.checked = false;
-            setNotificationUI(false);
-            localStorage.setItem('smartkhoroch_notif', 'false');
-          }
-        });
       } else {
-        localStorage.setItem('smartkhoroch_notif', 'false');
+        await disablePushNotifications();
         setNotificationUI(false);
       }
     };
@@ -2242,8 +2739,11 @@
       }
     }
 
-    if(localStorage.getItem('smartkhoroch_notif') === 'true') {
+    if(localStorage.getItem('smartkhoroch_notif') === 'true' && Notification.permission === 'granted') {
       setNotificationUI(true);
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
     }
 
     updatePlanSavingsBadges({ '1m': 49, '6m': 249, '1y': 399 });
@@ -2253,18 +2753,6 @@
         navigator.serviceWorker.register('/sw.js').catch(() => {});
       });
     }
-
-    setInterval(() => {
-      if(localStorage.getItem('smartkhoroch_notif') === 'true' && Notification.permission === 'granted') {
-        const now = new Date();
-        if(now.getHours() === 21 && now.getMinutes() === 0) {
-          new Date().getSeconds() < 10 && new Notification("SmartKhoroch রিমাইন্ডার", {
-            body: "আজকের বাজার বা খরচের হিসাব কি খাতাভুক্ত করা হয়েছে? এক মিনিটে লিখে রাখুন।",
-            icon: "manifest.json"
-          });
-        }
-      }
-    }, 60000);
 
 
     // =========================
@@ -2543,6 +3031,92 @@
 
     updateDashboard();
     setTimeout(() => { if(window.lucide) lucide.createIcons(); }, 100);
+
+    // ---------------- User Feedback ----------------
+    let selectedFeedbackRating = '';
+
+    window.openFeedbackModal = function() {
+      trackFeatureUsage('feedback');
+      if (!currentUserGlobal) {
+        alert('মতামত দিতে আগে লগইন করুন।');
+        return;
+      }
+      selectedFeedbackRating = '';
+      const text = document.getElementById('feedbackText');
+      const error = document.getElementById('feedbackError');
+      if (text) text.value = '';
+      if (error) { error.style.display = 'none'; error.textContent = ''; }
+      document.querySelectorAll('.feedback-rating-btn').forEach(btn => {
+        btn.style.background = '#fff';
+        btn.style.borderColor = '#cbd5e1';
+        btn.style.color = '#475569';
+      });
+      document.getElementById('feedbackModal').classList.add('active');
+      if (window.lucide) lucide.createIcons();
+    };
+
+    window.closeFeedbackModal = function() {
+      document.getElementById('feedbackModal').classList.remove('active');
+    };
+
+    window.selectFeedbackRating = function(btn) {
+      selectedFeedbackRating = btn.dataset.rating || '';
+      document.querySelectorAll('.feedback-rating-btn').forEach(item => {
+        item.style.background = '#fff';
+        item.style.borderColor = '#cbd5e1';
+        item.style.color = '#475569';
+      });
+      btn.style.background = '#ecfdf5';
+      btn.style.borderColor = '#059669';
+      btn.style.color = '#047857';
+    };
+
+    window.submitFeedback = async function() {
+      if (!currentUserGlobal) {
+        closeFeedbackModal();
+        alert('মতামত দিতে আগে লগইন করুন।');
+        return;
+      }
+      const textEl = document.getElementById('feedbackText');
+      const errorEl = document.getElementById('feedbackError');
+      const btn = document.getElementById('feedbackSubmitBtn');
+      const message = (textEl?.value || '').trim();
+
+      if (!selectedFeedbackRating && !message) {
+        errorEl.textContent = 'অনুগ্রহ করে একটি অনুভূতি নির্বাচন করুন অথবা আপনার মতামত লিখুন।';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'পাঠানো হচ্ছে...';
+      errorEl.style.display = 'none';
+
+      try {
+        const userSnap = await getDoc(doc(db, 'users', currentUserGlobal.uid));
+        const u = userSnap.exists() ? userSnap.data() : {};
+        await addDoc(collection(db, 'feedback'), {
+          uid: currentUserGlobal.uid,
+          name: u.name || 'ব্যবহারকারী',
+          phone: u.phone || '',
+          email: currentUserGlobal.email || '',
+          rating: selectedFeedbackRating || '',
+          message: message,
+          createdAt: new Date()
+        });
+
+        closeFeedbackModal();
+        alert('আপনার মতামতের জন্য ধন্যবাদ। ❤️');
+      } catch (err) {
+        console.error('Feedback submit error:', err);
+        errorEl.textContent = 'মতামত পাঠানো যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।';
+        errorEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'মতামত পাঠান';
+      }
+    };
+
   </script>
 </body>
 </html>
