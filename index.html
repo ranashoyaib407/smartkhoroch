@@ -445,7 +445,7 @@
         <h4 style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 4px;" id="payBoxTitle">টাকা পাঠানোর পর নিচের ফর্মটি পূরণ করুন</h4>
         <p id="payBoxHint" style="font-size: 11px; line-height: 1.4; color: #64748b; margin: 0 0 7px;">টাকা পাঠানোর পর যে নম্বর থেকে টাকা পাঠিয়েছেন, সেটি লিখুন।</p>
         <div id="payBoxContent">
-          <input type="text" id="paySenderPhone" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:10px; margin-bottom:8px; font-size:13px;" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          <input type="text" id="paySenderPhone" inputmode="numeric" enterkeyhint="go" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:10px; margin-bottom:8px; font-size:13px;" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
           <button class="btn-submit" style="padding:10px; font-size:14px;" onclick="submitPaymentRequest()">অ্যাডমিনের কাছে রিকোয়েস্ট পাঠান</button>
         </div>
       </div>
@@ -455,7 +455,7 @@
     <header class="top-bar">
       <div class="app-title" onclick="goHome()" style="cursor:pointer;" role="button" aria-label="হোমে যান">
         <img class="site-logo" src="/logo.png" alt="SmartKhoroch">
-        <span class="trial-pill" id="trialBadge" onclick="openSubscriptionModal()">
+        <span class="trial-pill" id="trialBadge" onclick="event.stopPropagation(); openSubscriptionModal()">
           <i data-lucide="sparkles" style="width: 13px; height: 13px;"></i>
           <span id="trialBadgeText">লোডিং...</span>
         </span>
@@ -640,10 +640,10 @@
         </div>
         <form id="authForm" onsubmit="handleFirebaseAuth(event)">
           <div class="form-group" id="groupName" style="display:none;"><label>নাম</label><input type="text" id="regName" placeholder="আপনার নাম"></div>
-          <div class="form-group"><label>মোবাইল নম্বর বা ইমেল</label><input type="text" id="authPhone" autocomplete="off" spellcheck="false" placeholder="01712345678 বা জিমেইল" required></div>
+          <div class="form-group"><label>মোবাইল নম্বর বা ইমেল</label><input type="text" id="authPhone" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="01712345678 বা জিমেইল" required></div>
           <div class="form-group" id="groupPass"><label>পাসওয়ার্ড</label>
             <div style="position:relative;">
-              <input type="password" id="authPass" autocomplete="off" spellcheck="false" placeholder="••••••••" required style="padding-right:44px;">
+              <input type="password" id="authPass" enterkeyhint="go" autocomplete="off" spellcheck="false" placeholder="••••••••" required style="padding-right:44px;">
               <button type="button" id="authPassToggle" onclick="togglePasswordVisibility('authPass','authPassToggle')" aria-label="পাসওয়ার্ড দেখুন" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); border:none; background:transparent; color:#64748b; cursor:pointer; padding:6px;">
                 <i data-lucide="eye" style="width:18px;height:18px;"></i>
               </button>
@@ -987,10 +987,11 @@
         <div class="section-head"><h3>মাসিক বাজেট সেট করুন</h3></div>
         <div class="form-group" style="margin-top:14px; margin-bottom:10px;">
           <label>বাজেটের পরিমাণ (৳)</label>
-          <input type="text" id="budgetAmountInput" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" maxlength="12" placeholder="20000"
+          <input type="text" id="budgetAmountInput" inputmode="numeric" enterkeyhint="done" pattern="[0-9]*" autocomplete="off" spellcheck="false" maxlength="12" placeholder="20000"
             onbeforeinput="if(event.data && /[^0-9]/.test(event.data)) event.preventDefault()"
             oninput="this.value=this.value.replace(/[^0-9]/g,''); updateBudgetSaveButton()"
-            onpaste="setTimeout(() => { this.value=this.value.replace(/[^0-9]/g,''); updateBudgetSaveButton(); }, 0)">
+            onpaste="setTimeout(() => { this.value=this.value.replace(/[^0-9]/g,''); updateBudgetSaveButton(); }, 0)"
+            onkeydown="if(event.key === 'Enter'){ event.preventDefault(); if(!document.getElementById('budgetSaveBtn').disabled) saveBudgetFromModal(); }">
         </div>
         <button type="button" id="budgetSaveBtn" class="btn-submit" onclick="saveBudgetFromModal()">বাজেট সেভ করুন</button>
       </div>
@@ -1039,7 +1040,7 @@
         <button onclick="document.getElementById('incomeModal').classList.remove('active')" style="position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #475569;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
         <div class="section-head"><h3>টাকা জমা যোগ করুন</h3></div>
         <form id="incomeForm" style="margin-top: 14px;">
-          <div class="form-group"><label>টাকার পরিমাণ (৳)</label><input type="text" id="incAmount" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="1500" required oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
+          <div class="form-group"><label>টাকার পরিমাণ (৳)</label><input type="text" id="incAmount" inputmode="numeric" enterkeyhint="next" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="1500" required oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
           <div class="form-group"><label>খাত / বিষয়</label>
             <select id="incCategory" required>
               <option value="বেতন / চাকরি">বেতন / চাকরি</option>
@@ -1079,7 +1080,7 @@
         </div>
 
         <form id="singleExpenseForm">
-          <div class="form-group"><label>মোট টাকার পরিমাণ (৳)</label><input type="text" id="expAmount" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="যেমন: 1500" required oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
+          <div class="form-group"><label>মোট টাকার পরিমাণ (৳)</label><input type="text" id="expAmount" inputmode="numeric" enterkeyhint="next" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="যেমন: 1500" required oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
           <div class="form-group"><label>খাত / বিষয়</label>
             <select id="expCategory" required>
               <option value="মুদি বাজার ও খাবার">মুদি বাজার ও খাবার</option>
@@ -1612,6 +1613,15 @@
       }
     };
 
+    function showPendingPaymentNotice() {
+      const boxTitle = document.getElementById('payBoxTitle');
+      const boxContent = document.getElementById('payBoxContent');
+      if (boxTitle) boxTitle.textContent = 'পেমেন্ট স্ট্যাটাস';
+      if (boxContent) {
+        boxContent.innerHTML = `<div style="color:#dc2626; font-size:13px; font-weight:700; padding:4px 0;">আপনার একটি রিকোয়েস্ট পেন্ডিং আছে। কিছু সময় অপেক্ষা করুন।</div>`;
+      }
+    }
+
     window.submitPaymentRequest = async function() {
       if (!currentUserGlobal) return alert('প্রথমে লগইন বা রেজিস্ট্রেশন করুন!');
       const senderPhone = document.getElementById('paySenderPhone').value.trim();
@@ -1622,27 +1632,54 @@
         return alert('প্যাকেজটি সঠিকভাবে নির্বাচন করুন। আবার চেষ্টা করুন।');
       }
 
+      const userRef = doc(db, 'users', currentUserGlobal.uid);
       try {
-        // শুধু UID দিয়ে পেমেন্টগুলো আনা হচ্ছে; এতে Firestore composite-index-এর উপর
-        // নির্ভর করতে হয় না। এরপর pending status client-side-এ যাচাই করা হবে।
-        const q = query(collection(db, "payments"), where("uid", "==", currentUserGlobal.uid));
-        const qSnap = await getDocs(q);
-        const hasPending = qSnap.docs.some(d => d.data()?.status === 'pending');
-        if(hasPending) {
-          return alert('আপনার একটি পেমেন্ট রিকোয়েস্ট ইতিমধ্যে পেন্ডিং রয়েছে। অ্যাডমিন এপ্রুভ করা পর্যন্ত অপেক্ষা করুন।');
+        // ইউজার ডকুমেন্টের pending flag আগে পরীক্ষা করা হয়। এতে payments collection
+        // পড়ার permission না থাকলেও দ্বিতীয় request আটকানো যায়।
+        try {
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists() && userSnap.data()?.paymentRequestStatus === 'pending') {
+            showPendingPaymentNotice();
+            return;
+          }
+        } catch (userCheckErr) {
+          console.warn('User pending status check skipped:', userCheckErr);
         }
 
-        await addDoc(collection(db, "payments"), {
-          uid: currentUserGlobal.uid,
-          phone: senderPhone,
-          gateway: selectedGateway,
-          packageId: currentPlan.id,
-          packageName: currentPlan.name,
-          packageDays: Number(currentPlan.days),
-          amount: Number(currentPlan.price),
-          status: 'pending',
-          createdAt: new Date()
-        });
+        // পুরোনো/বিদ্যমান pending payment থাকলে সেটিও আটকানোর চেষ্টা করা হবে।
+        try {
+          const q = query(collection(db, "payments"), where("uid", "==", currentUserGlobal.uid));
+          const qSnap = await getDocs(q);
+          const hasPending = qSnap.docs.some(d => d.data()?.status === 'pending');
+          if (hasPending) {
+            try { await setDoc(userRef, { paymentRequestStatus: 'pending' }, { merge: true }); } catch(e) {}
+            showPendingPaymentNotice();
+            return;
+          }
+        } catch (pendingCheckErr) {
+          console.warn('Pending payment collection check skipped:', pendingCheckErr);
+        }
+
+        // নতুন request reserve করা হলো। request save ব্যর্থ হলে flag সরিয়ে দেওয়া হবে।
+        await setDoc(userRef, { paymentRequestStatus: 'pending' }, { merge: true });
+
+        try {
+          await addDoc(collection(db, "payments"), {
+            uid: currentUserGlobal.uid,
+            phone: senderPhone,
+            gateway: selectedGateway,
+            packageId: currentPlan.id,
+            packageName: currentPlan.name,
+            packageDays: Number(currentPlan.days),
+            amount: Number(currentPlan.price),
+            status: 'pending',
+            createdAt: new Date()
+          });
+        } catch (saveErr) {
+          try { await setDoc(userRef, { paymentRequestStatus: 'none' }, { merge: true }); } catch(e) {}
+          throw saveErr;
+        }
+
         alert('আপনার পেমেন্ট রিকোয়েস্ট সফলভাবে জমা হয়েছে! অ্যাডমিন যাচাই করে দ্রুত অ্যাকাউন্ট এপ্রুভ করে দেবেন।');
         checkPendingRequestLock(currentUserGlobal.uid);
       } catch (err) {
@@ -1652,18 +1689,57 @@
     };
 
     async function checkPendingRequestLock(uid) {
+      const userRef = doc(db, 'users', uid);
+      try {
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists() && userSnap.data()?.paymentRequestStatus === 'pending') {
+          showPendingPaymentNotice();
+          return;
+        }
+      } catch(e) { console.warn('User pending status check skipped:', e); }
+
       try {
         const q = query(collection(db, "payments"), where("uid", "==", uid));
         const qSnap = await getDocs(q);
-        const boxTitle = document.getElementById('payBoxTitle');
-        const boxContent = document.getElementById('payBoxContent');
         const hasPending = qSnap.docs.some(d => d.data()?.status === 'pending');
-        if(hasPending) {
-          boxTitle.textContent = "পেমেন্ট স্ট্যাটাস";
-          boxContent.innerHTML = `<div style="background:#fef3c7; color:#92400e; padding:12px; border-radius:10px; font-size:13px; font-weight:600;">⏳ আপনার পেমেন্ট রিকোয়েস্টটি পেন্ডিং রয়েছে। অ্যাডমিন এপ্রুভ করলে অ্যাকাউন্ট সচল হবে।</div>`;
+        if (hasPending) {
+          try { await setDoc(userRef, { paymentRequestStatus: 'pending' }, { merge: true }); } catch(e) {}
+          showPendingPaymentNotice();
         }
       } catch(e) { console.warn('Pending payment check skipped:', e); }
     }
+
+    const paySenderPhoneInput = document.getElementById('paySenderPhone');
+    if (paySenderPhoneInput) {
+      paySenderPhoneInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          submitPaymentRequest();
+        }
+      });
+    }
+
+    function focusOnEnter(inputId, nextId, action) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      input.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        if (typeof action === 'function') {
+          action();
+          return;
+        }
+        const next = document.getElementById(nextId);
+        if (next) {
+          next.focus();
+          if (typeof next.select === 'function' && next.tagName === 'INPUT') next.select();
+        }
+      });
+    }
+
+    focusOnEnter('authPhone', 'authPass');
+    focusOnEnter('incAmount', 'incCategory');
+    focusOnEnter('expAmount', 'expCategory');
 
     window.toggleAdminFolder = function(folderId) {
       const box = document.getElementById(folderId);
@@ -1922,7 +1998,7 @@
     window.approvePayment = async function(payId, uid, days) {
       try {
         await updateDoc(doc(db, "payments", payId), { status: 'approved' });
-        await updateDoc(doc(db, "users", uid), { isSubscribed: true, subDays: days, createdAt: new Date() });
+        await updateDoc(doc(db, "users", uid), { isSubscribed: true, subDays: days, createdAt: new Date(), paymentRequestStatus: 'none' });
         alert('পেমেন্ট সফলভাবে এপ্রুভ করা হয়েছে!');
         loadAdminData();
       } catch(e) { alert('এপ্রুভ করা যায়নি!'); }
@@ -1931,6 +2007,10 @@
     window.rejectPayment = async function(payId) {
       try {
         await updateDoc(doc(db, "payments", payId), { status: 'rejected' });
+        const rejectedPaySnap = await getDoc(doc(db, "payments", payId));
+        if (rejectedPaySnap.exists() && rejectedPaySnap.data()?.uid) {
+          await updateDoc(doc(db, "users", rejectedPaySnap.data().uid), { paymentRequestStatus: 'none' });
+        }
         alert('পেমেন্ট রিকোয়েস্টটি রিজেক্ট করা হয়েছে।');
         loadAdminData();
       } catch(e) { alert('রিজেক্ট করা যায়নি!'); }
@@ -2005,7 +2085,7 @@
 
     window.logoutUser = async () => {
       transactions = [];
-      monthlyBudget = 20000;
+      monthlyBudget = 0;
       userDataLoaded = false;
       await signOut(auth);
       document.body.classList.add('logged-out');
@@ -2079,7 +2159,7 @@
     // ইউজারের হিসাব এখন UID-ভিত্তিক Firestore-এ থাকবে।
     // এতে একই অ্যাকাউন্ট যেকোনো ফোন/ডিভাইস থেকে লগইন করলে একই ডাটা পাওয়া যাবে।
     let transactions = [];
-    let monthlyBudget = 20000;
+    let monthlyBudget = 0;
     let authMode = 'login';
     let currentTxFilter = 'all';
     let userDataLoaded = false;
@@ -2102,7 +2182,7 @@
 
         monthlyBudget = userSnap.exists() && Number(userSnap.data().monthlyBudget) > 0
           ? Number(userSnap.data().monthlyBudget)
-          : 20000;
+          : 0;
 
         const txSnap = await getDocs(collection(db, 'users', uid, 'transactions'));
         transactions = txSnap.docs.map(d => {
