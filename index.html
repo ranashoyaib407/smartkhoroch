@@ -289,6 +289,10 @@
     #paywallScreen #gwRocket.active { border-color: #6f2da8; background: #f3eaff; color: #5a238a; }
     #paywallScreen #gwUpay { border-color: #a9d9bd; background: #f5fcf7; color: #008f4c; }
     #paywallScreen #gwUpay.active { border-color: #00a651; background: #eaf9f0; color: #008f4c; }
+    #paywallScreen #gatewayTitle.gateway-title-bkash { color: #e2136e !important; }
+    #paywallScreen #gatewayTitle.gateway-title-nagad { color: #e86f00 !important; }
+    #paywallScreen #gatewayTitle.gateway-title-rocket { color: #6f2da8 !important; }
+    #paywallScreen #gatewayTitle.gateway-title-upay { color: #008f4c !important; }
 
     .admin-folder { background: #fff; border: 1.5px solid #cbd5e1; border-radius: 16px; padding: 14px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: #0f172a; }
     .admin-sub-box { display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-bottom: 12px; flex-direction: column; gap: 10px; }
@@ -441,7 +445,7 @@
         <h4 style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 4px;" id="payBoxTitle">টাকা পাঠানোর পর নিচের ফর্মটি পূরণ করুন</h4>
         <p id="payBoxHint" style="font-size: 11px; line-height: 1.4; color: #64748b; margin: 0 0 7px;">টাকা পাঠানোর পর যে নম্বর থেকে টাকা পাঠিয়েছেন, সেটি লিখুন।</p>
         <div id="payBoxContent">
-          <input type="text" id="paySenderPhone" autocomplete="off" spellcheck="false" placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:10px; margin-bottom:8px; font-size:13px;">
+          <input type="text" id="paySenderPhone" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:10px; margin-bottom:8px; font-size:13px;" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
           <button class="btn-submit" style="padding:10px; font-size:14px;" onclick="submitPaymentRequest()">অ্যাডমিনের কাছে রিকোয়েস্ট পাঠান</button>
         </div>
       </div>
@@ -850,8 +854,8 @@
       <div class="admin-sub-box" id="folderGateway">
         <div class="form-group"><label>বিকাশ নম্বর</label><input type="text" id="adminBkashInput" placeholder="017xxxxxxxx"></div>
         <div class="form-group"><label>নগদ নম্বর</label><input type="text" id="adminNagadInput" placeholder="018xxxxxxxx"></div>
-        <div class="form-group"><label>রকেট নম্বর</label><input type="text" id="adminRocketInput" placeholder="019xxxxxxxx"></div>
-        <div class="form-group"><label>উপায় নম্বর</label><input type="text" id="adminUpayInput" placeholder="016xxxxxxxx"></div>
+        <div class="form-group"><label>রকেট নম্বর</label><input type="text" id="adminRocketInput" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="019xxxxxxxx" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
+        <div class="form-group"><label>উপায় নম্বর</label><input type="text" id="adminUpayInput" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="016xxxxxxxx" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
           <div><label style="font-size: 12px;">রকেট অন/অফ</label><select id="adminRocketToggle" style="padding: 8px; width: 100%; border-radius: 8px;"><option value="on">সচল (On)</option><option value="off">বন্ধ (Off)</option></select></div>
@@ -864,7 +868,7 @@
 
       <!-- ৬. ব্লগ ম্যানেজমেন্ট -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderBlogs'); loadAdminBlogs();">
-        <span>📝 ৭. ব্লগ ম্যানেজমেন্ট (SEO)</span>
+        <span>📝 ৮. ব্লগ ম্যানেজমেন্ট (SEO)</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderBlogs">
@@ -929,8 +933,33 @@
         </div>
       </div>
 
+      <div class="admin-folder" onclick="toggleAdminFolder('folderTrial')">
+        <span>🎁 ৬. Trial Pro সেটিংস</span>
+        <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
+      </div>
+      <div class="admin-sub-box" id="folderTrial">
+        <div style="background:#fff;border:1px solid #d1fae5;border-radius:12px;padding:10px;">
+          <div style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:8px;">ফ্রি Trial Pro চালু/বন্ধ</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="form-group" style="margin:0;">
+              <label>Trial Pro</label>
+              <select id="adminTrialToggle" style="padding:9px;width:100%;border-radius:8px;border:1px solid #cbd5e1;">
+                <option value="on">সচল (On)</option>
+                <option value="off">বন্ধ (Off)</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label>ট্রায়াল দিন</label>
+              <input type="text" id="adminTrialDays" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="7" style="padding:9px;width:100%;border-radius:8px;border:1px solid #cbd5e1;" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+            </div>
+          </div>
+          <p style="font-size:10px;color:#64748b;line-height:1.5;margin:8px 0 0;">এখান থেকে নতুন/বর্তমান ইউজারের ফ্রি ট্রায়ালের সময়সীমা নিয়ন্ত্রণ করা যাবে।</p>
+        </div>
+        <button class="btn-submit" onclick="saveAdminTrialSettings()" style="padding:10px;background:#059669;">Trial Pro সেটিংস সেভ করুন</button>
+      </div>
+
       <div class="admin-folder" onclick="toggleAdminFolder('folderNoticeVideo')">
-        <span>📢 ৬. রানিং নোটিশ ও ভিডিও টিউটোরিয়াল</span>
+        <span>📢 ৭. রানিং নোটিশ ও ভিডিও টিউটোরিয়াল</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderNoticeVideo">
@@ -948,6 +977,24 @@
       <div class="nav-item" id="navReport" onclick="switchTab('report')"><i data-lucide="bar-chart-3"></i><span>রিপোর্ট</span></div>
       <div class="nav-item" id="navSettings" onclick="switchTab('settings')"><i data-lucide="settings"></i><span>প্রোফাইল</span></div>
     </nav>
+
+    <!-- মাসিক বাজেট সেট করার মডাল -->
+    <div class="modal" id="budgetModal">
+      <div class="modal-content">
+        <button type="button" onclick="closeBudgetModal()" style="position:absolute; top:20px; right:20px; background:#f1f5f9; border:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#475569;">
+          <i data-lucide="x" style="width:18px; height:18px;"></i>
+        </button>
+        <div class="section-head"><h3>মাসিক বাজেট সেট করুন</h3></div>
+        <div class="form-group" style="margin-top:14px; margin-bottom:10px;">
+          <label>বাজেটের পরিমাণ (৳)</label>
+          <input type="text" id="budgetAmountInput" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" maxlength="12" placeholder="20000"
+            onbeforeinput="if(event.data && /[^0-9]/.test(event.data)) event.preventDefault()"
+            oninput="this.value=this.value.replace(/[^0-9]/g,''); updateBudgetSaveButton()"
+            onpaste="setTimeout(() => { this.value=this.value.replace(/[^0-9]/g,''); updateBudgetSaveButton(); }, 0)">
+        </div>
+        <button type="button" id="budgetSaveBtn" class="btn-submit" onclick="saveBudgetFromModal()">বাজেট সেভ করুন</button>
+      </div>
+    </div>
 
     <!-- পাসওয়ার্ড পরিবর্তনের মডাল -->
     <div class="modal" id="changePasswordModal">
@@ -992,7 +1039,7 @@
         <button onclick="document.getElementById('incomeModal').classList.remove('active')" style="position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #475569;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
         <div class="section-head"><h3>টাকা জমা যোগ করুন</h3></div>
         <form id="incomeForm" style="margin-top: 14px;">
-          <div class="form-group"><label>টাকার পরিমাণ (৳)</label><input type="number" id="incAmount" autocomplete="off" spellcheck="false" placeholder="1500" required></div>
+          <div class="form-group"><label>টাকার পরিমাণ (৳)</label><input type="text" id="incAmount" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="1500" required oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
           <div class="form-group"><label>খাত / বিষয়</label>
             <select id="incCategory" required>
               <option value="বেতন / চাকরি">বেতন / চাকরি</option>
@@ -1032,7 +1079,7 @@
         </div>
 
         <form id="singleExpenseForm">
-          <div class="form-group"><label>মোট টাকার পরিমাণ (৳)</label><input type="number" id="expAmount" autocomplete="off" spellcheck="false" placeholder="যেমন: 1500" required></div>
+          <div class="form-group"><label>মোট টাকার পরিমাণ (৳)</label><input type="text" id="expAmount" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="যেমন: 1500" required oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
           <div class="form-group"><label>খাত / বিষয়</label>
             <select id="expCategory" required>
               <option value="মুদি বাজার ও খাবার">মুদি বাজার ও খাবার</option>
@@ -1061,7 +1108,7 @@
         </form>
 
         <form id="memoExpenseForm" style="display: none;">
-          <div class="form-group"><label>মোট টাকার পরিমাণ (৳) [অটো যোগ হবে]</label><input type="number" id="memoTotalAmount" readonly style="background:#f8fafc; font-weight:700; color:#059669;" placeholder="0"></div>
+          <div class="form-group"><label>মোট টাকার পরিমাণ (৳) [অটো যোগ হবে]</label><input type="text" id="memoTotalAmount" inputmode="numeric" readonly style="background:#f8fafc; font-weight:700; color:#059669;" placeholder="0"></div>
           <div class="form-group"><label>খাত / বিষয়</label>
             <select id="memoCategory" required>
               <option value="মুদি বাজার ও খাবার">মুদি বাজার ও খাবার</option>
@@ -1091,7 +1138,7 @@
             <div id="memoItemsList" style="display: flex; flex-direction: column; gap: 8px;">
               <div class="memo-row" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; align-items: center;">
                 <input type="text" placeholder="পণ্যের নাম (যেমন: ২ কেজি আলু)" class="memo-name" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
-                <input type="number" autocomplete="off" spellcheck="false" placeholder="দাম (৳)" class="memo-price" oninput="calculateMemoTotal()" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="দাম (৳)" class="memo-price" oninput="this.value=this.value.replace(/[^0-9]/g,''); calculateMemoTotal()" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
                 <button type="button" onclick="this.parentElement.remove(); calculateMemoTotal();" style="background: #fee2e2; color: #dc2626; border: none; padding: 10px; border-radius: 10px; cursor: pointer;"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
               </div>
             </div>
@@ -1245,14 +1292,20 @@
           }
 
           if(data.trialActive !== undefined) globalTrialAllowed = data.trialActive;
-          if(data.trialDays !== undefined) trialDaysLimit = data.trialDays;
+          if(data.trialDays !== undefined) trialDaysLimit = Math.max(1, Number(data.trialDays) || 7);
+          const trialToggleEl = document.getElementById('adminTrialToggle');
+          const trialDaysEl = document.getElementById('adminTrialDays');
+          if (trialToggleEl) trialToggleEl.value = globalTrialAllowed ? 'on' : 'off';
+          if (trialDaysEl) trialDaysEl.value = String(trialDaysLimit);
 
           if(data.prices) {
             document.getElementById('price1m').textContent = `৳${data.prices['1m'] || 49}`;
             document.getElementById('price6m').textContent = `৳${data.prices['6m'] || 249}`;
             document.getElementById('price1y').textContent = `৳${data.prices['1y'] || 399}`;
             updatePlanSavingsBadges(data.prices);
-            selectPlan(currentPlan.id, data.prices[currentPlan.id], currentPlan.name, currentPlan.days);
+            const fallbackPrices = { '1m': 49, '6m': 249, '1y': 399 };
+            const safePrice = Number(data.prices[currentPlan.id]) || fallbackPrices[currentPlan.id] || currentPlan.price;
+            selectPlan(currentPlan.id, safePrice, currentPlan.name, currentPlan.days);
           }
 
           const noticeBar = document.getElementById('running-notice-bar');
@@ -1341,6 +1394,9 @@
     function updateGatewayDisplay() {
       const titleEl = document.getElementById('gatewayTitle');
       const numEl = document.getElementById('display-gateway-num');
+      if (!titleEl || !numEl) return;
+      titleEl.classList.remove('gateway-title-bkash','gateway-title-nagad','gateway-title-rocket','gateway-title-upay');
+      titleEl.classList.add(`gateway-title-${selectedGateway}`);
       if(selectedGateway === 'bkash') { titleEl.textContent = "bKash Send Money:"; numEl.textContent = globalGateways.bkash; }
       else if(selectedGateway === 'nagad') { titleEl.textContent = "Nagad Send Money:"; numEl.textContent = globalGateways.nagad; }
       else if(selectedGateway === 'rocket') { titleEl.textContent = "Rocket Send Money:"; numEl.textContent = globalGateways.rocket; }
@@ -1497,6 +1553,11 @@
       };
       if (errorBox) { errorBox.textContent = ''; errorBox.style.display = 'none'; }
       
+      if (!phoneOrEmail.includes('@') && /[^0-9]/.test(phoneOrEmail)) {
+        showError('মোবাইল নম্বরে শুধু ইংরেজি সংখ্যা (0-9) ব্যবহার করুন।');
+        return;
+      }
+
       const email = phoneOrEmail.includes('@') ? phoneOrEmail : `${phoneOrEmail}@smartkhoroch.app`;
 
       if (authMode === 'register') {
@@ -1507,7 +1568,11 @@
           const cred = await createUserWithEmailAndPassword(auth, email, pass);
           await setDoc(doc(db, "users", cred.user.uid), { name, phone: phoneOrEmail, email, isSubscribed: false, subDays: 30, createdAt: new Date(), lastActive: new Date() });
         } catch (err) {
-          showError('রেজিস্ট্রেশন করা যায়নি। তথ্যগুলো সঠিকভাবে দিন।');
+          if (err?.code === 'auth/email-already-in-use') {
+            showError('এই নম্বর দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে।');
+          } else {
+            showError('রেজিস্ট্রেশন করা যায়নি। তথ্যগুলো সঠিকভাবে দিন।');
+          }
           submitBtn.disabled = false;
           submitBtn.textContent = 'রেজিস্ট্রেশন';
         }
@@ -1551,11 +1616,19 @@
       if (!currentUserGlobal) return alert('প্রথমে লগইন বা রেজিস্ট্রেশন করুন!');
       const senderPhone = document.getElementById('paySenderPhone').value.trim();
       if (!senderPhone) return alert('যে নম্বর থেকে টাকা পাঠিয়েছেন তা লিখুন!');
+      if (!/^[0-9]+$/.test(senderPhone)) return alert('মোবাইল নম্বরে শুধু ইংরেজি সংখ্যা (0-9) ব্যবহার করুন।');
+      if (!selectedGateway || !globalGateways[selectedGateway]) return alert('পেমেন্ট মাধ্যমটি সঠিকভাবে নির্বাচন করুন।');
+      if (!currentPlan || !currentPlan.id || !Number.isFinite(Number(currentPlan.price)) || Number(currentPlan.price) <= 0) {
+        return alert('প্যাকেজটি সঠিকভাবে নির্বাচন করুন। আবার চেষ্টা করুন।');
+      }
 
       try {
-        const q = query(collection(db, "payments"), where("uid", "==", currentUserGlobal.uid), where("status", "==", "pending"));
+        // শুধু UID দিয়ে পেমেন্টগুলো আনা হচ্ছে; এতে Firestore composite-index-এর উপর
+        // নির্ভর করতে হয় না। এরপর pending status client-side-এ যাচাই করা হবে।
+        const q = query(collection(db, "payments"), where("uid", "==", currentUserGlobal.uid));
         const qSnap = await getDocs(q);
-        if(!qSnap.empty) {
+        const hasPending = qSnap.docs.some(d => d.data()?.status === 'pending');
+        if(hasPending) {
           return alert('আপনার একটি পেমেন্ট রিকোয়েস্ট ইতিমধ্যে পেন্ডিং রয়েছে। অ্যাডমিন এপ্রুভ করা পর্যন্ত অপেক্ষা করুন।');
         }
 
@@ -1565,27 +1638,31 @@
           gateway: selectedGateway,
           packageId: currentPlan.id,
           packageName: currentPlan.name,
-          packageDays: currentPlan.days,
-          amount: currentPlan.price,
+          packageDays: Number(currentPlan.days),
+          amount: Number(currentPlan.price),
           status: 'pending',
           createdAt: new Date()
         });
         alert('আপনার পেমেন্ট রিকোয়েস্ট সফলভাবে জমা হয়েছে! অ্যাডমিন যাচাই করে দ্রুত অ্যাকাউন্ট এপ্রুভ করে দেবেন।');
         checkPendingRequestLock(currentUserGlobal.uid);
-      } catch (err) { alert('রিকোয়েস্ট পাঠানো যায়নি!'); }
+      } catch (err) {
+        console.error('Payment request error:', err);
+        alert('পেমেন্ট রিকোয়েস্ট পাঠানো যায়নি। ইন্টারনেট সংযোগ/Firebase permission পরীক্ষা করে আবার চেষ্টা করুন।');
+      }
     };
 
     async function checkPendingRequestLock(uid) {
       try {
-        const q = query(collection(db, "payments"), where("uid", "==", uid), where("status", "==", "pending"));
+        const q = query(collection(db, "payments"), where("uid", "==", uid));
         const qSnap = await getDocs(q);
         const boxTitle = document.getElementById('payBoxTitle');
         const boxContent = document.getElementById('payBoxContent');
-        if(!qSnap.empty) {
+        const hasPending = qSnap.docs.some(d => d.data()?.status === 'pending');
+        if(hasPending) {
           boxTitle.textContent = "পেমেন্ট স্ট্যাটাস";
           boxContent.innerHTML = `<div style="background:#fef3c7; color:#92400e; padding:12px; border-radius:10px; font-size:13px; font-weight:600;">⏳ আপনার পেমেন্ট রিকোয়েস্টটি পেন্ডিং রয়েছে। অ্যাডমিন এপ্রুভ করলে অ্যাকাউন্ট সচল হবে।</div>`;
         }
-      } catch(e) {}
+      } catch(e) { console.warn('Pending payment check skipped:', e); }
     }
 
     window.toggleAdminFolder = function(folderId) {
@@ -1866,6 +1943,30 @@
       }
     };
 
+    window.saveAdminTrialSettings = async function() {
+      const toggleEl = document.getElementById('adminTrialToggle');
+      const daysEl = document.getElementById('adminTrialDays');
+      const trialActive = toggleEl?.value === 'on';
+      const rawDays = (daysEl?.value || '').trim();
+
+      if (!/^[0-9]+$/.test(rawDays) || Number(rawDays) < 1) {
+        alert('ট্রায়ালের দিন শুধু ইংরেজি সংখ্যা (0-9) দিয়ে ১ বা তার বেশি লিখুন।');
+        return;
+      }
+
+      try {
+        const trialDays = Number(rawDays);
+        await setDoc(doc(db, "settings", "appSettings"), { trialActive, trialDays }, { merge: true });
+        globalTrialAllowed = trialActive;
+        trialDaysLimit = trialDays;
+        alert('Trial Pro সেটিংস সফলভাবে আপডেট হয়েছে!');
+        fetchAdminSettings();
+      } catch (e) {
+        console.error('Trial settings save error:', e);
+        alert('Trial Pro সেটিংস আপডেট করা যায়নি!');
+      }
+    };
+
     window.saveAdminGatewaySettings = async function() {
       const bkash = document.getElementById('adminBkashInput').value.trim();
       const nagad = document.getElementById('adminNagadInput').value.trim();
@@ -1873,6 +1974,11 @@
       const upay = document.getElementById('adminUpayInput').value.trim();
       const rocketOn = document.getElementById('adminRocketToggle').value === 'on';
       const upayOn = document.getElementById('adminUpayToggle').value === 'on';
+
+      if (![bkash, nagad, rocket, upay].every(v => /^[0-9]+$/.test(v))) {
+        alert('পেমেন্ট নম্বরে শুধু ইংরেজি সংখ্যা (0-9) ব্যবহার করুন।');
+        return;
+      }
 
       try {
         await setDoc(doc(db, "settings", "appSettings"), {
@@ -2038,6 +2144,7 @@
 
         userDataLoaded = true;
         updateDashboard();
+        trackFeatureUsage('dashboard', true);
       } catch (err) {
         console.error('User data load error:', err);
         const loadingScreen = document.getElementById('dataLoadingScreen');
@@ -2073,19 +2180,33 @@
 
     const featureTrackLabels = { dashboard:'ড্যাশবোর্ড', transactions:'লেনদেন', budget:'বাজেট', report:'রিপোর্ট', premium:'Premium', feedback:'Feedback' };
 
-    function trackFeatureUsage(feature) {
+    const featureTrackInFlight = new Set();
+
+    async function trackFeatureUsage(feature, force = false) {
       const activeUser = auth.currentUser || currentUserGlobal;
-      if (!activeUser || activeUser.email === ADMIN_EMAIL || !featureTrackLabels[feature]) return;
-      const key = `smartkhoroch_track_${feature}`;
+      if (!activeUser || activeUser.email === ADMIN_EMAIL || !featureTrackLabels[feature]) return false;
+
+      const key = `smartkhoroch_track_${activeUser.uid}_${feature}`;
       const now = Date.now();
       const last = Number(sessionStorage.getItem(key) || 0);
-      if (last && now - last < 10 * 60 * 1000) return;
-      sessionStorage.setItem(key, String(now));
-      setDoc(doc(db, 'users', activeUser.uid), {
-        [`usage.${feature}.count`]: increment(1),
-        [`usage.${feature}.lastUsed`]: new Date(),
-        [`usage.${feature}.used`]: true
-      }, { merge:true }).catch(err => console.warn('Feature tracking skipped:', feature, err));
+      if (!force && last && now - last < 10 * 60 * 1000) return true;
+      if (featureTrackInFlight.has(key)) return true;
+
+      featureTrackInFlight.add(key);
+      try {
+        await setDoc(doc(db, 'users', activeUser.uid), {
+          [`usage.${feature}.count`]: increment(1),
+          [`usage.${feature}.lastUsed`]: new Date(),
+          [`usage.${feature}.used`]: true
+        }, { merge:true });
+        sessionStorage.setItem(key, String(now));
+        return true;
+      } catch (err) {
+        console.warn('Feature tracking skipped:', feature, err);
+        return false;
+      } finally {
+        featureTrackInFlight.delete(key);
+      }
     }
 
     window.trackFeedbackUsage = function() { trackFeatureUsage('feedback'); };
@@ -2141,22 +2262,55 @@
       document.getElementById('authSubmitBtn').textContent = mode === 'register' ? 'রেজিস্ট্রেশন করুন' : 'লগইন';
     };
 
-    window.setBudgetPrompt = async function() {
+    window.setBudgetPrompt = function() {
       const activeUser = auth.currentUser || currentUserGlobal;
       if (!activeUser || !activeUser.uid) {
         alert('প্রথমে লগইন করুন।');
         return;
       }
 
-      const b = window.prompt('মাসিক বাজেট লিখুন:', monthlyBudget);
-      if (b === null) return;
+      const input = document.getElementById('budgetAmountInput');
+      const modal = document.getElementById('budgetModal');
+      if (!input || !modal) return;
 
-      const value = Number(String(b).replace(/[৳,\s]/g, '').trim());
-      if (!Number.isFinite(value) || value <= 0) {
-        alert('সঠিক বাজেটের পরিমাণ লিখুন।');
-        return;
-      }
+      input.value = Number(monthlyBudget) > 0 ? String(monthlyBudget) : '';
+      modal.classList.add('active');
+      updateBudgetSaveButton();
+      setTimeout(() => {
+        input.focus();
+        input.select();
+      }, 50);
+      if (window.lucide) lucide.createIcons();
+    };
 
+    window.closeBudgetModal = function() {
+      const modal = document.getElementById('budgetModal');
+      if (modal) modal.classList.remove('active');
+    };
+
+    window.updateBudgetSaveButton = function() {
+      const input = document.getElementById('budgetAmountInput');
+      const btn = document.getElementById('budgetSaveBtn');
+      if (!input || !btn) return;
+      const value = Number(input.value);
+      const valid = /^[0-9]+$/.test(input.value.trim()) && Number.isFinite(value) && value > 0;
+      btn.disabled = !valid;
+      btn.style.opacity = valid ? '1' : '0.5';
+      btn.style.cursor = valid ? 'pointer' : 'not-allowed';
+    };
+
+    window.saveBudgetFromModal = async function() {
+      const activeUser = auth.currentUser || currentUserGlobal;
+      const input = document.getElementById('budgetAmountInput');
+      const btn = document.getElementById('budgetSaveBtn');
+      if (!activeUser || !activeUser.uid || !input || !btn) return;
+
+      const budgetText = input.value.trim();
+      if (!/^[0-9]+$/.test(budgetText)) return;
+      const value = Number(budgetText);
+      if (!Number.isFinite(value) || value <= 0) return;
+
+      btn.disabled = true;
       try {
         await setDoc(doc(db, 'users', activeUser.uid), {
           monthlyBudget: value
@@ -2164,9 +2318,11 @@
 
         monthlyBudget = value;
         updateDashboard();
+        closeBudgetModal();
       } catch (err) {
         console.error('Budget save error:', err);
-        alert('বাজেট সেভ করা যায়নি। আবার চেষ্টা করুন।');
+        btn.disabled = false;
+        updateBudgetSaveButton();
       }
     };
 
@@ -2209,7 +2365,7 @@
       row.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; align-items: center;';
       row.innerHTML = `
         <input type="text" placeholder="পণ্যের নাম (যেমন: ২ কেজি আলু)" class="memo-name" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
-        <input type="number" autocomplete="off" spellcheck="false" placeholder="দাম (৳)" class="memo-price" oninput="calculateMemoTotal()" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="দাম (৳)" class="memo-price" oninput="this.value=this.value.replace(/[^0-9]/g,''); calculateMemoTotal()" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
         <button type="button" onclick="this.parentElement.remove(); calculateMemoTotal();" style="background: #fee2e2; color: #dc2626; border: none; padding: 10px; border-radius: 10px; cursor: pointer;"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
       `;
       container.appendChild(row);
