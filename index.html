@@ -172,13 +172,40 @@
     }
     #paywallScreen.active { display: flex; }
     #paywallScreen .premium-topbar,
-    #paywallScreen .premium-logo,
-    #paywallScreen .premium-back-btn { display: none; }
+    #paywallScreen .premium-logo { display: none; }
+    #paywallScreen .premium-back-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      align-self: flex-start;
+      margin: 0 0 6px 0;
+      padding: 8px 12px;
+      border: 1px solid #dbe7e0;
+      border-radius: 10px;
+      background: #fff;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(15,23,42,.05);
+    }
+    #paywallScreen .premium-back-btn:active { transform: scale(.98); }
     .plans-container { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 340px; margin: 14px 0; }
     .plan-card { border: 2px solid #e2ece6; background: #fff; border-radius: 16px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: left; }
     .plan-card.selected { border-color: #059669; background: #ecfdf5; }
     .plan-title { font-size: 14px; font-weight: 700; color: #0f172a; }
     .plan-price { font-size: 18px; font-weight: 800; color: #064e3b; }
+
+
+    /* Standard Back Button — সব সাব-পেজে একই ডিজাইন */
+    .standard-back-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 12px; border: 1px solid #dbe7e0; border-radius: 10px;
+      background: #fff; color: #334155; font-size: 13px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 1px 3px rgba(15,23,42,.05);
+      white-space: nowrap;
+    }
+    .standard-back-btn:active { transform: scale(.98); }
 
     .expense-tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: 700; font-size: 13px; border-radius: 10px; cursor: pointer; background: #f1f5f9; color: #64748b; border: none; }
     .expense-tab-btn.active { background: #fff; color: #059669; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
@@ -349,7 +376,16 @@
     @keyframes smartLoadingDots { 0%,100% { opacity: 0.2; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
     @keyframes smartLoadingProgress { 0% { transform: translateX(-120%); } 70%,100% { transform: translateX(300%); } }
 
-  </style>
+  
+    #paywallScreen .premium-back-btn {
+      display:inline-flex; align-items:center; gap:7px; align-self:flex-start;
+      margin:0 0 6px 0; padding:8px 12px; border:1px solid #dbe7e0;
+      border-radius:10px; background:#fff; color:#334155; font-size:13px;
+      font-weight:700; cursor:pointer; box-shadow:0 1px 3px rgba(15,23,42,.05);
+      white-space:nowrap;
+    }
+    #paywallScreen .premium-back-btn:active { transform:scale(.98); }
+</style>
 
   <!-- Blog editor (Word-style formatting) -->
   <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
@@ -394,6 +430,10 @@
 
     <!-- পেওয়াল স্ক্রিন -->
     <div class="fullscreen-overlay" id="paywallScreen">
+      <button type="button" class="premium-back-btn standard-back-btn" onclick="closePaywall()" aria-label="ফিরে যান">
+        <i data-lucide="arrow-left" style="width: 17px; height: 17px;"></i>
+        <span>ফিরে যান</span>
+      </button>
       <div style="background: #fff7ed; padding: 14px; border-radius: 50%; color: #ea580c; margin-top: 4px; margin-bottom: 8px;">
         <i data-lucide="crown" style="width: 32px; height: 32px; color: #d97706;"></i>
       </div>
@@ -470,16 +510,25 @@
     <!-- ড্যাশবোর্ড ট্যাব -->
     <div class="tab-view" id="viewDashboard">
 
+      <section style="background:#fff; border:1px solid #e2ece6; border-radius:16px; padding:10px 12px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <button type="button" onclick="changeDashboardMonth(-1)" style="border:0;background:#ecfdf5;color:#047857;width:34px;height:34px;border-radius:10px;font-size:20px;cursor:pointer;">‹</button>
+        <div style="text-align:center;flex:1;">
+          <div style="font-size:10px;color:#64748b;">মাসের হিসাব</div>
+          <strong id="dashboardMonthLabel" style="font-size:14px;color:#0f172a;">এই মাস</strong>
+        </div>
+        <button type="button" onclick="changeDashboardMonth(1)" style="border:0;background:#ecfdf5;color:#047857;width:34px;height:34px;border-radius:10px;font-size:20px;cursor:pointer;">›</button>
+      </section>
+
       <section class="hero-card">
         <p class="balance-subtitle">বর্তমানে হাতে আছে</p>
         <h2 class="balance-hero" id="netBalance">৳0</h2>
-        <div class="monthly-net"><span id="savingsRateLabel">হিসাব আপডেট</span></div>
+        <div class="monthly-net"><span id="savingsRateLabel">নির্বাচিত মাসের হিসাব</span></div>
         <div class="in-out-grid">
           <div class="stat-pill in">
-            <div class="stat-info" style="text-align: left;"><span class="stat-title">টাকা এলো</span><div class="stat-val" id="totalIncome">৳0</div></div>
+            <div class="stat-info" style="text-align: left;"><span class="stat-title">এই মাসে এলো</span><div class="stat-val" id="totalIncome">৳0</div></div>
           </div>
           <div class="stat-pill out">
-            <div class="stat-info" style="text-align: right;"><span class="stat-title">খরচ হলো</span><div class="stat-val" id="totalExpense">৳0</div></div>
+            <div class="stat-info" style="text-align: right;"><span class="stat-title">এই মাসে গেলো</span><div class="stat-val" id="totalExpense">৳0</div></div>
           </div>
         </div>
       </section>
@@ -529,6 +578,14 @@
         <input type="text" id="txSearchInput" oninput="filterTransactions()" placeholder="পণ্যের নাম বা বিবরণ লিখে খুঁজুন..." autocomplete="off" style="width: 100%; padding: 12px 14px 12px 40px; border: 1px solid #cbd5e1; border-radius: 14px; font-size: 13px; outline: none; background: #fff;">
       </div>
 
+      <div style="background:#fff;border:1px solid #e2ece6;border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;font-weight:800;color:#064e3b;white-space:nowrap;">মাসের হিসাব</span>
+        <select id="txMonthSelect" onchange="selectTxMonth(this.value)" style="flex:1;border:1px solid #dbe5df;border-radius:10px;padding:9px;font-weight:700;color:#0f172a;background:#fff;outline:none;">
+          <option value="">চলতি মাস</option>
+        </select>
+      </div>
+      <div id="txMonthSummary" style="background:#f8fffb;border:1px solid #dff3e7;border-radius:14px;padding:10px 12px;display:none;"></div>
+
       <div style="display: flex; gap: 8px;">
         <button class="filter-btn active" id="filterAll" onclick="setTxFilter('all')">সব হিসাব</button>
         <button class="filter-btn" id="filterIncome" onclick="setTxFilter('income')">টাকা জমা (+)</button>
@@ -542,7 +599,7 @@
     <div class="tab-view" id="viewBudget">
       <div class="section-head">
         <h3>মাসিক বাজেট ও সেফটি গার্ড</h3>
-        <button onclick="setBudgetPrompt()" style="background:none; border:none; color:#059669; font-weight:700; cursor:pointer; font-size: 13px;">বাজেট বদলান</button>
+        <button onclick="setBudgetPrompt()" style="background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;font-weight:800;cursor:pointer;font-size:12px;padding:7px 10px;border-radius:10px;">💰 মাসিক বাজেট সেট করুন</button>
       </div>
       <p style="font-size: 12px; color: #64748b; margin-top: -8px;">মাসের টানাটানি ও ধার-দেনা রোধ করুন</p>
 
@@ -573,6 +630,16 @@
         </div>
       </div>
 
+      <button type="button" onclick="openNeedsView()" style="width:100%;text-align:left;background:#fff;border:1px solid #e2ece6;border-radius:20px;padding:16px;margin-top:10px;cursor:pointer;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:40px;height:40px;border-radius:12px;background:#ecfdf5;color:#059669;display:flex;align-items:center;justify-content:center;"><i data-lucide="clipboard-list" style="width:20px;height:20px;"></i></div>
+            <div><div style="font-size:15px;font-weight:800;color:#064e3b;">📝 প্রয়োজনের তালিকা</div><div style="font-size:11px;color:#64748b;margin-top:3px;">কী কী কিনতে/করতে হবে তা আলাদা করে রাখুন</div></div>
+          </div>
+          <span style="font-size:22px;color:#94a3b8;">›</span>
+        </div>
+      </button>
+
       <div style="background: #fff; border: 1px solid #e2ece6; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 8px; color: #064e3b; font-weight: 700; font-size: 15px;">
           <i data-lucide="info" style="width: 18px; height: 18px;"></i>
@@ -591,6 +658,13 @@
         <button onclick="exportToExcel()" style="background:none; border:none; color:#059669; font-weight:700; cursor:pointer; font-size: 13px;">Excel শিট ডাউনলোড</button>
       </div>
       <p style="font-size: 12px; color: #64748b; margin-top: -8px;">টাকা কোথায় বেশি যাচ্ছে জানুন</p>
+
+      <div class="report-month-picker" style="background:#fff;border:1px solid #e2ece6;border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+        <button type="button" onclick="changeReportMonth(-1)" aria-label="আগের মাস" style="width:34px;height:34px;border:1px solid #dbe7e1;background:#f8fafc;color:#047857;border-radius:10px;font-size:20px;line-height:1;cursor:pointer;">‹</button>
+        <select id="reportMonthSelect" onchange="selectReportMonth(this.value)" style="flex:1;min-width:0;border:1px solid #cbd5e1;background:#fff;color:#0f172a;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:700;outline:none;text-align:center;"></select>
+        <button type="button" onclick="changeReportMonth(1)" aria-label="পরের মাস" style="width:34px;height:34px;border:1px solid #dbe7e1;background:#f8fafc;color:#047857;border-radius:10px;font-size:20px;line-height:1;cursor:pointer;">›</button>
+      </div>
+      <div id="reportSelectedMonthText" style="font-size:11px;color:#64748b;text-align:center;margin-top:-5px;">এই মাসের আয়-খরচের বিশ্লেষণ</div>
 
       <div class="report-card">
         <h4 style="font-size: 15px; font-weight: 700; color: #0f172a;">মোট আয় ও ব্যয়ের অনুপাত</h4>
@@ -629,9 +703,9 @@
       </div>
     </div>
 
-    <!-- সেটিংস ও প্রোফাইল ট্যাব (অ্যাকর্ডিয়ন প্রোফাইল কার্ড সহ) -->
+    <!-- সেটিংস ট্যাব -->
     <div class="tab-view active" id="viewSettings">
-      <div class="section-head"><h3>প্রোফাইল ও সেটিংস</h3></div>
+      <div class="section-head"><h3>সেটিংস</h3></div>
       
       <div id="authContainer" class="settings-card">
         <div class="auth-tab-box" style="display:flex; background:#f1f5f9; padding:4px; border-radius:10px; margin-bottom:10px;">
@@ -682,18 +756,7 @@
       </div>
 
       <div class="settings-menu-grid">
-        <div class="settings-card settings-menu-item settings-menu-half" style="gap: 8px; padding: 10px; cursor:pointer;" onclick="setBudgetPrompt()">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="background: #e0f2fe; color: #0284c7; width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink:0;"><i data-lucide="wallet" style="width: 17px; height: 17px;"></i></div>
-            <div style="min-width:0;">
-              <h5 style="font-weight: 700; color: #0f172a;">মাসিক বাজেট</h5>
-              <p style="color: #64748b; margin-top:2px;">খরচের টার্গেট সেট করুন</p>
-            </div>
-          </div>
-          <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #94a3b8; align-self:flex-end;"></i>
-        </div>
-
-        <div class="settings-card settings-menu-item settings-menu-half" style="gap: 8px; padding: 10px; cursor:pointer;" onclick="openSubscriptionModal()">
+<div class="settings-card settings-menu-item settings-menu-half" style="gap: 8px; padding: 10px; cursor:pointer;" onclick="openSubscriptionModal()">
           <div style="display: flex; align-items: center; gap: 8px;">
             <div style="background: #fef3c7; color: #d97706; width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink:0;"><i data-lucide="crown" style="width: 17px; height: 17px;"></i></div>
             <div style="min-width:0;">
@@ -792,12 +855,12 @@
       </div>
 
       <!-- ২. ইউজার ফিচার ব্যবহার -->
-      <div class="admin-folder" onclick="toggleAdminFolder('folderUsage'); renderAdminFeatureUsage();">
+      <div class="admin-folder" onclick="toggleAdminFolder('folderUsage'); window.renderAdminFeatureUsage();">
         <span>📈 ২. ইউজার ফিচার ব্যবহার ও গ্রহণযোগ্যতা</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderUsage">
-        <p style="font-size:11px;color:#64748b;margin:0 0 9px;line-height:1.6;">Tracking চালু হওয়ার পর থেকে কতজন ইউজার কোন ফিচার ব্যবহার করেছেন, তা এখানে দেখা যাবে।</p>
+        <p id="adminFeatureUsageStatus" style="font-size:11px;color:#64748b;margin:0 0 9px;line-height:1.6;">Firebase থেকে সর্বশেষ Tracking ডাটা লোড করা হচ্ছে...</p>
         <div id="adminFeatureUsageList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
         <div id="adminFeatureUsersBox" style="display:none;margin-top:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px;">
           <div id="adminFeatureUsersTitle" style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:8px;"></div>
@@ -807,7 +870,7 @@
 
       <!-- ৩. পেমেন্ট রিকোয়েস্ট ফোল্ডার -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderPayments')">
-        <span>💳 ২. পেমেন্ট রিকোয়েস্টসমূহ</span>
+        <span>💳 ৩. পেমেন্ট রিকোয়েস্টসমূহ</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderPayments">
@@ -816,7 +879,7 @@
         </div>
       </div>
 
-      <!-- ৩. ইউজার লিস্ট ও পাসওয়ার্ড রিসেট ফোল্ডার -->
+      <!-- ৪. ইউজার লিস্ট ও পাসওয়ার্ড রিসেট ফোল্ডার -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderUsers')">
         <span>👥 ৪. ইউজার লিস্ট, সার্চ ও পাসওয়ার্ড রিসেট</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
@@ -831,9 +894,9 @@
         </div>
       </div>
 
-      <!-- ৪. ব্যবহারকারীর মতামত -->
+      <!-- ৫. ব্যবহারকারীর মতামত -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderFeedback'); loadAdminFeedback();">
-        <span>💬 ৪. ব্যবহারকারীর মতামত</span>
+        <span>💬 ৫. ব্যবহারকারীর মতামত</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderFeedback">
@@ -846,9 +909,9 @@
         </div>
       </div>
 
-      <!-- ৫. পেমেন্ট গেটওয়ে ফোল্ডার (আলাদা) -->
+      <!-- ৬. পেমেন্ট গেটওয়ে ফোল্ডার (আলাদা) -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderGateway')">
-        <span>💳 ৫. পেমেন্ট গেটওয়ে নম্বর ও অন/অফ</span>
+        <span>💳 ৬. পেমেন্ট গেটওয়ে নম্বর ও অন/অফ</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderGateway">
@@ -866,9 +929,9 @@
 
       <!-- ৬. নোটিশ ও ভিডিও গাইড ফোল্ডার (আলাদা) -->
 
-      <!-- ৬. ব্লগ ম্যানেজমেন্ট -->
+      <!-- ৯. ব্লগ ম্যানেজমেন্ট -->
       <div class="admin-folder" onclick="toggleAdminFolder('folderBlogs'); loadAdminBlogs();">
-        <span>📝 ৮. ব্লগ ম্যানেজমেন্ট (SEO)</span>
+        <span>📝 ৯. ব্লগ ম্যানেজমেন্ট (SEO)</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderBlogs">
@@ -934,7 +997,7 @@
       </div>
 
       <div class="admin-folder" onclick="toggleAdminFolder('folderTrial')">
-        <span>🎁 ৬. Trial Pro সেটিংস</span>
+        <span>🎁 ৮. Trial Pro সেটিংস</span>
         <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
       </div>
       <div class="admin-sub-box" id="folderTrial">
@@ -975,7 +1038,7 @@
       <div class="nav-item" id="navTransactions" onclick="switchTab('transactions')"><i data-lucide="arrow-left-right"></i><span>লেনদেন</span></div>
       <div class="nav-item" id="navBudget" onclick="switchTab('budget')"><i data-lucide="pie-chart"></i><span>বাজেট</span></div>
       <div class="nav-item" id="navReport" onclick="switchTab('report')"><i data-lucide="bar-chart-3"></i><span>রিপোর্ট</span></div>
-      <div class="nav-item" id="navSettings" onclick="switchTab('settings')"><i data-lucide="settings"></i><span>প্রোফাইল</span></div>
+      <div class="nav-item" id="navSettings" onclick="switchTab('settings')"><i data-lucide="settings"></i><span>সেটিংস</span></div>
     </nav>
 
     <!-- মাসিক বাজেট সেট করার মডাল -->
@@ -984,9 +1047,7 @@
         <button type="button" onclick="closeBudgetModal()" style="position:absolute; top:20px; right:20px; background:#f1f5f9; border:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#475569;">
           <i data-lucide="x" style="width:18px; height:18px;"></i>
         </button>
-        <div class="section-head"><h3>মাসিক বাজেট সেট করুন</h3></div>
-        <div class="form-group" style="margin-top:14px; margin-bottom:10px;">
-          <label>বাজেটের পরিমাণ (৳)</label>
+        <div class="section-head"><h3>💰 মাসিক বাজেট সেট করুন</h3></div><p style="font-size:12px;color:#64748b;line-height:1.5;margin-top:2px;">এই মাসে আপনি সর্বোচ্চ কত টাকা খরচ করতে চান?</p><div class="form-group" style="margin-top:14px;margin-bottom:10px;"><label>টাকার পরিমাণ লিখুন</label>
           <input type="text" id="budgetAmountInput" inputmode="numeric" enterkeyhint="done" pattern="[0-9]*" autocomplete="off" spellcheck="false" maxlength="12" placeholder="20000"
             onbeforeinput="if(event.data && /[^0-9]/.test(event.data)) event.preventDefault()"
             oninput="this.value=this.value.replace(/[^0-9]/g,''); updateBudgetSaveButton()"
@@ -1191,6 +1252,28 @@
           <p style="color: #64748b; font-size: 13px;">ভিডিও লিংক অ্যাডমিন প্যানেল থেকে যুক্ত করা হবে।</p>
         </div>
       </div>
+    </div>
+
+    <!-- প্রয়োজনের তালিকা পূর্ণ পেজ/ভিউ -->
+    <div class="tab-view" id="viewNeeds" style="padding-bottom:18px;">
+      <div class="section-head" style="margin-bottom:4px;">
+        <button type="button" class="standard-back-btn" onclick="closeNeedsView()" aria-label="ফিরে যান"><i data-lucide="arrow-left" style="width:17px;height:17px;"></i><span>ফিরে যান</span></button>
+        <h3 style="flex:1;text-align:center;">📝 প্রয়োজনের তালিকা</h3>
+        <div style="width:36px;"></div>
+      </div>
+      <p style="font-size:12px;color:#64748b;margin:0;line-height:1.5;text-align:center;">এটি শুধু পরিকল্পনার তালিকা। আনুমানিক দাম কোনো ব্যালেন্স, আয়, খরচ বা রিপোর্টে যোগ হবে না।</p>
+
+      <div style="background:#f8fffb;border:1px solid #dff3e7;border-radius:16px;padding:12px;margin-top:10px;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:150px;"><label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:5px;">প্রয়োজনের নাম</label><input id="needNameInput" type="text" placeholder="যেমন: বাজারের ব্যাগ" style="width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:10px;outline:none;"></div>
+        <div style="width:38%;min-width:120px;"><label style="display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:5px;">আনুমানিক দাম (ঐচ্ছিক)</label><input id="needPriceInput" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="৳ 0" style="width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:10px;outline:none;" onbeforeinput="if(event.data && /[^0-9]/.test(event.data)) event.preventDefault()" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onpaste="setTimeout(() => { this.value=this.value.replace(/[^0-9]/g,''); }, 0)"></div>
+        <button type="button" onclick="saveNewNeedFromForm()" style="border:0;background:#059669;color:#fff;border-radius:10px;padding:11px 14px;font-weight:800;cursor:pointer;white-space:nowrap;">যোগ করুন</button>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+        <div style="font-size:13px;font-weight:800;color:#0f172a;">আপনার প্রয়োজনগুলো</div>
+        <div id="needsCountText" style="font-size:11px;color:#64748b;"></div>
+      </div>
+      <div id="needsList" style="display:flex;flex-direction:column;gap:7px;margin-top:8px;"><p style="text-align:center;color:#94a3b8;font-size:12px;padding:8px;">কোনো প্রয়োজনের তালিকা নেই।</p></div>
     </div>
 
     <!-- শর্তাবলী ও গোপনীয়তা নীতি মডাল -->
@@ -1567,7 +1650,7 @@
         submitBtn.textContent = 'রেজিস্ট্রেশন হচ্ছে...';
         try {
           const cred = await createUserWithEmailAndPassword(auth, email, pass);
-          await setDoc(doc(db, "users", cred.user.uid), { name, phone: phoneOrEmail, email, isSubscribed: false, subDays: 30, createdAt: new Date(), lastActive: new Date() });
+          await setDoc(doc(db, "users", cred.user.uid), { name, phone: phoneOrEmail, email, isSubscribed: false, subDays: 30, createdAt: new Date(), lastActive: new Date(), usage: { dashboard: { count: 0, used: false }, transactions: { count: 0, used: false }, budget: { count: 0, used: false }, report: { count: 0, used: false }, premium: { count: 0, used: false }, feedback: { count: 0, used: false } } });
         } catch (err) {
           if (err?.code === 'auth/email-already-in-use') {
             showError('এই নম্বর দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে।');
@@ -1798,7 +1881,7 @@
             daysLeft,
             lastActiveMs: u.lastActive ? (u.lastActive.toMillis ? u.lastActive.toMillis() : new Date(u.lastActive).getTime()) : 0,
             lastActive: u.lastActive ? new Date(u.lastActive.toMillis ? u.lastActive.toMillis() : u.lastActive).toLocaleString('bn-BD') : 'অজানা',
-            usage: u.usage || {}
+            usage: normalizeAdminUsage(u)
           });
         });
 
@@ -1809,6 +1892,9 @@
         renderAdminFeatureUsage();
       } catch(e) { document.getElementById('adminUsersList').innerHTML = `<p style="color:red; font-size:12px;">ইউজার লোড করা যায়নি।</p>`; }
     }
+
+    // Expose admin data refresh to inline Admin Panel click handlers.
+    window.loadAdminData = loadAdminData;
 
     window.openAdminActiveUsers = function() {
       const box = document.getElementById('adminActiveUsersBox');
@@ -1953,18 +2039,105 @@
       box.style.display = 'block';
     };
 
-    window.renderAdminFeatureUsage = function() {
+    // Normalize tracking data from both nested usage maps and legacy dotted field names.
+    function normalizeAdminUsage(userData) {
+      const usage = {};
+      if (userData && userData.usage && typeof userData.usage === 'object') {
+        Object.assign(usage, userData.usage);
+      }
+      const features = ['dashboard','transactions','budget','report','premium','feedback'];
+      features.forEach(feature => {
+        const countKey = `usage.${feature}.count`;
+        const lastKey = `usage.${feature}.lastUsed`;
+        const usedKey = `usage.${feature}.used`;
+        if (Object.prototype.hasOwnProperty.call(userData || {}, countKey) ||
+            Object.prototype.hasOwnProperty.call(userData || {}, lastKey) ||
+            Object.prototype.hasOwnProperty.call(userData || {}, usedKey)) {
+          usage[feature] = {
+            ...(usage[feature] || {}),
+            ...(Object.prototype.hasOwnProperty.call(userData || {}, countKey) ? { count: userData[countKey] } : {}),
+            ...(Object.prototype.hasOwnProperty.call(userData || {}, lastKey) ? { lastUsed: userData[lastKey] } : {}),
+            ...(Object.prototype.hasOwnProperty.call(userData || {}, usedKey) ? { used: userData[usedKey] } : {})
+          };
+        }
+      });
+      return usage;
+    }
+
+    // Feature tracking panel: always reads the latest usage data directly from Firestore.
+    window.renderAdminFeatureUsage = async function() {
       const el = document.getElementById('adminFeatureUsageList');
+      const statusEl = document.getElementById('adminFeatureUsageStatus');
       if (!el) return;
-      const features = [['dashboard','🏠 ড্যাশবোর্ড'],['transactions','↔️ লেনদেন'],['budget','🎯 বাজেট'],['report','📊 রিপোর্ট'],['premium','⭐ Premium'],['feedback','💬 Feedback']];
-      const counts = {};
-      allUsersCache.forEach(u => features.forEach(([key]) => { if (u.usage?.[key]?.used || Number(u.usage?.[key]?.count || 0) > 0) counts[key]=(counts[key]||0)+1; }));
-      el.innerHTML = features.map(([key,label]) => `
-        <button type="button" onclick="openAdminFeatureUsers('${key}')" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px;text-align:left;cursor:pointer;width:100%;">
-          <div style="font-size:11px;color:#64748b;">${label}</div>
-          <div style="font-size:20px;font-weight:800;color:#0f172a;margin-top:2px;">${counts[key]||0}</div>
-          <div style="font-size:10px;color:#94a3b8;">ইউজার ব্যবহার করেছে · তালিকা দেখতে ক্লিক করুন</div>
-        </button>`).join('');
+      el.innerHTML = `<div style="grid-column:1/-1;text-align:center;font-size:11px;color:#64748b;padding:8px;">Tracking ডাটা লোড হচ্ছে...</div>`;
+      if (statusEl) statusEl.textContent = 'Firebase থেকে সর্বশেষ Tracking ডাটা লোড হচ্ছে...';
+
+      try {
+        const snap = await getDocs(collection(db, 'users'));
+        const freshUsers = [];
+        snap.forEach(uDoc => {
+          const u = uDoc.data() || {};
+          if (u.email === ADMIN_EMAIL) return;
+          const createdAt = u.createdAt ? (u.createdAt.toMillis ? u.createdAt.toMillis() : new Date(u.createdAt).getTime()) : Date.now();
+          const subDays = Number(u.subDays || 30);
+          const daysPassed = Math.floor((Date.now() - createdAt) / (1000 * 60 * 60 * 24));
+          const daysLeft = Math.max(0, subDays - daysPassed);
+          freshUsers.push({
+            name: u.name || 'নাম নেই',
+            phone: u.phone || '-',
+            email: u.email || '',
+            uid: uDoc.id,
+            isPro: !!u.isSubscribed && daysLeft > 0,
+            daysLeft,
+            lastActiveMs: u.lastActive ? (u.lastActive.toMillis ? u.lastActive.toMillis() : new Date(u.lastActive).getTime()) : 0,
+            lastActive: u.lastActive ? new Date(u.lastActive.toMillis ? u.lastActive.toMillis() : new Date(u.lastActive).getTime()).toLocaleString('bn-BD') : 'অজানা',
+            usage: normalizeAdminUsage(u)
+          });
+        });
+
+        // Keep the cache synchronized so clicking a feature card shows the exact same fresh users.
+        allUsersCache = freshUsers;
+
+        const features = [
+          ['dashboard','🏠 ড্যাশবোর্ড'],
+          ['transactions','↔️ লেনদেন'],
+          ['budget','🎯 বাজেট'],
+          ['report','📊 রিপোর্ট'],
+          ['premium','⭐ Premium'],
+          ['feedback','💬 Feedback']
+        ];
+
+        const counts = {};
+        const totalTrackedUsers = new Set();
+        features.forEach(([key]) => counts[key] = 0);
+        freshUsers.forEach(u => {
+          features.forEach(([key]) => {
+            const usage = u.usage && u.usage[key];
+            if (usage && (usage.used === true || Number(usage.count || 0) > 0)) {
+              counts[key]++;
+              totalTrackedUsers.add(u.uid);
+            }
+          });
+        });
+
+        el.innerHTML = features.map(([key,label]) => `
+          <button type="button" onclick="openAdminFeatureUsers('${key}')" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px;text-align:left;cursor:pointer;width:100%;">
+            <div style="font-size:11px;color:#64748b;">${label}</div>
+            <div style="font-size:20px;font-weight:800;color:#0f172a;margin-top:2px;">${counts[key] || 0}</div>
+            <div style="font-size:10px;color:#94a3b8;">জন ইউজার ব্যবহার করেছে · তালিকা দেখতে ক্লিক করুন</div>
+          </button>`).join('');
+
+        if (statusEl) {
+          const tracked = totalTrackedUsers.size;
+          statusEl.innerHTML = tracked > 0
+            ? `Tracking সক্রিয় আছে। বর্তমানে <strong>${tracked} জন ইউজারের</strong> ফিচার ব্যবহারের ডাটা পাওয়া গেছে।`
+            : 'Tracking ডাটা এখনো পাওয়া যায়নি।';
+        }
+      } catch (e) {
+        console.error('Admin feature tracking refresh error:', e);
+        el.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#dc2626;font-size:11px;padding:8px;">Tracking ডাটা লোড করা যায়নি।</div>`;
+        if (statusEl) statusEl.textContent = 'Tracking ডাটা লোড করা যায়নি।';
+      }
     };
 
     function renderAdminUserList(users) {
@@ -2162,7 +2335,12 @@
     let monthlyBudget = 0;
     let authMode = 'login';
     let currentTxFilter = 'all';
+    let txMonthFilter = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
     let userDataLoaded = false;
+    let needs = [];
+    let monthlyBudgets = {};
+    let dashboardMonthOffset = 0;
+    let reportMonthOffset = 0;
 
     function requireLogin(message = 'এই অপশনটি ব্যবহার করতে আগে লগইন করুন।') {
       if (!currentUserGlobal) {
@@ -2180,9 +2358,16 @@
         const userRef = doc(db, 'users', uid);
         const userSnap = await getDoc(userRef);
 
-        monthlyBudget = userSnap.exists() && Number(userSnap.data().monthlyBudget) > 0
-          ? Number(userSnap.data().monthlyBudget)
-          : 0;
+        const userData = userSnap.exists() ? userSnap.data() : {};
+        const nowForBudget = new Date();
+        const currentBudgetKey = `${nowForBudget.getFullYear()}-${String(nowForBudget.getMonth()+1).padStart(2,'0')}`;
+        monthlyBudgets = (userData.monthlyBudgets && typeof userData.monthlyBudgets === 'object') ? { ...userData.monthlyBudgets } : {};
+        if (!Object.keys(monthlyBudgets).length && Number(userData.monthlyBudget) > 0) {
+          monthlyBudgets[currentBudgetKey] = Number(userData.monthlyBudget);
+          try { await setDoc(userRef, { monthlyBudgets }, { merge: true }); } catch(e) { console.warn('Budget migration skipped:', e); }
+        }
+        monthlyBudget = Number(monthlyBudgets[currentBudgetKey]) > 0 ? Number(monthlyBudgets[currentBudgetKey]) : 0;
+        needs = Array.isArray(userData.needs) ? userData.needs : [];
 
         const txSnap = await getDocs(collection(db, 'users', uid, 'transactions'));
         transactions = txSnap.docs.map(d => {
@@ -2239,19 +2424,16 @@
 
     async function saveBudgetToCloud(value) {
       const activeUser = auth.currentUser || currentUserGlobal;
-      if (!activeUser || !activeUser.uid) {
-        console.error('Budget save: no authenticated user');
-        return false;
-      }
+      if (!activeUser || !activeUser.uid) { console.error('Budget save: no authenticated user'); return false; }
+      const now = new Date();
+      const key = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+      const nextBudgets = { ...(monthlyBudgets || {}), [key]: Number(value) };
       try {
-        await setDoc(doc(db, 'users', activeUser.uid), {
-          monthlyBudget: Number(value)
-        }, { merge: true });
+        await setDoc(doc(db, 'users', activeUser.uid), { monthlyBudgets: nextBudgets, monthlyBudget: Number(value) }, { merge: true });
+        monthlyBudgets = nextBudgets;
+        monthlyBudget = Number(value);
         return true;
-      } catch (err) {
-        console.error('Budget save error:', err);
-        return false;
-      }
+      } catch (err) { console.error('Budget save error:', err); return false; }
     }
 
     let allowBackNavigation = false;
@@ -2274,15 +2456,16 @@
 
       featureTrackInFlight.add(key);
       try {
+        // Update only this feature so tracking for other features is preserved.
         await setDoc(doc(db, 'users', activeUser.uid), {
           [`usage.${feature}.count`]: increment(1),
           [`usage.${feature}.lastUsed`]: new Date(),
           [`usage.${feature}.used`]: true
-        }, { merge:true });
+        }, { merge: true });
         sessionStorage.setItem(key, String(now));
         return true;
       } catch (err) {
-        console.warn('Feature tracking skipped:', feature, err);
+        console.error('Feature tracking write failed:', feature, err);
         return false;
       } finally {
         featureTrackInFlight.delete(key);
@@ -2322,6 +2505,7 @@
         }
       }
       updateDashboard();
+      if (tabName === 'report') updateReportMonth();
       if(window.lucide) lucide.createIcons();
     };
 
@@ -2392,11 +2576,7 @@
 
       btn.disabled = true;
       try {
-        await setDoc(doc(db, 'users', activeUser.uid), {
-          monthlyBudget: value
-        }, { merge: true });
-
-        monthlyBudget = value;
+        if (!(await saveBudgetToCloud(value))) throw new Error('Budget save failed');
         updateDashboard();
         closeBudgetModal();
       } catch (err) {
@@ -2504,6 +2684,7 @@
           date: createdAt.toLocaleDateString('bn-BD'), createdAt
         });
         transactions.unshift({ id: ref.id, type: 'income', amount, category, method, note, date: createdAt.toLocaleDateString('bn-BD'), createdAtMs: createdAt.getTime() });
+        await trackFeatureUsage('transactions', true);
         document.getElementById('incomeModal').classList.remove('active');
         document.getElementById('incomeForm').reset();
         updateDashboard();
@@ -2529,6 +2710,7 @@
           date: createdAt.toLocaleDateString('bn-BD'), createdAt
         });
         transactions.unshift({ id: ref.id, type: 'expense', amount, category, method, note, date: createdAt.toLocaleDateString('bn-BD'), createdAtMs: createdAt.getTime() });
+        await trackFeatureUsage('transactions', true);
         document.getElementById('expenseModal').classList.remove('active');
         document.getElementById('singleExpenseForm').reset();
         updateDashboard();
@@ -2571,6 +2753,7 @@
         };
         const ref = await addDoc(collection(db, 'users', currentUserGlobal.uid, 'transactions'), memoTx);
         transactions.unshift({ ...memoTx, id: ref.id, createdAtMs: createdAt.getTime() });
+        await trackFeatureUsage('transactions', true);
       } catch (err) {
         console.error(err);
         return alert('বাজার মেমো সংরক্ষণ করা যায়নি।');
@@ -2615,187 +2798,275 @@
 
     window.openCategoryDrillDown = function(categoryName) {
       if (!requireLogin()) return;
-      const filtered = transactions.filter(t => t.type === 'expense' && t.category === categoryName);
-      let totalCatExp = filtered.reduce((sum, t) => sum + t.amount, 0);
-      let totalAllExp = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-      let pct = totalAllExp > 0 ? Math.round((totalCatExp / totalAllExp) * 100) : 0;
+      const monthTx = getMonthTransactions(reportMonthOffset);
+      const filtered = monthTx.filter(t => t.type === 'expense' && t.category === categoryName);
+      const totalCatExp = filtered.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+      const totalAllExp = monthTx.filter(t => t.type === 'expense').reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+      const pct = totalAllExp > 0 ? Math.round((totalCatExp / totalAllExp) * 100) : 0;
 
       document.getElementById('drillDownTitle').textContent = categoryName;
-      document.getElementById('drillDownSubtitle').textContent = `মোট খরচ: ৳${totalCatExp.toLocaleString()} (মোটের ${pct}%)`;
+      document.getElementById('drillDownSubtitle').textContent = `${monthLabel(monthDate(reportMonthOffset))} • মোট খরচ: ৳${totalCatExp.toLocaleString()} (মোটের ${pct}%)`;
 
       const listContainer = document.getElementById('drillDownList');
-      if(filtered.length === 0) {
-        listContainer.innerHTML = `<p style="text-align: center; color: #94a3b8; font-size: 13px; padding: 20px;">এই খাতে কোনো খরচ নেই।</p>`;
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `<p style="text-align:center;color:#94a3b8;font-size:13px;padding:20px;">এই মাসে এই খাতে কোনো খরচ নেই।</p>`;
       } else {
-        let html = '';
-        filtered.forEach(t => {
-          html += renderTxCard(t);
-        });
-        listContainer.innerHTML = html;
+        listContainer.innerHTML = filtered.map(t => renderTxCard(t)).join('');
       }
       document.getElementById('categoryDrillDownModal').classList.add('active');
-      if(window.lucide) lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     };
 
     window.openCategoryDrillDownFromAlert = function() {
       if (!requireLogin()) return;
-      let catTotals = {};
-      transactions.forEach(t => {
-        if(t.type === 'expense') {
-          catTotals[t.category] = (catTotals[t.category] || 0) + t.amount;
-        }
+      const monthTx = getMonthTransactions(reportMonthOffset);
+      const catTotals = {};
+      monthTx.forEach(t => {
+        if (t.type === 'expense') catTotals[t.category] = (catTotals[t.category] || 0) + (Number(t.amount) || 0);
       });
-      let maxCat = '';
-      let maxAmt = 0;
-      for(let cat in catTotals) {
-        if(catTotals[cat] > maxAmt) {
-          maxAmt = catTotals[cat];
-          maxCat = cat;
-        }
+      let maxCat = '', maxAmt = 0;
+      for (const cat in catTotals) {
+        if (catTotals[cat] > maxAmt) { maxAmt = catTotals[cat]; maxCat = cat; }
       }
-      if(maxCat) {
-        openCategoryDrillDown(maxCat);
-      } else {
-        alert('এখনও কোনো খরচের ডাটা নেই!');
-      }
+      if (maxCat) openCategoryDrillDown(maxCat);
+      else alert(`${monthLabel(monthDate(reportMonthOffset))}-এ এখনও কোনো খরচের ডাটা নেই!`);
+    };
+
+    function transactionMonthKey(t) {
+      const d = new Date(Number(t.createdAtMs) || Date.now());
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    }
+
+    function monthDate(offset) {
+      const d = new Date();
+      d.setDate(1);
+      d.setMonth(d.getMonth() + offset);
+      return d;
+    }
+
+    function monthLabel(d) {
+      return d.toLocaleDateString('bn-BD', { month:'long', year:'numeric' });
+    }
+
+    function getMonthTransactions(offset) {
+      const d = monthDate(offset);
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      return transactions.filter(t => transactionMonthKey(t) === key);
+    }
+
+    window.changeDashboardMonth = function(step) {
+      dashboardMonthOffset += Number(step) || 0;
+      updateDashboard();
+    };
+
+    window.changeReportMonth = function(step) {
+      reportMonthOffset += Number(step) || 0;
+      updateReportMonth();
+    };
+
+    window.selectReportMonth = function(value) {
+      const [y,m] = String(value).split('-').map(Number);
+      if (!y || !m) return;
+      const now = new Date();
+      reportMonthOffset = (y - now.getFullYear()) * 12 + (m - 1 - now.getMonth());
+      updateReportMonth();
     };
 
     function updateDashboard() {
-      let income = 0, expense = 0;
-      let categoryTotals = {};
-
-      transactions.forEach(t => { 
-        if(t.type === 'income') {
-          income += t.amount; 
-        } else if(t.type === 'expense') {
-          expense += t.amount;
-          categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+      const monthTx = getMonthTransactions(dashboardMonthOffset);
+      let monthIncome = 0, monthExpense = 0;
+      const categoryTotals = {};
+      monthTx.forEach(t => {
+        if (t.type === 'income') monthIncome += Number(t.amount) || 0;
+        if (t.type === 'expense') {
+          monthExpense += Number(t.amount) || 0;
+          categoryTotals[t.category] = (categoryTotals[t.category] || 0) + (Number(t.amount) || 0);
         }
       });
-      
-      const net = income - expense;
-      const netEl = document.getElementById('netBalance');
-      netEl.textContent = `৳${net.toLocaleString()}`;
-      if(net < 0) {
-        netEl.classList.add('negative');
-      } else {
-        netEl.classList.remove('negative');
-      }
 
-      document.getElementById('totalIncome').textContent = `৳${income.toLocaleString()}`;
-      document.getElementById('totalExpense').textContent = `৳${expense.toLocaleString()}`;
-      document.getElementById('repTotalIncome').textContent = `৳${income.toLocaleString()}`;
-      document.getElementById('repTotalExpense').textContent = `৳${expense.toLocaleString()}`;
-      
+      let lifetimeIncome = 0, lifetimeExpense = 0;
+      transactions.forEach(t => {
+        if (t.type === 'income') lifetimeIncome += Number(t.amount) || 0;
+        else if (t.type === 'expense') lifetimeExpense += Number(t.amount) || 0;
+      });
+      const balance = lifetimeIncome - lifetimeExpense;
+      const netEl = document.getElementById('netBalance');
+      netEl.textContent = `৳${balance.toLocaleString()}`;
+      netEl.classList.toggle('negative', balance < 0);
+
+      document.getElementById('dashboardMonthLabel').textContent = monthLabel(monthDate(dashboardMonthOffset));
+      document.getElementById('totalIncome').textContent = `৳${monthIncome.toLocaleString()}`;
+      document.getElementById('totalExpense').textContent = `৳${monthExpense.toLocaleString()}`;
+      document.getElementById('savingsRateLabel').textContent = `এই মাসে নেট ${monthIncome - monthExpense >= 0 ? 'জমা' : 'ঘাটতি'}: ৳${Math.abs(monthIncome-monthExpense).toLocaleString()}`;
+
+      const currentMonthTx = getMonthTransactions(0);
+      const currentMonthExpense = currentMonthTx.filter(t=>t.type==='expense').reduce((a,t)=>a+(Number(t.amount)||0),0);
       document.getElementById('targetBudgetVal').textContent = `৳${monthlyBudget.toLocaleString()}`;
-      document.getElementById('spentBudgetVal').textContent = `৳${expense.toLocaleString()}`;
-      document.getElementById('remainBudgetVal').textContent = `৳${Math.max(0, monthlyBudget - expense).toLocaleString()}`;
+      document.getElementById('spentBudgetVal').textContent = `৳${currentMonthExpense.toLocaleString()}`;
+      document.getElementById('remainBudgetVal').textContent = `৳${Math.max(0, monthlyBudget-currentMonthExpense).toLocaleString()}`;
 
       const today = new Date();
-      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-      const currentDay = today.getDate();
-      const daysLeft = Math.max(1, lastDay - currentDay + 1);
-      const remainingBudget = Math.max(0, monthlyBudget - expense);
-      const safeDaily = Math.round(remainingBudget / daysLeft);
-
+      const lastDay = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+      const daysLeft = Math.max(1, lastDay-today.getDate()+1);
+      const remainingBudget = Math.max(0, monthlyBudget-currentMonthExpense);
+      const safeDaily = Math.round(remainingBudget/daysLeft);
       document.getElementById('homeSafeDaily').textContent = `৳${safeDaily.toLocaleString()} / দিন`;
       document.getElementById('daysRemainingText').textContent = `মাসের বাকি ${daysLeft} দিন`;
       document.getElementById('budgetSafeDaily').textContent = `৳${safeDaily.toLocaleString()} / দিন`;
       document.getElementById('budgetDaysRemainText').textContent = `মাসের বাকি আছে ${daysLeft} দিন • মোট বাজেট ৳${monthlyBudget.toLocaleString()}`;
-      
-      const spentPercent = monthlyBudget > 0 ? Math.min(100, Math.round((expense / monthlyBudget) * 100)) : 0;
+      const spentPercent = monthlyBudget > 0 ? Math.min(100,Math.round(currentMonthExpense/monthlyBudget*100)) : 0;
       document.getElementById('budgetSpentPercentText').textContent = `বাজেট খরচ: ${spentPercent}%`;
       document.getElementById('budgetSpentBar').style.width = `${spentPercent}%`;
       document.getElementById('budgetProgressBar').style.width = `${spentPercent}%`;
 
-      const savingsRate = income > 0 ? Math.max(0, Math.round(((income - expense) / income) * 100)) : 0;
-      document.getElementById('repSavingsRate').textContent = `${savingsRate}%`;
-      document.getElementById('repExpenseBar').style.width = `${spentPercent}%`;
-      document.getElementById('repExpenseRatioText').textContent = `আয়ের ${spentPercent}% খরচ হয়েছে`;
-
-      let maxCat = 'কোনো খরচ নেই', maxAmt = 0;
-      for(let cat in categoryTotals) {
-        if(categoryTotals[cat] > maxAmt) {
-          maxAmt = categoryTotals[cat];
-          maxCat = cat;
-        }
-      }
-      const maxCatPercent = expense > 0 ? Math.round((maxAmt / expense) * 100) : 0;
-      document.getElementById('maxExpenseCategoryText').textContent = maxAmt > 0 ? `${maxCat} (৳${maxAmt.toLocaleString()} বা ${maxCatPercent}%)` : 'এখনও কোনো খরচ নেই';
-
-      let breakdownHtml = '';
-      let catEntries = Object.entries(categoryTotals);
-      
-      if(catEntries.length === 0) {
-        breakdownHtml = `<p style="text-align: center; color: #94a3b8; font-size: 13px;">কোনো খরচের ডাটা নেই。</p>`;
-      } else {
-        let maxVal = -1, minVal = Infinity;
-        catEntries.forEach(([cat, amt]) => {
-          if(amt > maxVal) maxVal = amt;
-          if(amt < minVal) minVal = amt;
-        });
-
-        catEntries.sort((a, b) => b[1] - a[1]);
-
-        catEntries.forEach(([cat, amt]) => {
-          const pct = expense > 0 ? Math.round((amt / expense) * 100) : 0;
-          
-          let barColor = '#3b82f6';
-          if(amt === maxVal) {
-            barColor = '#e11d48';
-          } else if(amt === minVal) {
-            barColor = '#059669';
-          } else {
-            barColor = '#f59e0b';
-          }
-
-          breakdownHtml += `
-            <div onclick="openCategoryDrillDown('${cat}')" style="cursor: pointer; padding: 6px; border-radius: 12px; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 4px;">
-                <span style="color: #0f172a;">${cat}</span>
-                <span style="color: #475569;">৳${amt.toLocaleString()} (${pct}%)</span>
-              </div>
-              <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden;">
-                <div style="width: ${pct}%; height: 100%; background: ${barColor}; border-radius: 4px;"></div>
-              </div>
-            </div>
-          `;
-        });
-      }
-      document.getElementById('categoryBreakdownList').innerHTML = breakdownHtml;
-
       renderTransactions();
+      updateReportMonth();
+      renderNeeds();
+      if(window.lucide) lucide.createIcons();
     }
 
-    function renderTransactions() {
-      const recentList = document.getElementById('recentTransactionList');
-      const fullList = document.getElementById('fullTransactionList');
-      const searchQuery = document.getElementById('txSearchInput') ? document.getElementById('txSearchInput').value.toLowerCase().trim() : '';
+    function updateReportMonth() {
+      const select = document.getElementById('reportMonthSelect');
+      if (!select) return;
 
-      let filtered = transactions.filter(t => {
-        if(currentTxFilter !== 'all' && t.type !== currentTxFilter) return false;
-        if(searchQuery && !t.category.toLowerCase().includes(searchQuery) && !t.note.toLowerCase().includes(searchQuery) && !t.method.toLowerCase().includes(searchQuery)) return false;
-        return true;
+      const d = monthDate(reportMonthOffset);
+      const tx = getMonthTransactions(reportMonthOffset);
+      const income = tx.filter(t => t.type === 'income').reduce((a, t) => a + (Number(t.amount) || 0), 0);
+      const expense = tx.filter(t => t.type === 'expense').reduce((a, t) => a + (Number(t.amount) || 0), 0);
+      const categoryTotals = {};
+      tx.forEach(t => {
+        if (t.type === 'expense') {
+          categoryTotals[t.category] = (categoryTotals[t.category] || 0) + (Number(t.amount) || 0);
+        }
       });
 
-      if(transactions.length === 0) {
-        recentList.innerHTML = `<p style="text-align: center; color: #94a3b8; font-size: 14px;">এখনও কোনো লেনদেন নেই। করুন জমা বা খরচ।</p>`;
-        fullList.innerHTML = `<p style="text-align: center; color: #94a3b8; font-size: 14px;">এখনও কোনো লেনদেন নেই।</p>`;
-      } else {
-        let recentHtml = '';
-        let fullHtml = '';
-        transactions.slice(0, 5).forEach(t => { recentHtml += renderTxCard(t); });
-        
-        if(filtered.length === 0) {
-          fullHtml = `<p style="text-align: center; color: #94a3b8; font-size: 14px; padding: 20px;">কোনো মিল পাওয়া যায়নি।</p>`;
-        } else {
-          filtered.forEach(t => { fullHtml += renderTxCard(t); });
-        }
+      // Report-এর মাস তালিকা: যেসব মাসে লেনদেন আছে + বর্তমান মাস।
+      const months = new Set();
+      transactions.forEach(t => months.add(transactionMonthKey(t)));
+      const now = new Date();
+      months.add(`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`);
+      const opts = Array.from(months).sort().reverse();
+      select.innerHTML = opts.map(k => {
+        const [y, m] = k.split('-').map(Number);
+        const off = (y - now.getFullYear()) * 12 + (m - 1 - now.getMonth());
+        return `<option value="${k}" ${off === reportMonthOffset ? 'selected' : ''}>${monthLabel(new Date(y, m-1, 1))}</option>`;
+      }).join('');
 
-        recentList.innerHTML = recentHtml;
-        fullList.innerHTML = fullHtml;
+      // Arrow দিয়ে এমন মাসে গেলে যেটিতে এখনো কোনো লেনদেন নেই, সেটিও দেখানো হবে।
+      const selectedKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      if (!opts.includes(selectedKey)) {
+        select.insertAdjacentHTML('afterbegin', `<option value="${selectedKey}" selected>${monthLabel(d)}</option>`);
+      } else {
+        select.value = selectedKey;
       }
+
+      const monthText = document.getElementById('reportSelectedMonthText');
+      if (monthText) monthText.textContent = `${monthLabel(d)}-এর আয়, খরচ ও সঞ্চয়ের বিশ্লেষণ`;
+
+      const savingsRate = income > 0 ? Math.max(0, Math.round(((income - expense) / income) * 100)) : 0;
+      const expensePercent = income > 0 ? Math.min(100, Math.round((expense / income) * 100)) : 0;
+      document.getElementById('repTotalIncome').textContent = `৳${income.toLocaleString()}`;
+      document.getElementById('repTotalExpense').textContent = `৳${expense.toLocaleString()}`;
+      document.getElementById('repSavingsRate').textContent = `${savingsRate}%`;
+      document.getElementById('repExpenseBar').style.width = `${expensePercent}%`;
+      document.getElementById('repExpenseRatioText').textContent = `আয়ের ${expensePercent}% খরচ হয়েছে`;
+
+      // সর্বোচ্চ খরচের খাতও শুধু নির্বাচিত মাস থেকেই নেওয়া হবে।
+      let maxCat = 'কোনো খরচ নেই', maxAmt = 0;
+      Object.entries(categoryTotals).forEach(([cat, amt]) => {
+        if (amt > maxAmt) { maxAmt = amt; maxCat = cat; }
+      });
+      document.getElementById('maxExpenseCategoryText').textContent = maxAmt
+        ? `${maxCat} (৳${maxAmt.toLocaleString()} বা ${expense ? Math.round((maxAmt / expense) * 100) : 0}%)`
+        : 'এই মাসে কোনো খরচ নেই';
+
+      // বেশি খরচ = বেশি সতর্কতা: সর্বোচ্চ খাত লাল, তারপর কমলা/অ্যাম্বার/সবুজ।
+      const entries = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+      const colors = [
+        {bar:'#e11d48', text:'#be123c', bg:'#fff1f2'},
+        {bar:'#f97316', text:'#c2410c', bg:'#fff7ed'},
+        {bar:'#f59e0b', text:'#b45309', bg:'#fffbeb'},
+        {bar:'#059669', text:'#047857', bg:'#ecfdf5'}
+      ];
+      const list = document.getElementById('categoryBreakdownList');
+      if (!entries.length) {
+        list.innerHTML = `<p style="text-align:center;color:#94a3b8;font-size:13px;">এই মাসে কোনো খরচ নেই।</p>`;
+      } else {
+        list.innerHTML = entries.map(([cat, amt], index) => {
+          const pct = expense ? Math.round((amt / expense) * 100) : 0;
+          const c = colors[Math.min(index, colors.length - 1)];
+          const safeCat = JSON.stringify(cat).replace(/</g, '\\u003c');
+          return `<div onclick='openCategoryDrillDown(${safeCat})' style="cursor:pointer;padding:7px 6px;border-radius:12px;background:${c.bg};">
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;margin-bottom:5px;color:${c.text};">
+              <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${cat}</span>
+              <span style="flex-shrink:0;">৳${amt.toLocaleString()} (${pct}%)</span>
+            </div>
+            <div style="width:100%;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:${c.bar};border-radius:4px;"></div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    async function saveNeeds() {
+      const activeUser=auth.currentUser||currentUserGlobal;
+      if(!activeUser) return false;
+      try { await setDoc(doc(db,'users',activeUser.uid),{needs},{merge:true}); return true; } catch(e){ console.error('Needs save error',e); return false; }
+    }
+
+    window.openNeedsView=function(){
+      if(!requireLogin()) return;
+      switchTab('needs');
+      renderNeeds();
       if(window.lucide) lucide.createIcons();
+      setTimeout(()=>document.getElementById('needNameInput')?.focus(),80);
+    };
+    window.closeNeedsView=function(){ switchTab('budget'); };
+    window.saveNewNeedFromForm=async function(){
+      if(!requireLogin()) return;
+      const nameEl=document.getElementById('needNameInput'), priceEl=document.getElementById('needPriceInput');
+      const name=(nameEl?.value||'').trim(), raw=(priceEl?.value||'').trim();
+      if(!name){ nameEl?.focus(); return; }
+      if(raw && !/^[0-9]+$/.test(raw)){ alert('আনুমানিক দামে শুধু ইংরেজি সংখ্যা ব্যবহার করুন।'); priceEl?.focus(); return; }
+      needs.unshift({id:Date.now().toString(),name,estimatedPrice:raw?Number(raw):null,done:false,createdAt:Date.now()});
+      if(await saveNeeds()){ nameEl.value=''; priceEl.value=''; renderNeeds(); nameEl.focus(); } else alert('তালিকাটি সেভ করা যায়নি।');
+    };
+    window.addNeedItem=window.openNeedsView;
+    window.toggleNeed=async function(id){ const n=needs.find(x=>x.id===id); if(!n)return; n.done=!n.done; await saveNeeds(); renderNeeds(); };
+    window.deleteNeed=async function(id){ const n=needs.find(x=>x.id===id); if(!n) return; if(!confirm(`“${n.name}” প্রয়োজনটি মুছে ফেলতে চান?`)) return; needs=needs.filter(x=>x.id!==id); if(await saveNeeds()) renderNeeds(); };
+    function renderNeeds(){
+      const el=document.getElementById('needsList'); if(!el)return;
+      const active=needs.filter(n=>!n.done), done=needs.filter(n=>n.done), arr=[...active,...done];
+      const countEl=document.getElementById('needsCountText');
+      if(countEl) countEl.textContent=arr.length ? `${active.length}টি বাকি${done.length ? ` • ${done.length}টি সম্পন্ন` : ''}` : '';
+      el.innerHTML=arr.length?arr.map(n=>`<div style="display:flex;align-items:center;gap:8px;padding:12px;border:1px solid #e2ece6;border-radius:14px;background:${n.done?'#f8fafc':'#fff'};"><button type="button" onclick="toggleNeed('${n.id}')" style="border:0;background:none;font-size:20px;cursor:pointer;padding:0;">${n.done?'✅':'⬜'}</button><div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:700;color:${n.done?'#94a3b8':'#0f172a'};text-decoration:${n.done?'line-through':'none'};">${n.name}</div>${n.estimatedPrice!==null&&n.estimatedPrice!==undefined?`<div style="font-size:11px;color:#64748b;margin-top:3px;">আনুমানিক ৳${Number(n.estimatedPrice).toLocaleString()} • হিসাবের অংশ নয়</div>`:''}</div><button type="button" onclick="deleteNeed('${n.id}')" aria-label="মুছে ফেলুন" title="মুছে ফেলুন" style="border:0;background:#fff1f2;color:#e11d48;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button></div>`).join(''):`<div style="text-align:center;background:#fff;border:1px dashed #cbd5e1;border-radius:14px;padding:24px 12px;color:#94a3b8;font-size:12px;">এখনও কোনো প্রয়োজন যোগ করা হয়নি।</div>`;
+    }
+
+    function getTxMonthOptions(){
+      const months=new Set();
+      transactions.forEach(t=>months.add(transactionMonthKey(t)));
+      const now=new Date(); months.add(`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`);
+      return Array.from(months).sort().reverse();
+    }
+    window.selectTxMonth=function(value){ txMonthFilter=value || `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`; renderTransactions(); };
+    function renderTransactions() {
+      const recentList=document.getElementById('recentTransactionList'), fullList=document.getElementById('fullTransactionList');
+      const searchQuery=(document.getElementById('txSearchInput')?.value||'').toLowerCase().trim();
+      const select=document.getElementById('txMonthSelect');
+      const currentKey=`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
+      if(select){ const opts=getTxMonthOptions().map(k=>{const [y,m]=k.split('-').map(Number);return `<option value="${k}">${monthLabel(new Date(y,m-1,1))}</option>`;}); select.innerHTML=opts.join(''); select.value=txMonthFilter; if(select.value!==txMonthFilter){txMonthFilter=currentKey;select.value=currentKey;} }
+      let base=transactions.filter(t=>transactionMonthKey(t)===txMonthFilter);
+      let filtered=base.filter(t=>{ if(currentTxFilter!=='all'&&t.type!==currentTxFilter)return false; const hay=[t.category,t.note,t.method].map(v=>String(v||'').toLowerCase()); return !searchQuery||hay.some(v=>v.includes(searchQuery)); });
+      const summary=document.getElementById('txMonthSummary');
+      if(summary){ const inc=base.filter(t=>t.type==='income').reduce((a,t)=>a+(Number(t.amount)||0),0), exp=base.filter(t=>t.type==='expense').reduce((a,t)=>a+(Number(t.amount)||0),0); summary.style.display='block'; const [y,m]=txMonthFilter.split('-').map(Number); summary.innerHTML=`<div style="font-size:12px;font-weight:800;color:#064e3b;margin-bottom:6px;">${monthLabel(new Date(y,m-1,1))} — মাসের সারসংক্ষেপ</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center;gap:6px;"><div><span style="font-size:10px;color:#64748b;">এলো</span><div style="font-weight:800;color:#059669;">৳${inc.toLocaleString()}</div></div><div><span style="font-size:10px;color:#64748b;">গেলো</span><div style="font-weight:800;color:#e11d48;">৳${exp.toLocaleString()}</div></div><div><span style="font-size:10px;color:#64748b;">নেট</span><div style="font-weight:800;">৳${(inc-exp).toLocaleString()}</div></div></div>`; }
+      if(!fullList)return;
+      if(!filtered.length){fullList.innerHTML=base.length?'<p style="text-align:center;color:#94a3b8;font-size:14px;padding:20px;">কোনো মিল পাওয়া যায়নি।</p>':'<p style="text-align:center;color:#94a3b8;font-size:14px;padding:20px;">এই মাসে এখনো কোনো লেনদেন নেই।</p>';}
+      else fullList.innerHTML=filtered.map(renderTxCard).join('');
+      if(recentList){const recent=transactions.slice(0,5); recentList.innerHTML=recent.length?recent.map(renderTxCard).join(''):'<p style="text-align:center;color:#94a3b8;font-size:13px;">এখনও কোনো লেনদেন নেই।</p>';}
+      if(window.lucide)lucide.createIcons();
     }
 
     function renderTxCard(t) {
