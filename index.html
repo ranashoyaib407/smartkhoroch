@@ -103,6 +103,10 @@
     
     .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
     .section-head h3 { font-size: 17px; font-weight: 700; color: #064e3b; }
+    /* লেনদেন সফলভাবে সংরক্ষণের জন্য ছোট, non-blocking success toast */
+    #transactionSuccessToast { position: fixed; left: 50%; bottom: 78px; transform: translate(-50%, 18px); width: max-content; max-width: calc(100vw - 32px); background: #064e3b; color: #fff; padding: 11px 15px; border-radius: 12px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18); font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; opacity: 0; pointer-events: none; z-index: 220; transition: opacity .2s ease, transform .2s ease; }
+    #transactionSuccessToast.show { opacity: 1; transform: translate(-50%, 0); }
+    #transactionSuccessToast .toast-check { width: 20px; height: 20px; border-radius: 50%; background: #10b981; color: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; }
     .budget-card, .report-card, .settings-card { background: #fff; border-radius: 18px; padding: 14px; border: 1px solid #e2ece6; display: flex; flex-direction: column; gap: 12px; }
     /* মোবাইলে সেটিংসের প্রধান অপশনগুলো এক নজরে দেখানোর জন্য কমপ্যাক্ট গ্রিড */
     .settings-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -717,14 +721,22 @@
           <div class="form-group"><label>মোবাইল নম্বর বা ইমেল</label><input type="text" id="authPhone" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="01712345678 বা জিমেইল" required></div>
           <div class="form-group" id="groupPass"><label>পাসওয়ার্ড</label>
             <div style="position:relative;">
-              <input type="password" id="authPass" enterkeyhint="go" autocomplete="off" spellcheck="false" placeholder="••••••••" required style="padding-right:44px;">
+              <input type="password" id="authPass" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="কমপক্ষে ৬ অক্ষর" required minlength="6" style="padding-right:44px;">
               <button type="button" id="authPassToggle" onclick="togglePasswordVisibility('authPass','authPassToggle')" aria-label="পাসওয়ার্ড দেখুন" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); border:none; background:transparent; color:#64748b; cursor:pointer; padding:6px;">
                 <i data-lucide="eye" style="width:18px;height:18px;"></i>
               </button>
             </div>
+            <div id="passwordRuleHint" style="font-size:11px;color:#64748b;margin-top:5px;">কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন।</div>
           </div>
-          
-          <div style="text-align: right; margin-bottom: 10px;" id="forgotPassWrapper">
+          <div class="form-group" id="groupPassConfirm" style="display:none;"><label>পাসওয়ার্ড নিশ্চিত করুন</label>
+            <div style="position:relative;">
+              <input type="password" id="authPassConfirm" enterkeyhint="go" autocomplete="off" spellcheck="false" placeholder="পাসওয়ার্ডটি আবার লিখুন" minlength="6" style="padding-right:44px;">
+              <button type="button" id="authPassConfirmToggle" onclick="togglePasswordVisibility('authPassConfirm','authPassConfirmToggle')" aria-label="পাসওয়ার্ড দেখুন" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); border:none; background:transparent; color:#64748b; cursor:pointer; padding:6px;">
+                <i data-lucide="eye" style="width:18px;height:18px;"></i>
+              </button>
+            </div>
+          </div>
+                    <div style="text-align: right; margin-bottom: 10px;" id="forgotPassWrapper">
             <a id="whatsappForgotLink" href="https://wa.me/8801315937654" target="_blank" style="font-size: 12px; color: #059669; font-weight: 600; text-decoration: none;">পাসওয়ার্ড ভুলে গেছেন? হোয়াটসঅ্যাপে যোগাযোগ করুন</a>
           </div>
 
@@ -1058,6 +1070,21 @@
       </div>
     </div>
 
+    <!-- সাবস্ক্রিপশন প্রয়োজন মডাল -->
+    <div class="modal" id="subscriptionRequiredModal">
+      <div class="modal-content" style="max-width:360px;text-align:center;padding:24px 18px;">
+        <div style="width:52px;height:52px;border-radius:16px;background:#ecfdf5;color:#059669;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <i data-lucide="lock-keyhole" style="width:25px;height:25px;"></i>
+        </div>
+        <h3 style="font-size:17px;font-weight:800;color:#0f172a;margin-bottom:8px;">Premium Subscription প্রয়োজন</h3>
+        <p style="font-size:12px;line-height:1.6;color:#64748b;margin:0 0 18px;">আপনার Premium মেয়াদ শেষ হয়েছে। নতুন হিসাব সংরক্ষণ করতে একটি Subscription চালু করুন।</p>
+        <div style="display:flex;gap:8px;">
+          <button type="button" onclick="closeSubscriptionRequiredModal()" style="flex:1;padding:11px;border:1px solid #cbd5e1;background:#fff;color:#475569;border-radius:10px;font-weight:700;cursor:pointer;">পরে করব</button>
+          <button type="button" onclick="goToSubscriptionFromLock()" style="flex:1;padding:11px;border:none;background:#059669;color:#fff;border-radius:10px;font-weight:800;cursor:pointer;">Subscription চালু করুন</button>
+        </div>
+      </div>
+    </div>
+
     <!-- পাসওয়ার্ড পরিবর্তনের মডাল -->
     <div class="modal" id="changePasswordModal">
       <div class="modal-content">
@@ -1234,6 +1261,8 @@
     </div>
 
     <!-- রিপোর্ট খাতের বিস্তারিত ড্রিল-ডাউন মডাল -->
+    <div id="transactionSuccessToast" role="status" aria-live="polite"><span class="toast-check">✓</span><span id="transactionSuccessToastText">হিসাব সফলভাবে সংরক্ষণ হয়েছে</span></div>
+
     <div class="modal" id="categoryDrillDownModal">
       <div class="modal-content">
         <button onclick="document.getElementById('categoryDrillDownModal').classList.remove('active')" style="position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #475569;"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
@@ -1327,7 +1356,12 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const messaging = getMessaging(app);
+    let messaging = null;
+    try {
+      messaging = getMessaging(app);
+    } catch (err) {
+      console.warn('Firebase Messaging unavailable; app will continue normally:', err);
+    }
 
     const ADMIN_EMAIL = "ranashoyaib407@gmail.com";
 
@@ -1501,6 +1535,60 @@
     };
 
     let currentUserGlobal = null;
+    let currentSubscriptionActive = false;
+    let currentSubscriptionReason = '';
+    let transactionSaveInFlight = false;
+
+    function valueToMillis(value, fallback = 0) {
+      if (!value) return fallback;
+      if (value.toMillis) return value.toMillis();
+      const ms = new Date(value).getTime();
+      return Number.isNaN(ms) ? fallback : ms;
+    }
+
+    function evaluateUserAccess(userData = {}) {
+      const now = Date.now();
+      const createdMs = valueToMillis(userData.createdAt, now);
+      const trialStartMs = valueToMillis(userData.trialStartedAt, createdMs);
+      const trialDays = Math.max(0, Number(trialDaysLimit) || 0);
+      const trialValid = globalTrialAllowed && trialDays > 0 && (now - trialStartMs) < trialDays * 86400000;
+      const subStartMs = valueToMillis(userData.subscriptionStartedAt, userData.isSubscribed ? createdMs : 0);
+      const subDays = Math.max(0, Number(userData.subDays) || 0);
+      const subValid = !!userData.isSubscribed && !userData.subscriptionCancelledAt && subStartMs > 0 && (now - subStartMs) < subDays * 86400000;
+      if (subValid) return {active:true,type:'subscription',daysLeft:Math.max(0,subDays-Math.floor((now-subStartMs)/86400000))};
+      if (trialValid && !userData.subscriptionCancelledAt) return {active:true,type:'trial',daysLeft:Math.max(0,trialDays-Math.floor((now-trialStartMs)/86400000))};
+      return {active:false,type:'expired',daysLeft:0};
+    }
+
+    async function refreshSubscriptionAccess() {
+      const activeUser = auth.currentUser || currentUserGlobal;
+      if (!activeUser || activeUser.email === ADMIN_EMAIL) { currentSubscriptionActive=true; currentSubscriptionReason='admin'; return true; }
+      try {
+        const snap = await getDoc(doc(db,'users',activeUser.uid));
+        const state = evaluateUserAccess(snap.exists()?snap.data():{});
+        currentSubscriptionActive=state.active;
+        currentSubscriptionReason=state.type;
+        return state.active;
+      } catch(err) {
+        console.error('Subscription access check failed:',err);
+        currentSubscriptionActive=false;
+        currentSubscriptionReason='error';
+        return false;
+      }
+    }
+
+    function closeSubscriptionRequiredModal(){ document.getElementById('subscriptionRequiredModal')?.classList.remove('active'); }
+    window.closeSubscriptionRequiredModal=closeSubscriptionRequiredModal;
+    window.goToSubscriptionFromLock=function(){ closeSubscriptionRequiredModal(); window.openSubscriptionModal(); };
+
+    async function requireActiveSubscriptionForSave(){
+      if(!requireLogin()) return false;
+      const ok=await refreshSubscriptionAccess();
+      if(ok) return true;
+      document.getElementById('subscriptionRequiredModal')?.classList.add('active');
+      if(window.lucide) lucide.createIcons();
+      return false;
+    }
 
     onAuthStateChanged(auth, async (user) => {
       currentUserGlobal = user;
@@ -1536,52 +1624,32 @@
         if (localStorage.getItem('smartkhoroch_notif') === 'true' && Notification.permission === 'granted') {
           enablePushNotifications().catch((err) => console.warn('Existing push subscription refresh skipped:', err));
         }
-        let userName = "ব্যবহারকারী", userPhone = "";
-        let isApproved = false;
-        let createdAt = Date.now();
-        let subDays = 30;
-
-        if (userDocSnap.exists()) {
-          const uData = userDocSnap.data();
-          userName = uData.name || "ব্যবহারকারী";
-          userPhone = uData.phone || "";
-          isApproved = uData.isSubscribed || false;
-          if(uData.subDays) subDays = uData.subDays;
-          if(uData.createdAt) {
-            createdAt = uData.createdAt.toMillis ? uData.createdAt.toMillis() : new Date(uData.createdAt).getTime();
-          }
-        }
+        const userData = userDocSnap.exists() ? userDocSnap.data() : {};
+        const userName = userData.name || "ব্যবহারকারী";
+        const userPhone = userData.phone || "";
+        const createdAt = valueToMillis(userData.createdAt, Date.now());
+        const access = evaluateUserAccess(userData);
+        currentSubscriptionActive = access.active;
+        currentSubscriptionReason = access.type;
 
         profileCard.style.display = 'block';
         authBox.style.display = 'none';
-        
+
         document.getElementById('profileName').innerHTML = `<i data-lucide="user" style="width: 18px; height: 18px;"></i> <span>${userName}</span>`;
         document.getElementById('profilePhone').textContent = userPhone;
         document.getElementById('profileJoinDate').textContent = new Date(createdAt).toLocaleDateString('bn-BD');
 
-        const daysPassed = Math.floor((Date.now() - createdAt) / (1000 * 60 * 60 * 24));
-        const trialValid = globalTrialAllowed && (daysPassed < trialDaysLimit);
-        const subDaysLeft = Math.max(0, subDays - daysPassed);
-
-        if (isApproved) {
-          if (subDaysLeft > 0) {
-            document.getElementById('trialBadgeText').textContent = `প্রো: ${subDaysLeft} দিন বাকি`;
-            document.getElementById('paywallScreen').classList.remove('active');
-            document.getElementById('profileStatusBadge').textContent = 'প্রো অ্যাকাউন্ট';
-            document.getElementById('profileExpiry').textContent = `মেয়াদ বাকি: ${subDaysLeft} দিন`;
-            switchTab('dashboard', false);
-          } else {
-            document.getElementById('trialBadgeText').textContent = 'সাবস্ক্রিপশন মেয়াদ শেষ';
-            document.getElementById('paywallScreen').classList.add('active');
-            document.getElementById('profileStatusBadge').textContent = 'মেয়াদোত্তীর্ণ';
-            document.getElementById('profileExpiry').textContent = 'মেয়াদ শেষ';
-          }
-        } else if (trialValid) {
-          const trialLeft = Math.max(0, trialDaysLimit - daysPassed);
-          document.getElementById('trialBadgeText').textContent = `ট্রায়াল: ${trialLeft} দিন`;
+        if (access.type === 'subscription') {
+          document.getElementById('trialBadgeText').textContent = `প্রো: ${access.daysLeft} দিন বাকি`;
           document.getElementById('paywallScreen').classList.remove('active');
-          document.getElementById('profileStatusBadge').textContent = `ফ্রি ট্রায়াল`;
-          document.getElementById('profileExpiry').textContent = `ট্রায়াল বাকি: ${trialLeft} দিন`;
+          document.getElementById('profileStatusBadge').textContent = 'প্রো অ্যাকাউন্ট';
+          document.getElementById('profileExpiry').textContent = `মেয়াদ বাকি: ${access.daysLeft} দিন`;
+          switchTab('dashboard', false);
+        } else if (access.type === 'trial') {
+          document.getElementById('trialBadgeText').textContent = `ট্রায়াল: ${access.daysLeft} দিন`;
+          document.getElementById('paywallScreen').classList.remove('active');
+          document.getElementById('profileStatusBadge').textContent = 'ফ্রি ট্রায়াল';
+          document.getElementById('profileExpiry').textContent = `ট্রায়াল বাকি: ${access.daysLeft} দিন`;
           switchTab('dashboard', false);
         } else {
           document.getElementById('trialBadgeText').textContent = 'সাবস্ক্রিপশন প্রয়োজন';
@@ -1649,8 +1717,44 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'রেজিস্ট্রেশন হচ্ছে...';
         try {
+          const confirmPass = document.getElementById('authPassConfirm')?.value.trim() || '';
+          if (pass.length < 6) {
+            showError('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
+            return;
+          }
+          if (!confirmPass) {
+            showError('পাসওয়ার্ড নিশ্চিত করুন।');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
+            return;
+          }
+          if (pass !== confirmPass) {
+            showError('দুটি পাসওয়ার্ড মিলছে না।');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
+            return;
+          }
           const cred = await createUserWithEmailAndPassword(auth, email, pass);
-          await setDoc(doc(db, "users", cred.user.uid), { name, phone: phoneOrEmail, email, isSubscribed: false, subDays: 30, createdAt: new Date(), lastActive: new Date(), usage: { dashboard: { count: 0, used: false }, transactions: { count: 0, used: false }, budget: { count: 0, used: false }, report: { count: 0, used: false }, premium: { count: 0, used: false }, feedback: { count: 0, used: false } } });
+          await setDoc(doc(db, "users", cred.user.uid), {
+            name,
+            phone: phoneOrEmail,
+            email,
+            isSubscribed: false,
+            subDays: 0,
+            trialStartedAt: new Date(),
+            createdAt: new Date(),
+            lastActive: new Date(),
+            usage: {
+              dashboard: { count: 0, used: false },
+              transactions: { count: 0, used: false },
+              budget: { count: 0, used: false },
+              report: { count: 0, used: false },
+              premium: { count: 0, used: false },
+              feedback: { count: 0, used: false }
+            }
+          });
         } catch (err) {
           if (err?.code === 'auth/email-already-in-use') {
             showError('এই নম্বর দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট খোলা আছে।');
@@ -1658,14 +1762,13 @@
             showError('রেজিস্ট্রেশন করা যায়নি। তথ্যগুলো সঠিকভাবে দিন।');
           }
           submitBtn.disabled = false;
-          submitBtn.textContent = 'রেজিস্ট্রেশন';
+          submitBtn.textContent = 'রেজিস্ট্রেশন করুন';
         }
       } else {
         submitBtn.disabled = true;
         submitBtn.textContent = 'লগইন হচ্ছে...';
         try {
           await signInWithEmailAndPassword(auth, email, pass);
-          // Firebase auth state handler লগইনের পর সঠিক স্ক্রিনে নিয়ে যাবে।
         } catch (err) {
           showError('আপনার মোবাইল নম্বর/পাসওয়ার্ড ভুল।');
           submitBtn.disabled = false;
@@ -1821,8 +1924,12 @@
     }
 
     focusOnEnter('authPhone', 'authPass');
+    focusOnEnter('authPass', 'authPassConfirm');
+    focusOnEnter('authPassConfirm', null, () => document.getElementById('authForm')?.requestSubmit());
     focusOnEnter('incAmount', 'incCategory');
     focusOnEnter('expAmount', 'expCategory');
+    const initialMemoRow = document.querySelector('#memoItemsList .memo-row');
+    if (initialMemoRow) bindMemoRowKeyboard(initialMemoRow);
 
     window.toggleAdminFolder = function(folderId) {
       const box = document.getElementById(folderId);
@@ -1865,10 +1972,9 @@
           if(u.email === ADMIN_EMAIL) return;
           
           let createdAt = u.createdAt ? (u.createdAt.toMillis ? u.createdAt.toMillis() : new Date(u.createdAt).getTime()) : Date.now();
-          let subDays = u.subDays || 30;
-          let daysPassed = Math.floor((Date.now() - createdAt) / (1000 * 60 * 60 * 24));
-          let daysLeft = Math.max(0, subDays - daysPassed);
-          let isPro = u.isSubscribed && daysLeft > 0;
+          const access = evaluateUserAccess(u);
+          let daysLeft = access.daysLeft;
+          let isPro = access.type === 'subscription';
 
           if(isPro) proUsers++;
 
@@ -2155,7 +2261,10 @@
               স্ট্যাটাস: <strong style="color:${u.isPro?'#059669':'#e11d48'}">${u.isPro ? `প্রো (${u.daysLeft} দিন বাকি)` : 'ফ্রি / মেয়াদ শেষ'}</strong><br>
               শেষ সক্রিয়: ${u.lastActive}
             </div>
-            <button onclick="adminResetUserPassword('${u.email}', '${u.phone}')" style="background:#2563eb; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:600;">পাসওয়ার্ড রিসেট</button>
+            <div style="display:flex;flex-direction:column;gap:5px;align-items:stretch;">
+              <button onclick="adminResetUserPassword('${u.email}', '${u.phone}')" style="background:#2563eb; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:600;">পাসওয়ার্ড রিসেট</button>
+              ${u.isPro ? `<button onclick="adminRevokeSubscription('${u.uid}', '${u.phone}')" style="background:#e11d48;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">Subscription বন্ধ</button>` : ''}
+            </div>
           </div>
         `;
       });
@@ -2170,11 +2279,53 @@
 
     window.approvePayment = async function(payId, uid, days) {
       try {
-        await updateDoc(doc(db, "payments", payId), { status: 'approved' });
-        await updateDoc(doc(db, "users", uid), { isSubscribed: true, subDays: days, createdAt: new Date(), paymentRequestStatus: 'none' });
+        const now = new Date();
+        await updateDoc(doc(db, "payments", payId), { status: 'approved', approvedAt: now });
+        await updateDoc(doc(db, "users", uid), {
+          isSubscribed: true,
+          subDays: Number(days) || 0,
+          subscriptionStartedAt: now,
+          paymentRequestStatus: 'none',
+          subscriptionCancelledAt: null,
+          subscriptionCancellationReason: null
+        });
         alert('পেমেন্ট সফলভাবে এপ্রুভ করা হয়েছে!');
         loadAdminData();
       } catch(e) { alert('এপ্রুভ করা যায়নি!'); }
+    };
+
+    window.adminRevokeSubscription = async function(uid, phone) {
+      if (!confirm(`আপনি কি ${phone}-এর Premium Subscription বন্ধ করতে চান?
+ভুল অনুমোদন হয়ে থাকলে এটি ব্যবহারকারীর নতুন হিসাব সংরক্ষণ বন্ধ করবে।`)) return;
+      const reason = prompt('বাতিলের কারণ লিখুন (ঐচ্ছিক):', 'ভুলবশত অনুমোদন করা হয়েছিল।');
+      try {
+        const now = new Date();
+        const paySnap = await getDocs(query(collection(db, 'payments'), where('uid', '==', uid)));
+        const approved = paySnap.docs
+          .filter(d => d.data()?.status === 'approved')
+          .sort((a,b) => valueToMillis(b.data()?.approvedAt || b.data()?.createdAt) - valueToMillis(a.data()?.approvedAt || a.data()?.createdAt));
+
+        if (approved[0]) {
+          await updateDoc(doc(db, 'payments', approved[0].id), {
+            status: 'cancelled',
+            cancelledAt: now,
+            cancellationReason: reason || 'Admin cancelled subscription'
+          });
+        }
+
+        await updateDoc(doc(db, 'users', uid), {
+          isSubscribed: false,
+          subscriptionCancelledAt: now,
+          subscriptionCancellationReason: reason || 'Admin cancelled subscription',
+          paymentRequestStatus: 'none'
+        });
+
+        alert('Subscription বন্ধ করা হয়েছে।');
+        loadAdminData();
+      } catch(e) {
+        console.error(e);
+        alert('Subscription বন্ধ করা যায়নি!');
+      }
     };
 
     window.rejectPayment = async function(payId) {
@@ -2381,31 +2532,9 @@
           return { ...data, id: d.id, createdAtMs };
         }).sort((a, b) => b.createdAtMs - a.createdAtMs);
 
-        // পুরোনো ডিভাইসের localStorage ডাটা একবার ক্লাউডে তোলার সুবিধা।
-        // ক্লাউডে আগে থেকেই ডাটা থাকলে স্থানীয় ডাটা আর মেশানো হবে না।
-        if (txSnap.empty) {
-          const legacy = JSON.parse(localStorage.getItem('smartkhoroch_modern_data') || '[]');
-          if (Array.isArray(legacy) && legacy.length > 0) {
-            for (const oldTx of legacy) {
-              const ref = await addDoc(collection(db, 'users', uid, 'transactions'), {
-                type: oldTx.type,
-                amount: Number(oldTx.amount) || 0,
-                category: oldTx.category || '',
-                method: oldTx.method || '',
-                note: oldTx.note || '',
-                date: oldTx.date || new Date().toLocaleDateString('bn-BD'),
-                createdAt: new Date(Number(oldTx.id) || Date.now())
-              });
-              transactions.push({
-                ...oldTx,
-                id: ref.id,
-                amount: Number(oldTx.amount) || 0,
-                createdAtMs: Number(oldTx.id) || Date.now()
-              });
-            }
-            transactions.sort((a, b) => b.createdAtMs - a.createdAtMs);
-          }
-        }
+        // Firestore is the single source of truth.
+        // Local browser data is never copied into a different UID.
+        needs = userSnap.exists() && Array.isArray(userSnap.data().needs) ? userSnap.data().needs : [];
 
         userDataLoaded = true;
         updateDashboard();
@@ -2522,8 +2651,13 @@
       document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
       document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
       document.getElementById('groupName').style.display = mode === 'register' ? 'block' : 'none';
+      document.getElementById('groupPassConfirm').style.display = mode === 'register' ? 'block' : 'none';
       document.getElementById('forgotPassWrapper').style.display = mode === 'register' ? 'none' : 'block';
       document.getElementById('authSubmitBtn').textContent = mode === 'register' ? 'রেজিস্ট্রেশন করুন' : 'লগইন';
+      document.getElementById('authPass').setAttribute('enterkeyhint', mode === 'register' ? 'next' : 'go');
+      document.getElementById('authPassConfirm').required = mode === 'register';
+      document.getElementById('passwordRuleHint').style.display = mode === 'register' ? 'block' : 'none';
+      if (mode !== 'register') document.getElementById('authPassConfirm').value = '';
     };
 
     window.setBudgetPrompt = function() {
@@ -2574,6 +2708,7 @@
       const value = Number(budgetText);
       if (!Number.isFinite(value) || value <= 0) return;
 
+      if (!(await requireActiveSubscriptionForSave())) return;
       btn.disabled = true;
       try {
         if (!(await saveBudgetToCloud(value))) throw new Error('Budget save failed');
@@ -2595,6 +2730,7 @@
     window.openExpenseModal = function() {
       if (!requireLogin()) return;
       document.getElementById('expenseModal').classList.add('active');
+      resetMemoRows();
       switchExpenseTab('single');
       if(window.lucide) lucide.createIcons();
     }
@@ -2615,22 +2751,64 @@
         btnSingle.classList.remove('active');
         formMemo.style.display = 'block';
         formSingle.style.display = 'none';
+        const firstRow = document.querySelector('#memoItemsList .memo-row');
+        if (firstRow) bindMemoRowKeyboard(firstRow);
+        setTimeout(() => document.querySelector('#memoItemsList .memo-name')?.focus(), 60);
       }
     }
 
-    window.addMemoRow = function() {
+    function bindMemoRowKeyboard(row) {
+      const name = row.querySelector('.memo-name');
+      const price = row.querySelector('.memo-price');
+      if (!name || !price || row.dataset.keyboardBound === '1') return;
+      row.dataset.keyboardBound = '1';
+      name.setAttribute('enterkeyhint','next');
+      price.setAttribute('enterkeyhint','next');
+      name.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        price.focus();
+      });
+      price.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        if (!name.value.trim()) { name.focus(); return; }
+        if (!price.value.trim() || Number(price.value) <= 0) { price.focus(); return; }
+        addMemoRow(true);
+      });
+    }
+
+    window.addMemoRow = function(focusNew = false) {
       const container = document.getElementById('memoItemsList');
+      if (!container) return null;
       const row = document.createElement('div');
       row.className = 'memo-row';
       row.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; align-items: center;';
       row.innerHTML = `
-        <input type="text" placeholder="পণ্যের নাম (যেমন: ২ কেজি আলু)" class="memo-name" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
-        <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="দাম (৳)" class="memo-price" oninput="this.value=this.value.replace(/[^0-9]/g,''); calculateMemoTotal()" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
+        <input type="text" placeholder="পণ্যের নাম" class="memo-name" enterkeyhint="next" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
+        <input type="text" inputmode="numeric" enterkeyhint="next" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="দাম (৳)" class="memo-price" oninput="this.value=this.value.replace(/[^0-9]/g,''); calculateMemoTotal()" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
         <button type="button" onclick="this.parentElement.remove(); calculateMemoTotal();" style="background: #fee2e2; color: #dc2626; border: none; padding: 10px; border-radius: 10px; cursor: pointer;"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
       `;
       container.appendChild(row);
+      bindMemoRowKeyboard(row);
       if(window.lucide) lucide.createIcons();
+      if (focusNew) setTimeout(() => row.querySelector('.memo-name')?.focus(), 0);
+      return row;
     }
+
+    window.resetMemoRows = function() {
+      const container = document.getElementById('memoItemsList');
+      if (!container) return;
+      container.innerHTML = `
+        <div class="memo-row" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 6px; align-items: center;">
+          <input type="text" placeholder="পণ্যের নাম" class="memo-name" enterkeyhint="next" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
+          <input type="text" inputmode="numeric" enterkeyhint="next" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="দাম (৳)" class="memo-price" oninput="this.value=this.value.replace(/[^0-9]/g,''); calculateMemoTotal()" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px;">
+          <button type="button" onclick="this.parentElement.remove(); calculateMemoTotal();" style="background: #fee2e2; color: #dc2626; border: none; padding: 10px; border-radius: 10px; cursor: pointer;"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+        </div>`;
+      bindMemoRowKeyboard(container.querySelector('.memo-row'));
+      document.getElementById('memoTotalAmount').value = '';
+      if(window.lucide) lucide.createIcons();
+    };
 
     window.calculateMemoTotal = function() {
       const prices = document.querySelectorAll('.memo-price');
@@ -2668,16 +2846,37 @@
       a.click();
     }
 
+    let transactionToastTimer = null;
+    function showTransactionSuccessToast(message) {
+      const toast = document.getElementById('transactionSuccessToast');
+      const text = document.getElementById('transactionSuccessToastText');
+      if (!toast || !text) return;
+      text.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(transactionToastTimer);
+      transactionToastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
     document.getElementById('incomeForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!requireLogin()) return;
-      const amount = parseFloat(document.getElementById('incAmount').value);
-      const category = document.getElementById('incCategory').value;
-      const method = document.getElementById('incMethod').value;
-      const note = document.getElementById('incNote').value.trim() || 'বিবরণ নেই';
-      if (!Number.isFinite(amount) || amount <= 0) return alert('সঠিক টাকার পরিমাণ দিন!');
+      if (transactionSaveInFlight) return;
 
+      transactionSaveInFlight = true;
+      const submitBtn = document.querySelector('#incomeForm button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       try {
+        if (!(await requireActiveSubscriptionForSave())) return;
+
+        const amount = parseFloat(document.getElementById('incAmount').value);
+        const category = document.getElementById('incCategory').value;
+        const method = document.getElementById('incMethod').value;
+        const note = document.getElementById('incNote').value.trim() || 'বিবরণ নেই';
+        if (!Number.isFinite(amount) || amount <= 0) {
+          alert('সঠিক টাকার পরিমাণ দিন!');
+          return;
+        }
+
         const createdAt = new Date();
         const ref = await addDoc(collection(db, 'users', currentUserGlobal.uid, 'transactions'), {
           type: 'income', amount, category, method, note,
@@ -2688,22 +2887,36 @@
         document.getElementById('incomeModal').classList.remove('active');
         document.getElementById('incomeForm').reset();
         updateDashboard();
+        showTransactionSuccessToast('জমা সফলভাবে সংরক্ষণ হয়েছে');
       } catch (err) {
         console.error(err);
         alert('হিসাব সংরক্ষণ করা যায়নি।');
+      } finally {
+        transactionSaveInFlight = false;
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
 
     document.getElementById('singleExpenseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!requireLogin()) return;
-      const amount = parseFloat(document.getElementById('expAmount').value);
-      const category = document.getElementById('expCategory').value;
-      const method = document.getElementById('expMethod').value;
-      const note = document.getElementById('expNote').value.trim() || 'বিবরণ নেই';
-      if (!Number.isFinite(amount) || amount <= 0) return alert('সঠিক টাকার পরিমাণ দিন!');
+      if (transactionSaveInFlight) return;
 
+      transactionSaveInFlight = true;
+      const submitBtn = document.querySelector('#singleExpenseForm button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       try {
+        if (!(await requireActiveSubscriptionForSave())) return;
+
+        const amount = parseFloat(document.getElementById('expAmount').value);
+        const category = document.getElementById('expCategory').value;
+        const method = document.getElementById('expMethod').value;
+        const note = document.getElementById('expNote').value.trim() || 'বিবরণ নেই';
+        if (!Number.isFinite(amount) || amount <= 0) {
+          alert('সঠিক টাকার পরিমাণ দিন!');
+          return;
+        }
+
         const createdAt = new Date();
         const ref = await addDoc(collection(db, 'users', currentUserGlobal.uid, 'transactions'), {
           type: 'expense', amount, category, method, note,
@@ -2714,39 +2927,50 @@
         document.getElementById('expenseModal').classList.remove('active');
         document.getElementById('singleExpenseForm').reset();
         updateDashboard();
+        showTransactionSuccessToast('খরচ সফলভাবে যোগ হয়েছে');
       } catch (err) {
         console.error(err);
         alert('হিসাব সংরক্ষণ করা যায়নি।');
+      } finally {
+        transactionSaveInFlight = false;
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
 
     document.getElementById('memoExpenseForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const totalAmount = parseFloat(document.getElementById('memoTotalAmount').value) || 0;
-      if(totalAmount <= 0) return alert('দয়া করে মেমোতে সঠিক পণ্যের দাম লিখুন!');
-      
-      const category = document.getElementById('memoCategory').value;
-      const method = document.getElementById('memoMethod').value;
-      
-      const rows = document.querySelectorAll('.memo-row');
-      let notesArr = [];
-      rows.forEach(r => {
-        const name = r.querySelector('.memo-name').value.trim();
-        const price = parseFloat(r.querySelector('.memo-price').value) || 0;
-        if(name && price > 0) {
-          notesArr.push(`${name} (৳${price})`);
-        }
-      });
-
       if (!requireLogin()) return;
+      if (transactionSaveInFlight) return;
 
+      transactionSaveInFlight = true;
+      const submitBtn = document.querySelector('#memoExpenseForm button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       try {
+        if (!(await requireActiveSubscriptionForSave())) return;
+
+        const totalAmount = parseFloat(document.getElementById('memoTotalAmount').value) || 0;
+        if(totalAmount <= 0) {
+          alert('দয়া করে মেমোতে সঠিক পণ্যের দাম লিখুন!');
+          return;
+        }
+
+        const category = document.getElementById('memoCategory').value;
+        const method = document.getElementById('memoMethod').value;
+
+        const rows = document.querySelectorAll('.memo-row');
+        let notesArr = [];
+        rows.forEach(r => {
+          const name = r.querySelector('.memo-name').value.trim();
+          const price = parseFloat(r.querySelector('.memo-price').value) || 0;
+          if(name && price > 0) notesArr.push(`${name} (৳${price})`);
+        });
+
         const createdAt = new Date();
         const memoTx = {
           type: 'expense',
           amount: totalAmount,
-          category: category,
-          method: method,
+          category,
+          method,
           note: notesArr.join(', ') || 'বাজার মেমো',
           date: createdAt.toLocaleDateString('bn-BD'),
           createdAt
@@ -2754,15 +2978,19 @@
         const ref = await addDoc(collection(db, 'users', currentUserGlobal.uid, 'transactions'), memoTx);
         transactions.unshift({ ...memoTx, id: ref.id, createdAtMs: createdAt.getTime() });
         await trackFeatureUsage('transactions', true);
+
+        document.getElementById('expenseModal').classList.remove('active');
+        document.getElementById('memoExpenseForm').reset();
+        resetMemoRows();
+        updateDashboard();
+        showTransactionSuccessToast('খরচ সফলভাবে যোগ হয়েছে');
       } catch (err) {
         console.error(err);
-        return alert('বাজার মেমো সংরক্ষণ করা যায়নি।');
+        alert('খরচ সংরক্ষণ করা যায়নি।');
+      } finally {
+        transactionSaveInFlight = false;
+        if (submitBtn) submitBtn.disabled = false;
       }
-      document.getElementById('expenseModal').classList.remove('active');
-      document.getElementById('memoExpenseForm').reset();
-      document.getElementById('memoTotalAmount').value = '';
-      updateDashboard();
-      alert('বাজার মেমো খরচ সফলভাবে সংরক্ষিত হয়েছে!');
     });
 
     window.openVoucher = function(id) {
@@ -3027,6 +3255,7 @@
     window.closeNeedsView=function(){ switchTab('budget'); };
     window.saveNewNeedFromForm=async function(){
       if(!requireLogin()) return;
+      if(!(await requireActiveSubscriptionForSave())) return;
       const nameEl=document.getElementById('needNameInput'), priceEl=document.getElementById('needPriceInput');
       const name=(nameEl?.value||'').trim(), raw=(priceEl?.value||'').trim();
       if(!name){ nameEl?.focus(); return; }
@@ -3035,8 +3264,21 @@
       if(await saveNeeds()){ nameEl.value=''; priceEl.value=''; renderNeeds(); nameEl.focus(); } else alert('তালিকাটি সেভ করা যায়নি।');
     };
     window.addNeedItem=window.openNeedsView;
-    window.toggleNeed=async function(id){ const n=needs.find(x=>x.id===id); if(!n)return; n.done=!n.done; await saveNeeds(); renderNeeds(); };
-    window.deleteNeed=async function(id){ const n=needs.find(x=>x.id===id); if(!n) return; if(!confirm(`“${n.name}” প্রয়োজনটি মুছে ফেলতে চান?`)) return; needs=needs.filter(x=>x.id!==id); if(await saveNeeds()) renderNeeds(); };
+    window.toggleNeed=async function(id){
+      if(!(await requireActiveSubscriptionForSave())) return;
+      const n=needs.find(x=>x.id===id);
+      if(!n)return;
+      n.done=!n.done;
+      if(await saveNeeds()) renderNeeds();
+    };
+    window.deleteNeed=async function(id){
+      if(!(await requireActiveSubscriptionForSave())) return;
+      const n=needs.find(x=>x.id===id);
+      if(!n) return;
+      if(!confirm(`“${n.name}” প্রয়োজনটি মুছে ফেলতে চান?`)) return;
+      needs=needs.filter(x=>x.id!==id);
+      if(await saveNeeds()) renderNeeds();
+    };
     function renderNeeds(){
       const el=document.getElementById('needsList'); if(!el)return;
       const active=needs.filter(n=>!n.done), done=needs.filter(n=>n.done), arr=[...active,...done];
@@ -3093,7 +3335,7 @@
 
       return `
         <div onclick='openVoucher(${JSON.stringify(t.id)})' style="background: #fff; padding: 14px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2ece6; box-shadow: 0 2px 6px rgba(0,0,0,0.02); cursor: pointer; transition: transform 0.1s; margin-bottom: 8px;">
-          <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
+          <div style="display: flex; align-items: center; gap: 12px; overflow: hidden; flex: 1; min-width: 0;">
             <div style="width: 40px; height: 40px; border-radius: 12px; background: ${isInc ? '#ecfdf5' : '#fff1f2'}; color: ${isInc ? '#059669' : '#e11d48'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
               <i data-lucide="${iconName}" style="width: 20px; height: 20px;"></i>
             </div>
@@ -3102,7 +3344,7 @@
               <p style="font-size: 12px; color: #64748b; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.note} • ${t.date}</p>
             </div>
           </div>
-          <div style="text-align: right; flex-shrink: 0; margin-left: 8px;">
+          <div style="text-align: right; flex-shrink: 0; min-width: 78px; margin-left: 18px;">
             <div style="font-size: 16px; font-weight: 800; ${colorClass}">${sign}৳${t.amount.toLocaleString()}</div>
             <span class="${badgeClass}" style="font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 600; display: inline-block; margin-top: 2px;">${t.method}</span>
           </div>
