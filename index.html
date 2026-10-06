@@ -57,6 +57,14 @@
     .app-title .brand-smart { color: #1e293b; }
     .app-title .brand-khoroch { color: #059669; }
 
+    .top-install-banner { display: none; align-items: center; justify-content: space-between; gap: 10px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 9px 10px; box-shadow: 0 2px 8px rgba(5,150,105,0.06); }
+    .top-install-banner.show { display: flex; }
+    .top-install-banner .install-copy { min-width: 0; flex: 1; }
+    .top-install-banner .install-copy strong { display: block; color: #065f46; font-size: 12px; line-height: 1.3; }
+    .top-install-banner .install-copy span { display: block; color: #047857; font-size: 10px; line-height: 1.3; margin-top: 2px; }
+    .top-install-btn { flex-shrink: 0; border: 0; background: #059669; color: #fff; border-radius: 9px; padding: 7px 11px; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .top-install-btn:active { transform: scale(0.97); }
+
     .trial-pill { font-size: 11px; background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid #a7f3d0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
     
     .running-notice-bar {
@@ -509,6 +517,14 @@
         </span>
       </div>
     </header>
+
+    <div id="topInstallBanner" class="top-install-banner" aria-live="polite">
+      <div class="install-copy">
+        <strong>📱 SmartKhoroch ইনস্টল করুন</strong>
+        <span>হোম স্ক্রিন থেকে দ্রুত হিসাব রাখুন</span>
+      </div>
+      <button type="button" id="topInstallBtn" class="top-install-btn">ইনস্টল করুন</button>
+    </div>
 
     <!-- রানিং নোটিশ বার -->
     <div id="running-notice-bar" class="running-notice-bar">
@@ -3386,22 +3402,53 @@
     };
 
     let deferredPrompt;
+    const topInstallBanner = document.getElementById('topInstallBanner');
+    const topInstallBtn = document.getElementById('topInstallBtn');
+    const installCard = document.getElementById('installCard');
+    const installAppBtn = document.getElementById('installAppBtn');
+
+    function isSmartKhorochInstalled() {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+
+    function hideInstallPrompts() {
+      topInstallBanner?.classList.remove('show');
+      if (installCard) installCard.style.display = 'none';
+    }
+
+    function showInstallPrompts() {
+      if (isSmartKhorochInstalled()) {
+        hideInstallPrompts();
+        return;
+      }
+      topInstallBanner?.classList.add('show');
+      if (installCard) installCard.style.display = 'block';
+      if (window.lucide) lucide.createIcons();
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      document.getElementById('installCard').style.display = 'block';
+      showInstallPrompts();
     });
 
-    document.getElementById('installAppBtn').addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          document.getElementById('installCard').style.display = 'none';
-        }
-        deferredPrompt = null;
-      }
+    async function triggerSmartKhorochInstall() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') hideInstallPrompts();
+      deferredPrompt = null;
+    }
+
+    topInstallBtn?.addEventListener('click', triggerSmartKhorochInstall);
+    installAppBtn?.addEventListener('click', triggerSmartKhorochInstall);
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      hideInstallPrompts();
     });
+
+    if (isSmartKhorochInstalled()) hideInstallPrompts();
 
     const FCM_VAPID_KEY = 'BAem0oX3i9ZBKoSZ-4BRRE8HlTPV-W5Nl0IFR7FfCreBQ944eB5Iwr_iFFtqOJpsl4-9SjEba2YUInPWQuyZdJ4';
 
