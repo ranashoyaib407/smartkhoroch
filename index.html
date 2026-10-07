@@ -1318,6 +1318,14 @@
         <button type="button" onclick="saveNewNeedFromForm()" style="border:0;background:#059669;color:#fff;border-radius:10px;padding:11px 14px;font-weight:800;cursor:pointer;white-space:nowrap;">যোগ করুন</button>
       </div>
 
+      <div id="needsEstimatedTotalCard" style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:14px;padding:10px 12px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#047857;">💰 মোট আনুমানিক খরচ</div>
+          <div style="font-size:9px;color:#64748b;margin-top:2px;">অসম্পন্ন প্রয়োজনগুলোর দেওয়া আনুমানিক দামের মোট</div>
+        </div>
+        <strong id="needsEstimatedTotal" style="font-size:18px;font-weight:800;color:#064e3b;white-space:nowrap;">৳0</strong>
+      </div>
+
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
         <div style="font-size:13px;font-weight:800;color:#0f172a;">আপনার প্রয়োজনগুলো</div>
         <div id="needsCountText" style="font-size:11px;color:#64748b;"></div>
@@ -3302,9 +3310,20 @@
     function renderNeeds(){
       const el=document.getElementById('needsList'); if(!el)return;
       const active=needs.filter(n=>!n.done), done=needs.filter(n=>n.done), arr=[...active,...done];
+
+      // শুধু অসম্পন্ন প্রয়োজনের দেওয়া আনুমানিক দাম মোট করা হবে।
+      // এই হিসাব Dashboard, Transactions, Budget বা Report-এ যাবে না।
+      const estimatedTotal=active.reduce((sum,n)=>{
+        const price=Number(n.estimatedPrice);
+        return sum + (Number.isFinite(price) && price > 0 ? price : 0);
+      },0);
+      const totalEl=document.getElementById('needsEstimatedTotal');
+      if(totalEl) totalEl.textContent=`৳${estimatedTotal.toLocaleString()}`;
+
       const countEl=document.getElementById('needsCountText');
       if(countEl) countEl.textContent=arr.length ? `${active.length}টি বাকি${done.length ? ` • ${done.length}টি সম্পন্ন` : ''}` : '';
       el.innerHTML=arr.length?arr.map(n=>`<div style="display:flex;align-items:center;gap:8px;padding:12px;border:1px solid #e2ece6;border-radius:14px;background:${n.done?'#f8fafc':'#fff'};"><button type="button" onclick="toggleNeed('${n.id}')" style="border:0;background:none;font-size:20px;cursor:pointer;padding:0;">${n.done?'✅':'⬜'}</button><div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:700;color:${n.done?'#94a3b8':'#0f172a'};text-decoration:${n.done?'line-through':'none'};">${n.name}</div>${n.estimatedPrice!==null&&n.estimatedPrice!==undefined?`<div style="font-size:11px;color:#64748b;margin-top:3px;">আনুমানিক ৳${Number(n.estimatedPrice).toLocaleString()} • হিসাবের অংশ নয়</div>`:''}</div><button type="button" onclick="deleteNeed('${n.id}')" aria-label="মুছে ফেলুন" title="মুছে ফেলুন" style="border:0;background:#fff1f2;color:#e11d48;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button></div>`).join(''):`<div style="text-align:center;background:#fff;border:1px dashed #cbd5e1;border-radius:14px;padding:24px 12px;color:#94a3b8;font-size:12px;">এখনও কোনো প্রয়োজন যোগ করা হয়নি।</div>`;
+      if (window.lucide) lucide.createIcons();
     }
 
     function getTxMonthOptions(){
